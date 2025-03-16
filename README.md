@@ -63,8 +63,14 @@ Open another terminal, move to the same directory, run the command below, then f
 
 ```bash
 pnpm start:client
+`pnpm start --characters="path/to/your/character.json"`
 ```
 
+or use lubain
+
+```bash
+pnpm start --characters="lubain.character.json"
+```
 Then read the [Documentation](https://elizaos.github.io/eliza/) to learn how to customize your Eliza.
 
 ---
@@ -81,7 +87,6 @@ For detailed instructions on using the start script, including character managem
 
 > **Note**: The start script handles all dependencies, environment setup, and character management automatically.
 
----
 
 ### Modify Character
 
@@ -100,6 +105,13 @@ For detailed instructions on using the start script, including character managem
 1. run `npx elizaos plugins list` to get a list of available plugins or visit https://elizaos.github.io/registry/
 
 2. run `npx elizaos plugins add @elizaos-plugins/plugin-NAME` to install the plugin into your instance
+
+### Supabase
+
+```bash
+psql "postgresql://postgres:cypherpunkhackathon@db.erqahqyzhirixswuiplt.supabase.co:5432/postgres"  -f schema.sql
+psql "postgresql://postgres:cypherpunkhackathon@db.erqahqyzhirixswuiplt.supabase.co:5432/postgres"  -f seed.sql
+```
 
 #### Additional Requirements
 
