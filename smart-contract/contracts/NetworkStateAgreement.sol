@@ -7,8 +7,16 @@ contract NetworkStateAgreement {
     mapping(address => bool) public hasAgreed; // Mapping of users who have signed the agreement
     mapping(string => bool) public userProfileTypeAllowedList; // Mapping of allowed user profile types
     mapping(address => string) public userProfileType; // Mapping of users to their profile type
+    mapping(string => bool) public userNatureAgentAllowedList; // Mapping of allowed user nature agents
+    mapping(address => string) public userNatureAgent; // Mapping of users to their nature agent
 
-    event AgreementSigned(address indexed user, string userProfileType, string constitutionHash, uint256 timestamp);
+    event AgreementSigned(
+        address indexed user,
+        string userProfileType,
+        string userNatureAgent,
+        string constitutionHash,
+        uint256 timestamp
+    );
     event ConstitutionUpdated(string newHash, uint256 timestamp);
 
     /**
@@ -29,20 +37,25 @@ contract NetworkStateAgreement {
         userProfileTypeAllowedList["maker"] = true;
         userProfileTypeAllowedList["instigator"] = true;
         userProfileTypeAllowedList["investor"] = true;
+        userNatureAgentAllowedList["AI"] = true;
+        userNatureAgentAllowedList["human"] = true;
         constitutionHash = _constitutionHash;
     }
 
     /**
-     * @notice Allows a user to sign the network state agreement.
-     * @dev This function records the user's agreement and profile type.
+     * @notice Allows a user to sign the agreement.
+     * @dev This function records the user's agreement and emits an AgreementSigned event.
      * @param _userProfileType The profile type of the user signing the agreement.
+     * @param _userNatureAgent The nature agent of the user signing the agreement.
      */
-    function signAgreement(string memory _userProfileType) public {
+    function signAgreement(string memory _userProfileType, string memory _userNatureAgent) public {
         require(!hasAgreed[msg.sender], "Agreement already signed");
         require(userProfileTypeAllowedList[_userProfileType], "Invalid profile type");
+        require(userNatureAgentAllowedList[_userNatureAgent], "Invalid nature agent");
         hasAgreed[msg.sender] = true;
         userProfileType[msg.sender] = _userProfileType;
-        emit AgreementSigned(msg.sender, _userProfileType, constitutionHash, block.timestamp);
+        userNatureAgent[msg.sender] = _userNatureAgent;
+        emit AgreementSigned(msg.sender, _userProfileType, _userNatureAgent, constitutionHash, block.timestamp);
     }
 
     /**
