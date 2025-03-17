@@ -5,8 +5,10 @@ contract NetworkStateAgreement {
     address public owner; // Owner of the contract
     string public constitutionHash; // IPFS hash pointing to the constitution document
     mapping(address => bool) public hasAgreed; // Mapping of users who have signed the agreement
+    mapping(string => bool) public userProfileTypeAllowedList; // Mapping of allowed user profile types
+    mapping(address => string) public userProfileType; // Mapping of users to their profile type
 
-    event AgreementSigned(address indexed user, string constitutionHash, uint256 timestamp);
+    event AgreementSigned(address indexed user, string userProfileType, string constitutionHash, uint256 timestamp);
     event ConstitutionUpdated(string newHash, uint256 timestamp);
 
     /**
@@ -24,18 +26,23 @@ contract NetworkStateAgreement {
      */
     constructor(string memory _constitutionHash) {
         owner = msg.sender;
+        userProfileTypeAllowedList["maker"] = true;
+        userProfileTypeAllowedList["instigator"] = true;
+        userProfileTypeAllowedList["investor"] = true;
         constitutionHash = _constitutionHash;
     }
 
     /**
-     * @notice Allows a user to sign the agreement.
-     * @dev This function checks if the user has already signed the agreement.
-     * If not, it marks the user as having signed and emits an AgreementSigned event.
+     * @notice Allows a user to sign the network state agreement.
+     * @dev This function records the user's agreement and profile type.
+     * @param _userProfileType The profile type of the user signing the agreement.
      */
-    function signAgreement() public {
+    function signAgreement(string memory _userProfileType) public {
         require(!hasAgreed[msg.sender], "Agreement already signed");
+        require(userProfileTypeAllowedList[_userProfileType], "Invalid profile type");
         hasAgreed[msg.sender] = true;
-        emit AgreementSigned(msg.sender, constitutionHash, block.timestamp);
+        userProfileType[msg.sender] = _userProfileType;
+        emit AgreementSigned(msg.sender, _userProfileType, constitutionHash, block.timestamp);
     }
 
     /**

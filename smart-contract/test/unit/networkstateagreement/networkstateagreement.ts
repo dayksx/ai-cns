@@ -34,16 +34,22 @@ describe("NetworkStateAgreement", function () {
     });
 
     it("should allow a user to sign the agreement", async function () {
-      await this.networkStateAgreement.connect(this.signers.user1).signAgreement();
+      await this.networkStateAgreement.connect(this.signers.user1).signAgreement("maker");
       const hasSigned = await this.networkStateAgreement.hasAgreed(this.signers.user1);
       expect(hasSigned).to.equal(true);
     });
 
     it("should not allow a user to sign the agreement twice", async function () {
-      await this.networkStateAgreement.connect(this.signers.user1).signAgreement();
-      await expect(this.networkStateAgreement.connect(this.signers.user1).signAgreement()).to.be.revertedWith(
+      await this.networkStateAgreement.connect(this.signers.user1).signAgreement("maker");
+      await expect(this.networkStateAgreement.connect(this.signers.user1).signAgreement("maker")).to.be.revertedWith(
         "Agreement already signed",
       );
+    });
+
+    it("should not allow a user to sign without the right profile type", async function () {
+      await expect(
+        this.networkStateAgreement.connect(this.signers.user1).signAgreement("president"),
+      ).to.be.revertedWith("Invalid profile type");
     });
   });
 });
