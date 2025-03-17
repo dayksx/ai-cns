@@ -100,6 +100,24 @@ export function AppSidebar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
+                <SidebarMenuItem>
+                        <NavLink
+                            to="/census"
+                        >
+                            <SidebarMenuButton>
+                                <Book /> Census
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <NavLink
+                            to="/naturalization"
+                        >
+                            <SidebarMenuButton>
+                                <Book /> Naturalization
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <NavLink
                             to="https://elizaos.github.io/eliza/docs/intro/"
