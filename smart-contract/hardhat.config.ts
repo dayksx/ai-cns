@@ -4,18 +4,11 @@ import { config as dotenvConfig } from "dotenv";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
 import type { HardhatUserConfig } from "hardhat/config";
-import { vars } from "hardhat/config";
 import type { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
 import "solidity-coverage";
 
-
-
 import "./scripts/tasks/accounts";
-
-
-
-
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
