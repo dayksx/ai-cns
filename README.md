@@ -18,7 +18,7 @@ Cypherpunk hackathon 2025
 
 ### Prerequisites
 
-- [Python 2.7+](https://www.python.org/downloads/)
+- [Python 2.7+](https://www.python.org/downloads/) (3.8+ recommended)
 - [Node.js 23+](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [pnpm](https://pnpm.io/installation)
 
@@ -34,9 +34,22 @@ cp .env.example .env
 
 Required environment variables:
 ```
-SUPABASE_URL
-SUPABASE_ANON_KEY
-OPENAI_API_KEY
+# LLM Configuration
+OPENAI_API_KEY=
+
+# Supabase Configuration
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+
+# Slack Configuration
+CHARACTER.LUBAIN.SLACK_APP_ID=           # From Basic Information > App Credentials > App ID
+CHARACTER.LUBAIN.SLACK_CLIENT_ID=        # From Basic Information > App Credentials > Client ID
+CHARACTER.LUBAIN.SLACK_CLIENT_SECRET=    # From Basic Information > App Credentials > Client Secret
+CHARACTER.LUBAIN.SLACK_SIGNING_SECRET=   # From Basic Information > App Credentials > Signing Secret
+CHARACTER.LUBAIN.SLACK_BOT_TOKEN=       # From OAuth & Permissions > Bot User OAuth Token (starts with xoxb-)
+CHARACTER.LUBAIN.SLACK_VERIFICATION_TOKEN= # From Basic Information > App Credentials > Verification Token
+CHARACTER.LUBAIN.SLACK_SERVER_PORT=  # Must match the port you used with ngrok
+
 ```
 
 #### Start Eliza
@@ -73,32 +86,6 @@ pnpm start --characters="lubain.character.json"
 ```
 Then read the [Documentation](https://elizaos.github.io/eliza/) to learn how to customize your Eliza.
 
----
-
-### Automatically Start Eliza
-
-The start script provides an automated way to set up and run Eliza:
-
-```bash
-sh scripts/start.sh
-```
-
-For detailed instructions on using the start script, including character management and troubleshooting, see our [Start Script Guide](./docs/docs/guides/start-script.md).
-
-> **Note**: The start script handles all dependencies, environment setup, and character management automatically.
-
-
-### Modify Character
-
-1. Open `packages/core/src/defaultCharacter.ts` to modify the default character. Uncomment and edit.
-
-2. To load custom characters:
-    - Use `pnpm start --characters="path/to/your/character.json"`
-    - Multiple character files can be loaded simultaneously
-3. Connect with X (Twitter)
-    - change `"clients": []` to `"clients": ["twitter"]` in the character file to connect with X
-
----
 
 ### Add more plugins
 
@@ -113,13 +100,19 @@ psql "postgresql://postgres:cypherpunkhackathon@db.erqahqyzhirixswuiplt.supabase
 psql "postgresql://postgres:cypherpunkhackathon@db.erqahqyzhirixswuiplt.supabase.co:5432/postgres"  -f seed.sql
 ```
 
-#### Additional Requirements
+### Submodules
 
-You may need to install Sharp. If you see an error when starting up, try installing it with the following command:
+#### Clone a repo with submodules
+`git clone --recursive <repository_url>`
+or if you forget and you just did a git clone, you can still add the git submodules using this command git submodule update --init --recursive
 
+#### Commit a submodule
+```bash
+npx elizaos plugins list 
+npx elizaos plugins add @elizaos-plugins/adapter-supabase
 ```
-pnpm install --include=optional sharp
-```
+
+`git submodule add git@github.com:elizaos-plugins/adapter-supabase.git packages/adapter-supabase`
 
 ---
 
@@ -164,28 +157,13 @@ packages/
 ```
 
 
-## 🛠️ System Requirements
-
-### Minimum Requirements
-- CPU: Dual-core processor
-- RAM: 4GB
-- Storage: 1GB free space
-- Internet connection: Broadband (1 Mbps+)
-
-### Software Requirements
-- Python 2.7+ (3.8+ recommended)
-- Node.js 23+
-- pnpm
-- Git
-
-### Optional Requirements
-- GPU: For running local LLM models
-- Additional storage: For document storage and memory
-- Higher RAM: For running multiple agents
 
 ## 📁 Project Structure
 ```
-eliza/
+monorepo/
+├── agent/              # Agent runtime (ElizaOS)
+└── client/             # Front end (React)
+└── contract/           # Smart contract (Harhat)
 ├── packages/
 │   ├── core/           # Core Eliza functionality
 │   ├── clients/        # Client implementations
