@@ -37,18 +37,18 @@ export function AppSidebar() {
                         <SidebarMenuButton size="lg" asChild>
                             <NavLink to="/">
                                 <img
-                                    alt="elizaos-icon"
-                                    src="/elizaos-icon.png"
+                                    alt="csn-icon"
+                                    src="/csn-icon.png"
                                     width="100%"
                                     height="100%"
-                                    className="size-7"
+                                    className="size-10"
                                 />
 
                                 <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">
-                                        ElizaOS
+                                    <span className="font-semibold uppercase text-xl">
+                                        CNS
                                     </span>
-                                    <span className="">v{info?.version}</span>
+                                    <span className="text-xs text-blue-400">consensys network state</span>
                                 </div>
                             </NavLink>
                         </SidebarMenuButton>
@@ -57,7 +57,7 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Agents</SidebarGroupLabel>
+                    <SidebarGroupLabel>AI Agent Netizens</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {query?.isPending ? (
