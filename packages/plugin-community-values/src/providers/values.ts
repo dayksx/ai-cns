@@ -1,4 +1,4 @@
-import type { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
+import { composeContext, generateText, ModelClass, type HandlerCallback, type IAgentRuntime, type Memory, type Provider, type State } from "@elizaos/core";
 import axios from "axios";
 
 interface GraphQLResponse {
@@ -33,14 +33,29 @@ interface GraphQLResponse {
         };
       }>;
     };
-  }
+}
+export const valuesEndpoint = "https://prod.linea.intuition-api.com/v1/graphql";
+
+const valuesInfoTemplate = `# Contextual Message on Consensys Network State (CNS) Values for @recipient  
+  Based on previous discussions, this message provides additional context about CNS community values.  
+  
+  {{recentMessages}}  
+  
+  # Instructions:  
+  {{senderName}} has mentioned CNS values. Your task is to ensure that @recipient fully understands them by adding missing context, including:  
+  
+  - CNS values are proposed dynamically by the community.  
+  - Their importance is weighted based on staked ETH.  
+  - The community votes on values through this Dapp: https://ethereum-values.consensys.io/ (ensure the link is included if not already shared).  
+  
+  Respond in {{agentName}}'s natural speaking style. If essential information is missing, ask {{senderName}} for the specifics needed to complete the request, maintaining {{agentName}}'s tone.`;  
+  
+export const communityValuesURL = "https://ethereum-values.consensys.io/";
 
 const valuesProvider: Provider = {
-    get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
+    get: async (runtime: IAgentRuntime, message: Memory, state?: State, callback?: HandlerCallback) => {
 
-        try {
-            const endpoint = "https://prod.linea.intuition-api.com/v1/graphql";
-            
+        try {            
             const graphqlQuery = {
               query: `
                 query GetTriplesWithPositions(
@@ -101,7 +116,7 @@ const valuesProvider: Provider = {
       
             // GraphQL request
             const response = await axios.post<GraphQLResponse>(
-              endpoint,
+                valuesEndpoint,
               graphqlQuery,
               {
                 headers: {
@@ -117,9 +132,36 @@ const valuesProvider: Provider = {
       
             // Format the values as a comma-separated list
             const formattedValues = values.join(", ");
-            console.log('Community values: ', formattedValues);
+
+
+            // Profile more info about the community values
+            if (!state) {
+                state = (await runtime.composeState(message)) as State;
+            } else {
+                state = await runtime.updateRecentMessageState(state);
+            }
+            const valuesInfoContext = composeContext({
+                state,
+                template: valuesInfoTemplate,
+            });
+            const communityValuesInfo = await generateText({
+                runtime,
+                context: valuesInfoContext,
+                modelClass: ModelClass.SMALL,
+            });
+
+            if (callback) {
+                callback({
+                    text: communityValuesInfo,
+                    content: {
+                        url: {
+                            communityValuesURL
+                        },
+                    },
+                });
+            }
             // Return the formatted values for the AI agent
-            return `The Consensys Network State (CNS) values are ${formattedValues}`;
+            return `The Consensys Network State (CNS) values voted by the community through ETH staking are: ${formattedValues}`;
 
           } catch (error) {
             console.error("Error fetching values from GraphQL API:", error);
