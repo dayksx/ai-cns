@@ -88,6 +88,9 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  sourcify: {
+    enabled: false,
+  },
   paths: {
     artifacts: "./artifacts",
     cache: "./cache",
