@@ -10,7 +10,8 @@ import Overview from "./routes/overview";
 import Home from "./routes/home";
 import useVersion from "./hooks/use-version";
 import Naturalization from "./routes/naturalization";
-
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "./lib/wagmi";
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -22,13 +23,14 @@ const queryClient = new QueryClient({
 function App() {
     useVersion();
     return (
-        <QueryClientProvider client={queryClient}>
-            <div
-                className="dark antialiased"
-                style={{
-                    colorScheme: "dark",
-                }}
-            >
+            <WagmiProvider config={wagmiConfig}>
+                <QueryClientProvider client={queryClient}>
+                    <div
+                        className="dark antialiased"
+                        style={{
+                            colorScheme: "dark",
+                        }}
+                    >
                 <BrowserRouter>
                     <TooltipProvider delayDuration={0}>
                         <SidebarProvider>
@@ -56,8 +58,9 @@ function App() {
                         <Toaster />
                     </TooltipProvider>
                 </BrowserRouter>
-            </div>
-        </QueryClientProvider>
+                </div>
+            </QueryClientProvider>
+        </WagmiProvider>
     );
 }
 

@@ -1,10 +1,11 @@
 import { Suspense, use } from "react";
 import { Button } from "../components/ui/button";
 import { getCNSValues } from "../lib/cns/get-cns-values";
+import { useAccount, useConnect } from "wagmi";
+import { mmConnector } from "../lib/wagmi";
 
 function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
     const values = use(dataPromise);
-    console.log(values)
     return values.slice(0, 10).map((value, index) => {
         return (
             <span className="text-lg text-gray-500">{index + 1}. {value}</span>
@@ -13,6 +14,9 @@ function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
 }
 
 export default function Naturalization() {
+    const { connect } = useConnect();
+    const { address } = useAccount();// temporary
+    console.log(address);// temporary
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
             <div className="flex-1 overflow-y-auto">
@@ -42,7 +46,7 @@ export default function Naturalization() {
                     </div>
                     <div className="flex flex-col gap-4 py-6">
                         <div className="flex flex-col gap-2 mb-6">
-                            <Button variant="secondary">
+                            <Button variant="secondary" onClick={() => connect({ connector: mmConnector })}>
                                 Join the State
                             </Button>
                         </div>
