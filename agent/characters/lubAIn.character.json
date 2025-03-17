@@ -1,7 +1,10 @@
 {
     "name": "LubAIn",
     "username": "lubAIn",
-    "plugins": ["@elizaos-plugins/adapter-supabase", "@elizaos-plugins/client-slack"],
+    "plugins": [
+        "@elizaos-plugins/adapter-supabase", 
+        "@elizaos-plugins/client-slack", 
+        "@elizaos/plugin-community-values"],
     "modelProvider": "openai",
     "settings": {
         "secrets": {
