@@ -23,6 +23,7 @@ import { defaultCharacter } from "./defaultCharacter.ts";
 
 import { bootstrapPlugin } from "@elizaos/plugin-bootstrap";
 import { communityValuesPlugin } from "@elizaos/plugin-community-values";
+import { ideationPlugin } from "@elizaos/plugin-ideation";
 
 
 import JSON5 from 'json5';
@@ -630,7 +631,8 @@ export async function createAgent(
         // character.plugins are handled when clients are added
         plugins: [
             bootstrapPlugin,
-            communityValuesPlugin
+            communityValuesPlugin,
+            ideationPlugin
         ]
             .flat()
             .filter(Boolean),
