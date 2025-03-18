@@ -9,7 +9,8 @@ import {
     ModelClass,
     generateObjectDeprecated,
     generateText,
-    ActionExample
+    ActionExample,
+    generateTrueOrFalse
 } from "@elizaos/core";
 
 import { ethers } from "ethers";
@@ -25,6 +26,19 @@ type IdeaInformation = {
     tags?: string[];
     category?: string;
 };
+
+const isAnIdeaContext = `Respond with a boolean, wether or not the last message of {{senderName}} is sharing a new idea, or need or initiative.
+{{recentMessages}}
+
+Example response:
+\`\`\`json
+false
+\`\`\`
+
+# Instructions:  
+{{senderName}} is sending a {{message}}, identify if this message is a new idea, need or initiative that is relevant to register or not
+
+Return only a boolean true or false`;
 
 const ideaContext = `Respond with a JSON markdown block containing the relevant details of the last idea proposed by {{senderName}}, based on {{senderName}} last messages:
 {{recentMessages}}
@@ -87,10 +101,11 @@ const SMART_CONTRACT_ABI = [
 export const registerIdeaAction: Action = {
     name: "REGISTER_IDEA",
     similes: ["SUBMIT_IDEA", "SHARE_IDEA", "STORE_IDEA"],
-    description: "Use this action when a user wants to register an idea in the CNS smart contract.",
+    description: "Use this action only when a user mention a new idea, need or initiative for Consensys Network State (CNS).",
 
-    validate: async (_runtime: IAgentRuntime, _message: Memory) => {
+    validate: async (runtime: IAgentRuntime, message: Memory, state: State) => {
         elizaLogger.info(`Validating idea registration request`);
+
         return true;
     },
     
@@ -155,19 +170,19 @@ export const registerIdeaAction: Action = {
                 console.log('🔧 All information have been extracted ');
                 const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
                 const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-                const contract = new ethers.Contract(SMART_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
+                const contract = new ethers.Contract(process.env.CNS_INITIATIVES_REGISTRY_ADDRESS, SMART_CONTRACT_ABI, signer);
                 
                 console.log("🔧=== Registering initiative on-chain ===");
                 
-                //const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || []);
-                //await tx.wait();
+                const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || []);
+                await tx.wait();
                 
-                //elizaLogger.info(`Idea successfully registered on-chain: ${tx.hash}`);
+                elizaLogger.info(`Idea successfully registered on-chain: ${tx.hash}`);
     
                 if (callback) {
                     callback({
-                        text: `Your idea has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/123`,
-                        //content: { transactionHash: tx.hash },
+                        text: `Your idea "${title}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
+                        content: { transactionHash: tx.hash },
                     });
                 }
                 console.log("🔧 return true")

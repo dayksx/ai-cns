@@ -4,7 +4,8 @@
     "plugins": [
         "@elizaos-plugins/adapter-supabase", 
         "@elizaos-plugins/client-slack", 
-        "@elizaos/plugin-community-values"],
+        "@elizaos/plugin-community-values", 
+        "@elizaos/plugin-ideation"],
     "modelProvider": "openai",
     "settings": {
         "secrets": {
