@@ -17,8 +17,8 @@ export async function deployNetworkStateAgreement(
 
   if (verifyContract) {
     setTimeout(async () => {
-      await verify(address);
-    }, 5000);
+      await verify(address, [""]);
+    }, 10000);
   }
 
   return address;
