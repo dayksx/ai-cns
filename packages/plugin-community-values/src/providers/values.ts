@@ -180,7 +180,6 @@ const valuesProvider: Provider = {
                   - **Current Share Price**: ${value.counterVault.currentSharePrice}`
             ).join("\n\n");
 
-            console.log("Values Provider: ", formattedValues);
             if (!state) {
                 state = (await runtime.composeState(message)) as State;
             } else {

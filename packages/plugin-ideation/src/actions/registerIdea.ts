@@ -3,23 +3,36 @@ import {
     type Memory,
     type State,
     type Action,
-    type ActionExample,
     type HandlerCallback,
     elizaLogger,
     composeContext,
     ModelClass,
+    generateObjectDeprecated,
     generateText,
-    generateObjectDeprecated
+    ActionExample
 } from "@elizaos/core";
 
 import { ethers } from "ethers";
 
-const ideaContext = `Respond with a JSON markdown block containing only the extracted values. Use the \`null\` special value (without quotes) for any values that cannot be determined.
+const isValidEVMAddress = (address: string) => {
+    return ethers.isAddress(address);
+};
+
+type IdeaInformation = {
+    instigator: string | null;
+    title: string | null;
+    description: string | null;
+    tags?: string[];
+    category?: string;
+};
+
+const ideaContext = `Respond with a JSON markdown block containing the relevant details of the last idea proposed by {{senderName}}, based on {{senderName}} last messages:
+{{recentMessages}}
 
 Example response:
 \`\`\`json
 {
-    "instigator": "0xSenderEVMAddressHere",
+    "instigator": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
     "title": "Title of the Idea",
     "description": "Detailed description of the idea",
     "tags": ["tag1", "tag2"],
@@ -27,28 +40,44 @@ Example response:
 }
 \`\`\`
 
-Given the last message of {{senderName}}, use the relevant recent messages to gather the idea submission information in the JSON data structure.
-{{recentMessages}}
+# Instructions:  
+{{senderName}} is sharing a need, an idea, or an initiative for Consensys Network State (CNS). Your task is to extract relevant details in order to return a JSON object that will be used for the on-chain registration of this community idea.
 
-Extract the following details from {{senderName}}'s messages:
-- Instigator's EVM address
+Extract the following from {{senderName}}'s latest messages, prioritizing the most recent and relevant details:
+- Instigator's EVM address (valid 0x address)
 - Idea title
 - Idea description
-- Relevant tags (optional)
-- Idea category (optional)
+- Tags (optional)
+- Category (optional)
 
-Ensure that the JSON payload is specific to the idea submission identified by the sender's Ethereum address.
+If recent messages provide conflicting details, always favor the latest information.  
+If no explicit tags or category are mentioned, infer the most appropriate tags and category based on the context of the discussion.
 
-Respond with a JSON markdown block containing only the extracted values.`;
+Return only the extracted data as a JSON markdown block.`;
 
-// Replace with actual smart contract details
-const SMART_CONTRACT_ADDRESS = "0xYourSmartContractAddress";
+
+const missingIdeaInfoTemplate = `Based on the recent messages, the following information is missing to complete the idea registration:
+
+{{recentMessages}}
+
+Missing required details:
+{{#if !instigator}}- Instigator's EVM address (must be a valid 0x address){{/if}}
+{{#if !title}}- Idea title{{/if}}
+{{#if !description}}- Idea description{{/if}}
+
+To proceed, please provide the missing details. If you're still refining your idea, feel free to share more context or take the time to develop it further before submission.`;
+
+const SMART_CONTRACT_ADDRESS = "0xAb62C6A194ED8Fd6c96db2d63957Db7e1578144F";
 const SMART_CONTRACT_ABI = [
     {
         "inputs": [
-            { "internalType": "string", "name": "idea", "type": "string" }
+            { "internalType":"address","name":"_instigator","type":"address"},
+            { "internalType": "string", "name": "_title", "type": "string" },
+            { "internalType": "string", "name": "_description", "type": "string" },
+            { "internalType": "string", "name": "_category", "type": "string" },
+            { "internalType": "string[]", "name": "_tags", "type": "string[]" }
         ],
-        "name": "registerIdea",
+        "name": "createInitiatives",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -73,73 +102,84 @@ export const registerIdeaAction: Action = {
         callback?: HandlerCallback
     ): Promise<boolean> => {
         elizaLogger.info(`Handling idea registration`);
-        
+
         try {
+            
             if (!state) {
                 state = (await runtime.composeState(message)) as State;
             } else {
                 state = await runtime.updateRecentMessageState(state);
             }
             
-            // Extract and build idea object progressively
+            // Extracting idea information in a JSON data structure
+            console.log("🛠 Extracting idea information");
             const ideaContextData = composeContext({
                 state,
                 template: ideaContext,
             });
-
-            const ideaInformation = await generateObjectDeprecated({
+            console.log("🔧 idea Context: ", ideaContext);
+            const ideaInformation: IdeaInformation = await generateObjectDeprecated({
                 runtime,
                 context: ideaContextData,
                 modelClass: ModelClass.SMALL,
             });
 
-            console.log('Idea information: ', ideaInformation);
+            console.log('🔧 Idea information: ', ideaInformation);
 
-            const { evm_address, idea_title, idea_description, tags, category } = ideaInformation;
+            let { instigator, title, description, tags, category } = ideaInformation;
 
-            if (!evm_address || !idea_title || !idea_description) {
-                console.log("Missing required idea fields.");
-            }
+            // Treatment in case of missing information
+            console.log("🛠 Treating idea information");
+            if (!instigator || !isValidEVMAddress(instigator) || !title || !description) {
+                console.log('🔧 Missing idea information: ', !isValidEVMAddress(instigator));
 
-            // Extract idea from user message
-            const idea = message.content.text;
-            if (!idea) {
-                throw new Error("No idea found in the message.");
-            }
-            
-            // Connect to Ethereum network and smart contract
-            const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-            const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-
-            console.log("===registration onchain===");
-            /**
-            const contract = new ethers.Contract(SMART_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
-            
-            // Register idea in the smart contract
-            const tx = await contract.registerIdea(
-                evm_address,
-                idea_title,
-                idea_description,
-                tags || [],
-                category || ""
-            );
-            await tx.wait();
-            
-            elizaLogger.info(`Idea successfully registered on-chain: ${tx.hash}`);
- */
-            if (callback) {
-                callback({
-                    text: `Your idea has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/0x75d52f80bcf46e4cd86799af89a445f1f12d6a37b154a4e50961dbc707b4a160`,
-                    content: { transactionHash: '0x75d52f80bcf46e4cd86799af89a445f1f12d6a37b154a4e50961dbc707b4a160' },
+                const missingInfoContext = composeContext({
+                    state,
+                    template: missingIdeaInfoTemplate,
                 });
+                console.log("🔧 idea Context: ", missingIdeaInfoTemplate);
+                const missingInfoMessage = await generateText({
+                    runtime,
+                    context: missingInfoContext,
+                    modelClass: ModelClass.SMALL,
+                });
+
+                if (callback) {
+                    callback({ text: missingInfoMessage });
+                }
+                console.log("🔧 return false")
+                return false;
+
+            // Treatment in case of valid information
+            } else {
+                console.log('🔧 All information have been extracted ');
+                const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+                const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
+                const contract = new ethers.Contract(SMART_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
+                
+                console.log("🔧=== Registering initiative on-chain ===");
+                
+                //const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || []);
+                //await tx.wait();
+                
+                //elizaLogger.info(`Idea successfully registered on-chain: ${tx.hash}`);
+    
+                if (callback) {
+                    callback({
+                        text: `Your idea has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/123`,
+                        //content: { transactionHash: tx.hash },
+                    });
+                }
+                console.log("🔧 return true")
+                return true;
             }
+            
         } catch (error) {
             elizaLogger.error("Error registering idea on-chain:", error);
             if (callback) {
                 callback({ text: "Failed to register idea. Please try again later." });
             }
         }
-
         return true;
     },
     
@@ -147,15 +187,101 @@ export const registerIdeaAction: Action = {
         [
             {
                 user: "{{user1}}",
-                content: { text: "I have an idea for CNS governance improvements!" },
+                content: {
+                    text: "I have an idea for a decentralized app that connects local farmers directly with consumers, cutting out middlemen and reducing food waste.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "That's a fantastic idea! I've registered your concept for a decentralized farm-to-consumer marketplace onchain via Linea Sepolia. The transaction is confirmed and you can view it on the block explorer. Your idea is now permanently recorded on the blockchain!",
+                    action: "REGISTER_ONCHAIN_IDEA",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user2}}",
+                content: {
+                    text: "What if we created a smart contract system that automatically releases funds to disaster relief organizations based on verified weather data?",
+                },
+            },
+            {
+                user: "{{user3}}",
+                content: {
+                    text: "That could really speed up response times!",
+                },
             },
             {
                 user: "{{user2}}",
-                content: { 
-                    text: "Your idea has been successfully registered on-chain. You can track it here: https://etherscan.io/tx/{{transactionHash}}",
-                    action: "REGISTER_IDEA"
+                content: {
+                    text: "Can you register this idea onchain?",
                 },
-            }
-        ]
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I've registered your 'Parametric Disaster Relief Fund' idea onchain through our Linea Sepolia smart contract. The transaction is complete and your concept is now immutably recorded with proper attribution. You can check the transaction details on Linea Sepolia's block explorer.",
+                    action: "REGISTER_ONCHAIN_IDEA",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "We should build a tool that converts plain English to smart contract code, making blockchain development accessible to non-programmers.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I've captured your idea for a 'Natural Language Smart Contract Generator' and registered it onchain via Linea Sepolia. This innovative concept for democratizing blockchain development is now permanently recorded with your attribution. The transaction is confirmed and available on the block explorer.",
+                    action: "REGISTER_ONCHAIN_IDEA",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user3}}",
+                content: {
+                    text: "What if we created a DAO that focuses on funding ocean cleanup initiatives, with governance tokens that can only be earned through verified cleanup activities?",
+                },
+            },
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "That's brilliant! It aligns incentives perfectly.",
+                },
+            },
+            {
+                user: "{{user3}}",
+                content: {
+                    text: "Can you register this concept on the blockchain?",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I've registered your 'Ocean Cleanup DAO' concept onchain through our Linea Sepolia smart contract. Your innovative governance model is now immutably recorded on the blockchain. You can view the transaction details on Linea Sepolia's block explorer. Your idea is preserved with proper attribution.",
+                    action: "REGISTER_ONCHAIN_IDEA",
+                },
+            },
+        ],
+        [
+            {
+                user: "{{user2}}",
+                content: {
+                    text: "I need to register my idea for a cross-chain identity solution that allows users to maintain a consistent identity across multiple blockchains without revealing personal information.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I've registered your 'Cross-Chain Anonymous Identity' concept onchain via Linea Sepolia. This solution addresses the important challenge of maintaining consistent user identity across multiple blockchains while preserving privacy. The transaction is confirmed and your idea is now permanently recorded with your attribution.",
+                    action: "REGISTER_ONCHAIN_IDEA",
+                },
+            },
+        ],
     ] as ActionExample[][],
 } as Action;
