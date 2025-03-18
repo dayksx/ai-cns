@@ -29,6 +29,7 @@ const chainIds = {
   "linea-mainnet": 59144,
   "linea-sepolia": 59141,
   sepolia: 11155111,
+  "polygon-amoy": 80002,
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -58,6 +59,7 @@ const config: HardhatUserConfig = {
     "linea-mainnet": getChainConfig("linea-mainnet"),
     "linea-sepolia": getChainConfig("linea-sepolia"),
     sepolia: getChainConfig("sepolia"),
+    "polygon-amoy": getChainConfig("polygon-amoy"),
   },
   gasReporter: {
     currency: "USD",
@@ -68,6 +70,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       "linea-sepolia": process.env.LINEASCAN_API_KEY || "",
       "linea-mainnet": process.env.LINEASCAN_API_KEY || "",
+      "polygon-amoy": process.env.POLYGONSCAN_API_KEY || "",
     },
     customChains: [
       {
@@ -84,6 +87,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api.lineascan.build/api",
           browserURL: "https://lineascan.build/",
+        },
+      },
+      {
+        network: "polygon-amoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com/",
         },
       },
     ],

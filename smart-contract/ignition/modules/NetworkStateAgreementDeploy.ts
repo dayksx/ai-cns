@@ -1,9 +1,9 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 export default buildModule("NetworkStateAgreement", (m) => {
-  const constitutionHash = m.contract("NetworkStateAgreement", ["IPFS hash"]);
+  const constitutionURL = m.contract("NetworkStateAgreement", ["https://ipfs.io/ipfs/xxx"]);
 
-  m.call(constitutionHash, "say", []);
+  m.call(constitutionURL, "say", []);
 
-  return { constitutionHash };
+  return { constitutionURL };
 });
