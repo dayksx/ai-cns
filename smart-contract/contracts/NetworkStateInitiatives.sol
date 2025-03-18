@@ -11,6 +11,7 @@ contract NetworkStateInitiatives {
         string category;
         string[] tags;
         uint256 timestamp;
+        string status;
         uint256 upvotes;
         uint256 downvotes;
     }
@@ -74,6 +75,7 @@ contract NetworkStateInitiatives {
             category: _category,
             tags: _tags,
             timestamp: block.timestamp,
+            status: "IDEATION",
             upvotes: 0,
             downvotes: 0
         });
