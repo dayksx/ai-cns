@@ -49,6 +49,7 @@ contract NetworkStateInitiatives {
      * @param _tags An array of tags associated with the initiative.
      */
     function createInitiatives(
+        address _instigator,
         string memory _title,
         string memory _description,
         string memory _category,
@@ -57,7 +58,7 @@ contract NetworkStateInitiatives {
         bytes32 initiativeId = generateUUID();
         Initiative memory newInitiative = Initiative({
             id: initiativeId,
-            instigator: msg.sender,
+            instigator: _instigator,
             title: _title,
             description: _description,
             category: _category,
@@ -65,7 +66,7 @@ contract NetworkStateInitiatives {
             timestamp: block.timestamp
         });
         initiatives.push(newInitiative);
-        emit InitiativeCreated(initiativeId, msg.sender, _title, _description, _category);
+        emit InitiativeCreated(initiativeId, _instigator, _title, _description, _category);
     }
 
     /**
