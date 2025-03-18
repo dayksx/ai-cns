@@ -104,7 +104,7 @@ psql "postgresql://postgres:cypherpunkhackathon@db.erqahqyzhirixswuiplt.supabase
 
 #### Clone a repo with submodules
 `git clone --recursive <repository_url>`
-or if you forget and you just did a git clone, you can still add the git submodules using this command git submodule update --init --recursive
+or if you forget and you just did a git clone, you can still add the git submodules using this command `git submodule update --init --recursive`
 
 #### Commit a submodule
 ```bash
