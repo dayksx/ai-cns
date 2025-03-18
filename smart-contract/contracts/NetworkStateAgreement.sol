@@ -5,6 +5,8 @@ contract NetworkStateAgreement {
     struct UserInfo {
         string userProfileType;
         string userNatureAgent;
+        bytes32 constitutionHash;
+        bytes signature;
         bool hasAgreed;
     }
 
@@ -19,7 +21,7 @@ contract NetworkStateAgreement {
         address indexed user,
         string userProfileType,
         string userNatureAgent,
-        string constitutionURL,
+        bytes32 constitutionHash,
         uint256 timestamp
     );
     event ConstitutionUpdated(string newURL, uint256 timestamp);
@@ -46,14 +48,20 @@ contract NetworkStateAgreement {
     }
 
     /**
-     * @notice Allows a user to sign the network state agreement.
-     * @param _userProfileType The profile type of the user signing the agreement.
-     * @param _userNatureAgent The nature agent of the user signing the agreement.
-     * @dev This function requires that the user has not already signed the agreement,
-     *      the provided profile type is allowed, and the provided nature agent is allowed.
-     *      It updates the user's information and emits an AgreementSigned event.
+     * @notice Allows a user to sign the agreement.
+     * @dev The user must not have signed the agreement before.
+     * The user profile type and nature agent must be valid.
+     * @param _userProfileType The profile type of the user.
+     * @param _userNatureAgent The nature agent of the user.
+     * @param _constitutionHash The hash of the constitution document.
+     * @param _signature The signature of the user.
      */
-    function signAgreement(string memory _userProfileType, string memory _userNatureAgent) public {
+    function signAgreement(
+        string memory _userProfileType,
+        string memory _userNatureAgent,
+        bytes32 _constitutionHash,
+        bytes memory _signature
+    ) public {
         require(!userInformation[msg.sender].hasAgreed, "Agreement already signed");
         require(isValidProfileType(_userProfileType), "Invalid profile type");
         require(isValidNatureAgent(_userNatureAgent), "Invalid nature agent");
@@ -61,9 +69,11 @@ contract NetworkStateAgreement {
         userInformation[msg.sender] = UserInfo({
             userProfileType: _userProfileType,
             userNatureAgent: _userNatureAgent,
+            constitutionHash: _constitutionHash,
+            signature: _signature,
             hasAgreed: true
         });
-        emit AgreementSigned(msg.sender, _userProfileType, _userNatureAgent, constitutionURL, block.timestamp);
+        emit AgreementSigned(msg.sender, _userProfileType, _userNatureAgent, _constitutionHash, block.timestamp);
     }
 
     /**
