@@ -18,25 +18,33 @@ describe("NetworkStateAgreement", function () {
 
   describe("Testing", function () {
     beforeEach(async function () {
-      const { networkStateAgreement, networkStateAgreementAddress, constitutionHash, owner } = await this.loadFixture(
+      const { networkStateAgreement, networkStateAgreementAddress, constitutionURL, owner } = await this.loadFixture(
         deployNetworkStateAgreementFixture,
       );
       this.networkStateAgreement = networkStateAgreement;
       this.networkStateAgreementAddress = networkStateAgreementAddress;
-      this.constitutionHash = constitutionHash;
+      this.constitutionURL = constitutionURL;
       this.owner = owner;
     });
 
-    it("should return the new IPFS hash once it's changed", async function () {
-      expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionHash()).to.equal("IPFS hash");
-      await this.networkStateAgreement.connect(this.signers.admin).updateConstitution("new IPFS hash");
-      expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionHash()).to.equal("new IPFS hash");
+    it("should return the new constitution URL once it's changed", async function () {
+      expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionURL()).to.equal(
+        "https://ipfs.io/ipfs/xxxxxxxxxxxx",
+      );
+      await this.networkStateAgreement
+        .connect(this.signers.admin)
+        .updateConstitutionURL("https://ipfs.io/ipfs/zzzzzzzzzz");
+      expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionURL()).to.equal(
+        "https://ipfs.io/ipfs/zzzzzzzzzz",
+      );
     });
 
     it("should allow a user to sign the agreement", async function () {
       await this.networkStateAgreement.connect(this.signers.user1).signAgreement("maker", "human");
-      const hasSigned = await this.networkStateAgreement.hasAgreed(this.signers.user1);
-      expect(hasSigned).to.equal(true);
+      const userInfo = await this.networkStateAgreement.userInformation(this.signers.user1.address);
+      expect(userInfo.hasAgreed).to.equal(true);
+      expect(userInfo.userProfileType).to.equal("maker");
+      expect(userInfo.userNatureAgent).to.equal("human");
     });
 
     it("should not allow a user to sign the agreement twice", async function () {

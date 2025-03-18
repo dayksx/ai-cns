@@ -4,15 +4,15 @@ import type { NetworkStateAgreement } from "../../../src/types/NetworkStateAgree
 import type { NetworkStateAgreement__factory } from "../../../src/types/factories/NetworkStateAgreement__factory";
 
 export async function deployNetworkStateAgreementFixture() {
-  const constitutionHash = "IPFS hash";
+  const constitutionURL = "https://ipfs.io/ipfs/xxxxxxxxxxxx";
 
   const [owner, user1] = await ethers.getSigners();
 
   const NetworkStateAgreement = (await ethers.getContractFactory(
     "NetworkStateAgreement",
   )) as NetworkStateAgreement__factory;
-  const networkStateAgreement = (await NetworkStateAgreement.deploy(constitutionHash)) as NetworkStateAgreement;
+  const networkStateAgreement = (await NetworkStateAgreement.deploy(constitutionURL)) as NetworkStateAgreement;
   const networkStateAgreementAddress = await networkStateAgreement.getAddress();
 
-  return { networkStateAgreement, networkStateAgreementAddress, constitutionHash, owner, user1 };
+  return { networkStateAgreement, networkStateAgreementAddress, constitutionURL, owner, user1 };
 }
