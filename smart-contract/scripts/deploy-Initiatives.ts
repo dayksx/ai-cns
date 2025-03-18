@@ -1,6 +1,7 @@
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/dist/src/signer-with-address";
 import { ethers } from "hardhat";
 
+import { verify } from "../scripts/VerifyContract";
 import type { NetworkStateInitiatives } from "../src/types/NetworkStateInitiatives";
 import type { NetworkStateInitiatives__factory } from "../src/types/factories/NetworkStateInitiatives__factory";
 
@@ -16,6 +17,9 @@ async function main() {
   networkStateInitiatives.waitForDeployment();
   const networkStateInitiativesAddress = await networkStateInitiatives.getAddress();
   console.log("NetworkStateInitiatives deployed to:", networkStateInitiativesAddress);
+  setTimeout(async () => {
+    await verify(networkStateInitiativesAddress);
+  }, 10000);
 }
 
 main().catch((error) => {
