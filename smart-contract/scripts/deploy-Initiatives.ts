@@ -19,7 +19,7 @@ async function main() {
   console.log("NetworkStateInitiatives deployed to:", networkStateInitiativesAddress);
   setTimeout(async () => {
     await verify(networkStateInitiativesAddress);
-  }, 10000);
+  }, 5000);
 }
 
 main().catch((error) => {

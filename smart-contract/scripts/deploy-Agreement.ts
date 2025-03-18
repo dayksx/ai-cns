@@ -17,7 +17,7 @@ async function main() {
   console.log("NetworkStateAgreement deployed to:", networkStateAgreementAddress);
   setTimeout(async () => {
     await verify(networkStateAgreementAddress);
-  }, 10000);
+  }, 5000);
 }
 
 main().catch((error) => {
