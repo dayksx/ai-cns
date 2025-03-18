@@ -45,5 +45,25 @@ describe("NetworkStateInitiatives", function () {
       expect(initiative.description).to.equal("this is a zk passport");
       expect(initiative.category).to.equal("digital identity");
     });
+
+    it("should return the correct number of votes for the initiative", async function () {
+      const tags = ["crypto", "passport", "identity"];
+      await this.networkStateInitiatives
+        .connect(this.signers.admin)
+        .createInitiatives(
+          this.signers.admin.address,
+          "a crypto passport",
+          "this is a zk passport",
+          "digital identity",
+          tags,
+        );
+
+      let initiative = await this.networkStateInitiatives.initiatives(0);
+      await this.networkStateInitiatives.connect(this.signers.admin).upvote(initiative.id, 50);
+      await this.networkStateInitiatives.connect(this.signers.user1).downvote(initiative.id, 25);
+      initiative = await this.networkStateInitiatives.initiatives(0);
+      expect(initiative.upvotes).to.equal(50);
+      expect(initiative.downvotes).to.equal(25);
+    });
   });
 });
