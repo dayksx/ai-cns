@@ -16,9 +16,10 @@ const SMART_CONTRACT_ABI = [
         "type": "event"
     }
 ];
+
 const ideasProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
-        elizaLogger.info(`Fetching onchain registered ideas`);
+        elizaLogger.info(`⏳ Provider: Fetch registered ideas to provide the information to the Agent`);
         try {
             const iface = new ethers.Interface(SMART_CONTRACT_ABI);
             const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
@@ -31,8 +32,7 @@ const ideasProvider: Provider = {
     
             while (fromBlock <= latestBlock) {
                 const toBlock = Math.min(fromBlock + batchSize, latestBlock);
-                console.log(`Fetching logs from block ${fromBlock} to ${toBlock}`);
-    
+                console.log(`🔧 Fetching logs from block ${fromBlock} to ${toBlock}`);
                 const logs = await provider.getLogs({
                     address: process.env.CNS_INITIATIVES_REGISTRY_ADDRESS,
                     topics: [iface.getEvent("InitiativeCreated").topicHash],
@@ -54,13 +54,29 @@ const ideasProvider: Provider = {
                 allInitiatives = [...allInitiatives, ...initiatives];
                 fromBlock = toBlock + 1;
             }
-    
-            console.log("Fetched Initiatives:", allInitiatives);
-            return allInitiatives;
+
+            // Formatting the initiatives in a more structured and readable way
+            if (allInitiatives.length === 0) {
+                return "No initiatives have been registered on-chain yet.";
+            }
+
+            const formattedInitiatives = allInitiatives.map((initiative, index) => {
+                return `
+                    **Initiative #${index + 1}**
+                    - **ID:** ${initiative.initiativeId}
+                    - **Instigator:** ${initiative.instigator}
+                    - **Title:** ${initiative.title}
+                    - **Description:** ${initiative.description}
+                    - **Category:** ${initiative.category}`;
+            }).join("\n");
+
+            return `**The Consensys Network State (CNS) initiatives registered on-chain by the community (smart contract address: ${process.env.CNS_INITIATIVES_REGISTRY_ADDRESS}): ** ${formattedInitiatives}`;
+
         } catch (error) {
             console.error("Error fetching initiatives:", error);
             return "Failed to retrieve initiatives.";
         }
     },
 };
+
 export { ideasProvider };

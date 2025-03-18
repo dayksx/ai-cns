@@ -1,4 +1,4 @@
-import { composeContext, generateText, ModelClass, type HandlerCallback, type IAgentRuntime, type Memory, type Provider, type State } from "@elizaos/core";
+import { composeContext, elizaLogger, generateText, ModelClass, type HandlerCallback, type IAgentRuntime, type Memory, type Provider, type State } from "@elizaos/core";
 import axios from "axios";
 
 interface CommunityValue {
@@ -159,6 +159,7 @@ const fetchCommunityValues = async (): Promise<CommunityValue[]> => {
 // Provider function that converts structured data into a string
 const valuesProvider: Provider = {
     get: async (runtime: IAgentRuntime, message: Memory, state?: State, callback?: HandlerCallback) => {
+        elizaLogger.log("⏳ Provider: Fetch registered values to provide them to the Agent");
         try {
             const values = await fetchCommunityValues();
 

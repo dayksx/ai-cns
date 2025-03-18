@@ -28,7 +28,7 @@ type IdeaInformation = {
 };
 
 const isAnIdeaContext = `Respond with a boolean, wether or not the last message of {{senderName}} is sharing a new idea, or need or initiative.
-{{recentMessages}}
+{{message}}
 
 Example response:
 \`\`\`json
@@ -101,11 +101,23 @@ const SMART_CONTRACT_ABI = [
 export const registerIdeaAction: Action = {
     name: "REGISTER_IDEA",
     similes: ["SUBMIT_IDEA", "SHARE_IDEA", "STORE_IDEA"],
-    description: "Use this action only when a user mention a new idea, need or initiative for Consensys Network State (CNS).",
+    description: "Only use this action when a new idea, need or initiative for Consensys Network State (CNS) is mentioned",
 
     validate: async (runtime: IAgentRuntime, message: Memory, state: State) => {
-        elizaLogger.info(`Validating idea registration request`);
+        elizaLogger.info(`👀 Action validate: Validating idea registration request`);
 
+        if (!state) {
+            state = (await runtime.composeState(message)) as State;
+        } else {
+            state = await runtime.updateRecentMessageState(state);
+        }
+        const ideaContextData = composeContext({
+            state,
+            template: isAnIdeaContext,
+        });
+        console.log("@@@@@@@@@@@@@@@@ avant");
+
+        console.log("@@@@@@@@@@@@@@@@ apres");       
         return true;
     },
     
@@ -116,7 +128,7 @@ export const registerIdeaAction: Action = {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ): Promise<boolean> => {
-        elizaLogger.info(`Handling idea registration`);
+        elizaLogger.info(`🚀 Action handler: Idea registration`);
 
         try {
             
@@ -132,7 +144,7 @@ export const registerIdeaAction: Action = {
                 state,
                 template: ideaContext,
             });
-            console.log("🔧 idea Context: ", ideaContext);
+
             const ideaInformation: IdeaInformation = await generateObjectDeprecated({
                 runtime,
                 context: ideaContextData,
@@ -144,7 +156,7 @@ export const registerIdeaAction: Action = {
             let { instigator, title, description, tags, category } = ideaInformation;
 
             // Treatment in case of missing information
-            console.log("🛠 Treating idea information");
+            console.log("🔧 Treating idea information");
             if (!instigator || !isValidEVMAddress(instigator) || !title || !description) {
                 console.log('🔧 Missing idea information: ', !isValidEVMAddress(instigator));
 

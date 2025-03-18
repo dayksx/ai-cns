@@ -41,7 +41,8 @@ export const shareValuesAction: Action = {
         "Use this action only when user is asking about Consensys Network State (CNS) Values",
 
     validate: async (_runtime: IAgentRuntime, _message: Memory) => {
-        elizaLogger.info(`Community Values sharing validation`);
+        elizaLogger.info(`👀 Action validate: Sharing values`);
+
         return true;
     },
     
@@ -52,7 +53,7 @@ export const shareValuesAction: Action = {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ): Promise<boolean> => {
-        elizaLogger.info(`Community Values sharing handling`);
+        elizaLogger.info(`🚀 Action handler: Share values`);
         
         try {
             // Setup state for context generation
