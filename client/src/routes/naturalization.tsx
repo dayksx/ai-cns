@@ -3,6 +3,7 @@ import { Button } from "../components/ui/button";
 import { getCNSValues } from "../lib/cns/get-cns-values";
 import { useAccount, useConnect } from "wagmi";
 import { mmConnector } from "../lib/wagmi";
+import {PageHeader} from "../components/page-header";
 
 function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
     const values = use(dataPromise);
@@ -20,9 +21,7 @@ export default function Naturalization() {
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
             <div className="flex-1 overflow-y-auto">
-                <div className="flex flex-col gap-4 mb-8">
-                    <h1 className="text-3xl font-bold">Naturalization</h1>
-                </div>
+                <PageHeader title="Naturalization" />
                 <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
                         <span className="text-xl font-bold">Constitution of Consensys Network State (CNS)</span>
