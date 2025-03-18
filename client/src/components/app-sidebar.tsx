@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import info from "@/lib/info.json";
+//import info from "@/lib/info.json";
 import {
     Sidebar,
     SidebarContent,
