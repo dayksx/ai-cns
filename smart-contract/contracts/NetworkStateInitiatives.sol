@@ -42,11 +42,13 @@ contract NetworkStateInitiatives {
     }
 
     /**
-     * @dev Creates a new initiative with the given details and stores it in the initiatives array.
+     * @notice Allows the owner to create a new initiative.
+     * @dev This function creates a new initiative and emits an InitiativeCreated event.
+     * @param _instigator The address of the instigator creating the initiative.
      * @param _title The title of the initiative.
-     * @param _description A brief description of the initiative.
-     * @param _category The category under which the initiative falls.
-     * @param _tags An array of tags associated with the initiative.
+     * @param _description The description of the initiative.
+     * @param _category The category of the initiative.
+     * @param _tags The tags associated with the initiative.
      */
     function createInitiatives(
         address _instigator,
