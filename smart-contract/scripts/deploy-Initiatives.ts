@@ -5,24 +5,21 @@ import { verify } from "../scripts/VerifyContract";
 import type { NetworkStateInitiatives } from "../src/types/NetworkStateInitiatives";
 import type { NetworkStateInitiatives__factory } from "../src/types/factories/NetworkStateInitiatives__factory";
 
-async function main() {
-  const signers: SignerWithAddress[] = await ethers.getSigners();
-  console.log("Deployer:", signers[0].address);
-  const NetworkStateInitiatives = (await ethers.getContractFactory(
-    "NetworkStateInitiatives",
-  )) as NetworkStateInitiatives__factory;
-  const networkStateInitiatives = (await NetworkStateInitiatives.connect(
-    signers[0],
-  ).deploy()) as NetworkStateInitiatives;
-  networkStateInitiatives.waitForDeployment();
-  const networkStateInitiativesAddress = await networkStateInitiatives.getAddress();
-  console.log("NetworkStateInitiatives deployed to:", networkStateInitiativesAddress);
-  setTimeout(async () => {
-    await verify(networkStateInitiativesAddress);
-  }, 5000);
-}
+export async function deployNetworkStateInitiatives(
+  deployer: SignerWithAddress,
+  verifyContract: boolean = true,
+): Promise<string> {
+  const factory = (await ethers.getContractFactory("NetworkStateInitiatives")) as NetworkStateInitiatives__factory;
+  const contract = (await factory.connect(deployer).deploy()) as NetworkStateInitiatives;
+  await contract.waitForDeployment();
+  const address = await contract.getAddress();
+  console.log("NetworkStateInitiatives deployed to:", address);
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+  if (verifyContract) {
+    setTimeout(async () => {
+      await verify(address);
+    }, 5000);
+  }
+
+  return address;
+}
