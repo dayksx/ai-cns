@@ -12,6 +12,7 @@ import useVersion from "./hooks/use-version";
 import Naturalization from "./routes/naturalization";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "./lib/wagmi";
+import Governance from "./routes/governance";
 import Census from "./routes/census";
 import Core from "./routes/core";
 
@@ -56,6 +57,10 @@ function App() {
                                             <Route
                                                 path="naturalization"
                                                 element={<Naturalization />}
+                                            />
+                                            <Route
+                                                path="governance"
+                                                element={<Governance />}
                                             />
                                             <Route
                                                 path="census"

@@ -126,6 +126,13 @@ export function AppSidebar() {
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
+                        <NavLink to="/governance">
+                            <SidebarMenuButton>
+                                <Book /> Governance
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                         <NavLink
                             to="https://elizaos.github.io/eliza/docs/intro/"
                             target="_blank"
