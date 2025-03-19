@@ -13,6 +13,9 @@ import Naturalization from "./routes/naturalization";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "./lib/wagmi";
 import Governance from "./routes/governance";
+import Census from "./routes/census";
+import Core from "./routes/core";
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -58,6 +61,14 @@ function App() {
                                             <Route
                                                 path="governance"
                                                 element={<Governance />}
+                                            />
+                                            <Route
+                                                path="census"
+                                                element={<Census />}
+                                            />
+                                            <Route
+                                                path="core"
+                                                element={<Core />}
                                             />
                                         </Routes>
                                     </div>

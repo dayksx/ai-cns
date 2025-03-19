@@ -105,6 +105,13 @@ export function AppSidebar() {
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
+                        <NavLink to="/core">
+                            <SidebarMenuButton>
+                                <Book /> Core Infrastructure
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                         <NavLink to="/census">
                             <SidebarMenuButton>
                                 <Book /> Census
