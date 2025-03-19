@@ -12,6 +12,7 @@ describe("NetworkStateInitiatives", function () {
     const signers = await ethers.getSigners();
     this.signers.admin = signers[0];
     this.signers.user1 = signers[1];
+    this.signers.user2 = signers[2];
 
     this.loadFixture = loadFixture;
   });
@@ -35,6 +36,7 @@ describe("NetworkStateInitiatives", function () {
           "digital identity",
           this.tags,
         );
+      this.initiative = await this.networkStateInitiatives.initiatives(0);
     });
 
     it("should return a created initiative", async function () {
@@ -46,16 +48,46 @@ describe("NetworkStateInitiatives", function () {
       expect(initiative.status).to.equal("IDEATION");
     });
 
-    it("should return the correct number of votes for the initiative", async function () {
-      let initiative = await this.networkStateInitiatives.initiatives(0);
-      await this.networkStateInitiatives.connect(this.signers.admin).upvote(initiative.id, 50);
-      await this.networkStateInitiatives.connect(this.signers.user1).downvote(initiative.id, 25);
-      initiative = await this.networkStateInitiatives.initiatives(0);
-      expect(initiative.upvotes).to.equal(50);
-      expect(initiative.downvotes).to.equal(25);
+    it("should initialize voter credits on first vote", async function () {
+      await this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 1);
+      const userCredits = await this.networkStateInitiatives.userCredits(this.signers.user1.address);
+      expect(userCredits).to.be.lessThan(100);
     });
 
-    it("should return the new status once it's changed", async function () {
+    it("should deduct correct quadratic cost when voting", async function () {
+      await this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 3);
+      const userCredits = await this.networkStateInitiatives.userCredits(this.signers.user1.address);
+      expect(userCredits).to.equal(100 - 3 * 3); // 100 - 9 = 91
+    });
+
+    it("should prevent a user from voting twice on the same initiative", async function () {
+      await this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 1);
+      await expect(
+        this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 2),
+      ).to.be.revertedWith("Already voted on this initiative");
+    });
+
+    it("should allow owner to update user credits", async function () {
+      await this.networkStateInitiatives.connect(this.signers.admin).updateUserCredits(this.signers.user1.address, 50);
+      const userCredits = await this.networkStateInitiatives.userCredits(this.signers.user1.address);
+      expect(userCredits).to.equal(50);
+    });
+
+    it("should prevent a user from exceeding their max credit limit when voting", async function () {
+      await expect(
+        this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 11), // 11*11 = 121 exceeds max credits
+      ).to.be.revertedWith("Not enough credits");
+    });
+
+    it("should allow different users to vote on the same initiative", async function () {
+      await this.networkStateInitiatives.connect(this.signers.user1).upvote(this.initiative.id, 2);
+      await this.networkStateInitiatives.connect(this.signers.user2).downvote(this.initiative.id, 3);
+      const initiative = await this.networkStateInitiatives.initiatives(0);
+      expect(initiative.upvotes).to.equal(2);
+      expect(initiative.downvotes).to.equal(3);
+    });
+
+    it("should correctly update status of an initiative", async function () {
       let initiative = await this.networkStateInitiatives.initiatives(0);
       await this.networkStateInitiatives.connect(this.signers.admin).updateStatus(initiative.id, "CAPITAL_ALLOCATION");
       initiative = await this.networkStateInitiatives.initiatives(0);
