@@ -5,7 +5,6 @@ import { deployNetworkStateInitiatives } from "./deploy-Initiatives";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deployer:", deployer.address);
 
   // Deploy NetworkStateAgreement
   await deployNetworkStateAgreement(deployer);
