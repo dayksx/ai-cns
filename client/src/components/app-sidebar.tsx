@@ -48,7 +48,9 @@ export function AppSidebar() {
                                     <span className="font-semibold uppercase text-xl">
                                         CNS
                                     </span>
-                                    <span className="text-xs text-blue-400">consensys network state</span>
+                                    <span className="text-xs text-blue-400">
+                                        consensys network state
+                                    </span>
                                 </div>
                             </NavLink>
                         </SidebarMenuButton>
@@ -64,7 +66,9 @@ export function AppSidebar() {
                                 <div>
                                     {Array.from({ length: 5 }).map(
                                         (_, _index) => (
-                                            <SidebarMenuItem key={"skeleton-item"}>
+                                            <SidebarMenuItem
+                                                key={"skeleton-item"}
+                                            >
                                                 <SidebarMenuSkeleton />
                                             </SidebarMenuItem>
                                         )
@@ -100,21 +104,24 @@ export function AppSidebar() {
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
-                <SidebarMenuItem>
-                        <NavLink
-                            to="/census"
-                        >
+                    <SidebarMenuItem>
+                        <NavLink to="/census">
                             <SidebarMenuButton>
                                 <Book /> Census
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <NavLink
-                            to="/naturalization"
-                        >
+                        <NavLink to="/naturalization">
                             <SidebarMenuButton>
                                 <Book /> Naturalization
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <NavLink to="/governance">
+                            <SidebarMenuButton>
+                                <Book /> Governance
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
