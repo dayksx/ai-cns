@@ -20,7 +20,7 @@ function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
     });
 }
 
-export default function Naturalization(): React.FC {
+export default function Naturalization() {
     const [profileType, setProfileType] = useState("maker");
     const [agentNature, setAgentNature] = useState("human");
     const [contribution, setContribution] = useState(0.001);
@@ -209,7 +209,7 @@ export default function Naturalization(): React.FC {
                                         !isConnected ||
                                         ![59141, 59144].includes(chainId ?? 0)
                                     }
-                                    onClick={() => switchChain({ chainId: 1 })}
+                                    onClick={() => handleAgreementSubmit()}
                                 >
                                     {!isConnected
                                         ? "Connect Wallet to Join"
