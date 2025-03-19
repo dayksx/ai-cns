@@ -33,6 +33,8 @@ contract NetworkStateInitiatives {
     event Upvoted(bytes32 initiativeId, address voter, uint256 votesNumber);
     // Event emitted when a down vote is casted
     event Downvoted(bytes32 initiativeId, address voter, uint256 votesNumber);
+    // Event emitted when a status is updated
+    event StatusUpdated(bytes32 initiativeId, string newStatus, uint256 timestamp);
 
     /**
      * @dev Modifier to make a function callable only by the owner.
@@ -126,6 +128,22 @@ contract NetworkStateInitiatives {
                 initiatives[i].downvotes += _votesNumber;
                 voterTotalVotes[msg.sender] += _votesNumber;
                 emit Downvoted(_initiativeId, msg.sender, _votesNumber);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @notice Updates the status of an initiative.
+     * @dev This function can only be called by the owner of the contract.
+     * @param _initiativeId The unique identifier of the initiative to update.
+     * @param _newStatus The new status to set for the initiative.
+     */
+    function updateStatus(bytes32 _initiativeId, string memory _newStatus) public onlyOwner {
+        for (uint256 i = 0; i < initiatives.length; i++) {
+            if (initiatives[i].id == _initiativeId) {
+                initiatives[i].status = _newStatus;
+                emit StatusUpdated(_initiativeId, _newStatus, block.timestamp);
                 break;
             }
         }
