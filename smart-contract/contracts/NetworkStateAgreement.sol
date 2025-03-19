@@ -14,6 +14,7 @@ contract NetworkStateAgreement {
     string[] public userNatureAgentAllowedList = ["AI", "human"]; // Allowed user nature agents
 
     address public owner; // Owner of the contract
+    address payable public networkdStateTreasury; // Address of the treasury contract
     string public constitutionURL; // URL pointing to the constitution document
     mapping(address => UserInfo) public userInformation; // Mapping of users to their information
 
@@ -22,9 +23,11 @@ contract NetworkStateAgreement {
         string userProfileType,
         string userNatureAgent,
         bytes32 constitutionHash,
+        uint256 etherAmount,
         uint256 timestamp
     );
     event ConstitutionUpdated(string newURL, uint256 timestamp);
+    event NetworkStateTreasuryUpdated(address newReceiver, uint256 timestamp);
 
     /**
      * @dev Modifier to make a function callable only by the owner.
@@ -44,6 +47,7 @@ contract NetworkStateAgreement {
      */
     constructor(string memory _constitutionURL) {
         owner = msg.sender;
+        networkdStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
         constitutionURL = _constitutionURL;
     }
 
@@ -61,7 +65,8 @@ contract NetworkStateAgreement {
         string memory _userNatureAgent,
         bytes32 _constitutionHash,
         bytes memory _signature
-    ) public {
+    ) public payable {
+        //TODO: Implement signature verification
         require(!userInformation[msg.sender].hasAgreed, "Agreement already signed");
         require(isValidProfileType(_userProfileType), "Invalid profile type");
         require(isValidNatureAgent(_userNatureAgent), "Invalid nature agent");
@@ -73,7 +78,18 @@ contract NetworkStateAgreement {
             signature: _signature,
             hasAgreed: true
         });
-        emit AgreementSigned(msg.sender, _userProfileType, _userNatureAgent, _constitutionHash, block.timestamp);
+        if (msg.value > 0) {
+            (bool success, ) = networkdStateTreasury.call{ value: msg.value }("");
+            require(success, "Ether forwarding failed");
+        }
+        emit AgreementSigned(
+            msg.sender,
+            _userProfileType,
+            _userNatureAgent,
+            _constitutionHash,
+            msg.value,
+            block.timestamp
+        );
     }
 
     /**
@@ -116,5 +132,16 @@ contract NetworkStateAgreement {
     function updateConstitutionURL(string memory _constitutionURL) public onlyOwner {
         constitutionURL = _constitutionURL;
         emit ConstitutionUpdated(_constitutionURL, block.timestamp);
+    }
+
+    /**
+     * @notice Updates the address of the network state treasury.
+     * @dev This function can only be called by the owner of the contract.
+     * @param _newReceiver The new address to receive the network state treasury funds.
+     */
+    function updateNetworkStateTreasury(address payable _newReceiver) public onlyOwner {
+        require(_newReceiver != address(0), "Invalid address");
+        networkdStateTreasury = _newReceiver;
+        emit NetworkStateTreasuryUpdated(_newReceiver, block.timestamp);
     }
 }
