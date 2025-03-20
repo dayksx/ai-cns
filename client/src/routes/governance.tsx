@@ -6,13 +6,22 @@ import { getInitiatives } from "@/contracts/get-initiatives";
 import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
 import { getUserCredits } from "@/contracts/get-user-credits";
+import { createPublicClient, http } from "viem";
+import { lineaSepolia } from "wagmi/chains";
+
+const publicClient = createPublicClient({
+    chain: lineaSepolia, // Ensure it's the correct chain
+    transport: http(),
+});
 
 function InitiativesList({
     dataPromise,
     creditBalance,
+    refreshCredits,
 }: {
     dataPromise: Promise<any[]>;
     creditBalance: number;
+    refreshCredits: () => void;
 }) {
     const initiatives = use(dataPromise);
     const { address } = useAccount();
@@ -27,7 +36,7 @@ function InitiativesList({
     const [pendingVotes, setPendingVotes] = useState<{
         [key: string]: boolean;
     }>({});
-    const { data: txHash, writeContract, isError } = useWriteContract();
+    const { writeContract } = useWriteContract();
     const fetchCredits = async () => {
         const creditsData = await Promise.all(
             initiatives.map(async (initiative) => {
@@ -35,12 +44,11 @@ function InitiativesList({
                     initiative.initiativeId,
                     address
                 );
-                if (voteInfo.votesNumber === 0) {
-                    setUserVoted((prev) => ({
-                        ...prev,
-                        [initiative.initiativeId]: true,
-                    }));
-                }
+                setUserVoted((prev) => ({
+                    ...prev,
+                    [initiative.initiativeId]: voteInfo.votesNumber > 0,
+                }));
+
                 setVotes((prev) => ({
                     ...prev,
                     [initiative.initiativeId]: voteInfo.votesNumber,
@@ -103,37 +111,54 @@ function InitiativesList({
             setPendingVotes((prev) => ({ ...prev, [initiativeId]: true }));
 
             // Initiate transaction (but it doesn’t return a hash)
-            writeContract({
-                address: contractAddress,
-                abi: contractAbi,
-                functionName: isUpvote ? "upvote" : "downvote",
-                args: [initiativeId, Math.abs(voteCount)],
-            });
+            writeContract(
+                {
+                    address: contractAddress,
+                    abi: contractAbi,
+                    functionName: isUpvote ? "upvote" : "downvote",
+                    args: [initiativeId, Math.abs(voteCount)],
+                },
+                {
+                    onSuccess: async (tx) => {
+                        console.log("Transaction sent! Hash:", tx);
 
-            // Start timeout (120 seconds)
-            const timeout = 120000;
-            const startTime = Date.now();
+                        // Wait for confirmation
+                        await publicClient.waitForTransactionReceipt({
+                            hash: tx,
+                        });
 
-            // Wait for transaction hash (user confirmation)
-            while (!txHash) {
-                if (Date.now() - startTime > timeout || isError) {
-                    throw new Error(
-                        "Transaction timeout! User may have abandoned it."
-                    );
+                        // Mark as voted
+                        setUserVoted((prev) => ({
+                            ...prev,
+                            [initiativeId]: true,
+                        }));
+                        setPendingVotes((prev) => ({
+                            ...prev,
+                            [initiativeId]: false,
+                        }));
+                        refreshCredits();
+                        alert("Vote submitted successfully!");
+                    },
+                    onError: (error) => {
+                        console.error("Vote transaction failed:", error);
+                        setPendingVotes((prev) => ({
+                            ...prev,
+                            [initiativeId]: false,
+                        }));
+                        alert("Vote failed!");
+                    },
+                    onSettled: () => {
+                        // Remove "voting" state whether success or failure
+                    },
                 }
-                await new Promise((resolve) => setTimeout(resolve, 500));
-            }
-
-            // Mark vote as completed
-            setUserVoted((prev) => ({ ...prev, [initiativeId]: true }));
-            fetchCredits();
-            alert("Vote submitted successfully!");
+            );
         } catch (error) {
             console.error("Error submitting vote:", error);
             alert("Vote failed!");
-        } finally {
-            // Remove pending state for this specific initiative
-            setPendingVotes((prev) => ({ ...prev, [initiativeId]: false }));
+            setPendingVotes((prev) => ({
+                ...prev,
+                [initiativeId]: false,
+            }));
         }
     };
 
@@ -148,7 +173,7 @@ function InitiativesList({
                             className="flex flex-row gap-4"
                             key={initiative.initiativeId}
                         >
-                            <div className="relative flex flex-col items-center justify-between border border-gray-600 rounded-lg p-6 bg-gray-800 shadow-md w-[700px] min-h-[140px] mb-12">
+                            <div className="relative flex flex-col items-center justify-between border border-gray-600 rounded-lg p-6 bg-gray-900 shadow-md w-[700px] min-h-[140px] mb-12">
                                 <div className="flex flex-col justify-center flex-grow">
                                     <h3 className="text-md font-bold text-white mb-3 truncate">
                                         {initiative.title}
@@ -182,7 +207,7 @@ function InitiativesList({
                                 )}
                             </div>
                             <div className="flex flex-col">
-                                {userVoted[initiative.initiativeId] ? (
+                                {!userVoted[initiative.initiativeId] ? (
                                     pendingVotes[initiative.initiativeId] ? (
                                         <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
                                             Voting...
@@ -281,26 +306,24 @@ function InitiativesList({
 
 export default function Governance() {
     const { address } = useAccount();
-    const [remainingCredits, setRemainingCredits] = useState<number>(100);
+    const [remainingCredits, setRemainingCredits] = useState<number>(0);
+
+    const fetchAndUpdateCredits = async () => {
+        if (!address) return;
+        const credits: number = (await getUserCredits(address)) as number;
+        setRemainingCredits(credits);
+    };
 
     useEffect(() => {
-        if (address) {
-            const fetchCredits = async () => {
-                const credits: number = (await getUserCredits(
-                    address
-                )) as number;
-                setRemainingCredits(credits);
-            };
-            fetchCredits();
-        }
-    }, [remainingCredits]);
+        fetchAndUpdateCredits();
+    }, [address]);
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col h-[calc(100dvh)] p-4">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Governance" />
                 <div className="grid grid-cols-[3fr_1fr] gap-6 items-start">
-                    <div className="flex flex-col items-center justify-center border border-gray-700 rounded-lg p-6 min-h-[400px] bg-gray-800 w-full">
+                    <div className="flex flex-col items-center justify-center border border-gray-700 rounded-lg p-6 min-h-[400px] bg-black w-full">
                         <h2 className="text-xl font-bold text-white mb-8">
                             Initiatives
                         </h2>
@@ -314,6 +337,7 @@ export default function Governance() {
                             <InitiativesList
                                 dataPromise={getInitiatives()}
                                 creditBalance={remainingCredits}
+                                refreshCredits={fetchAndUpdateCredits}
                             />
                         </Suspense>
                     </div>

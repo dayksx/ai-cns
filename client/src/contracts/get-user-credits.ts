@@ -21,6 +21,6 @@ export async function getUserCredits(address: `0x${string}`) {
         return userCredits;
     } catch (error) {
         console.error("Error fetching userCredits:", error);
-        return [];
+        return 0;
     }
 }
