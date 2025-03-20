@@ -11,8 +11,8 @@ main().catch((error) => {
 });
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-  await deployNetworkStateInitiatives(deployer, true, true);
+  const [deployer, acc] = await ethers.getSigners();
+  await deployNetworkStateInitiatives(acc, true, true);
 }
 
 export async function deployNetworkStateInitiatives(
