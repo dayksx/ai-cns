@@ -11,7 +11,7 @@ export function Address({
 }) {
     const { data: ensName } = useEnsName({ address, chainId: linea.id }); // always checking against mainnet
     return (
-        <span>
+        <span className="text-sm">
             {ensName || (showFullAddress ? address : shortenAddress(address))}
         </span>
     );

@@ -20,7 +20,7 @@ export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
                 <div className="flex flex-row gap-2">
                     <span className="text-xl font-bold">Demography</span>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 text-sm">
                     <div>
                         {netizens.map((netizen) => {
                             return (

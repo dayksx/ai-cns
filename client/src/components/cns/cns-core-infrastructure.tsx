@@ -71,7 +71,7 @@ export function CnsCoreInfrastructure() {
                                 </a>
                             )}
                         </div>
-                        <span>{item.description}</span>
+                        <span className="text-sm">{item.description}</span>
                     </div>
                 );
             })}

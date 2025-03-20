@@ -28,7 +28,7 @@ export function CnsCoreGoods() {
                     return (
                         <div
                             key={i}
-                            className="flex flex-row items-center gap-2"
+                            className="flex flex-row items-center gap-2 text-sm"
                         >
                             <span>{asset.label}</span>
                             {asset.link && (
