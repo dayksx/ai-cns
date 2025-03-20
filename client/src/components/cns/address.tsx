@@ -33,7 +33,7 @@ const demoEnsTweakForMembers = [
     },
     {
         address: "0x01F8e269CADCD36C945F012d2EeAe814c42D1159",
-        ensName: "zorg.linea.eth",
+        ensName: "patmahomes.linea.eth",
     },
     {
         address: "0xAf38d70E2Bfa1d13f025dB50315c9B4ec00a2b0c",
@@ -57,7 +57,7 @@ const demoEnsTweakForMembers = [
     },
     {
         address: "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
-        ensName: "mahomes.linea.eth",
+        ensName: "dayksx.linea.eth",
     },
 ];
 
