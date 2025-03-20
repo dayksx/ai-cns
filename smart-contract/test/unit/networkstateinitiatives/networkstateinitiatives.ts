@@ -41,7 +41,7 @@ describe("NetworkStateInitiatives", function () {
 
     it("should return a created initiative", async function () {
       const initiative = await this.networkStateInitiatives.initiatives(0);
-      expect(initiative.instigator).to.equal(this.signers.admin.address);
+      expect(initiative.ideator).to.equal(this.signers.admin.address);
       expect(initiative.title).to.equal("a crypto passport");
       expect(initiative.description).to.equal("this is a zk passport");
       expect(initiative.category).to.equal("digital identity");

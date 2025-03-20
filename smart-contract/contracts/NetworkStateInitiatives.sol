@@ -5,7 +5,7 @@ contract NetworkStateInitiatives {
     // Struct to store initiatives properties
     struct Initiative {
         bytes32 id;
-        address instigator;
+        address ideator;
         string title;
         string description;
         string category;
@@ -27,7 +27,7 @@ contract NetworkStateInitiatives {
     // Event emitted when a new initiative is created
     event InitiativeCreated(
         bytes32 initiativeId,
-        address instigator,
+        address ideator,
         string title,
         string description,
         string category
@@ -58,14 +58,14 @@ contract NetworkStateInitiatives {
     /**
      * @notice Allows the owner to create a new initiative.
      * @dev This function creates a new initiative and emits an InitiativeCreated event.
-     * @param _instigator The address of the instigator creating the initiative.
+     * @param _ideator The address of the ideator creating the initiative.
      * @param _title The title of the initiative.
      * @param _description The description of the initiative.
      * @param _category The category of the initiative.
      * @param _tags The tags associated with the initiative.
      */
     function createInitiatives(
-        address _instigator,
+        address _ideator,
         string memory _title,
         string memory _description,
         string memory _category,
@@ -74,7 +74,7 @@ contract NetworkStateInitiatives {
         bytes32 initiativeId = generatePseudoUUID();
         Initiative memory newInitiative = Initiative({
             id: initiativeId,
-            instigator: _instigator,
+            ideator: _ideator,
             title: _title,
             description: _description,
             category: _category,
@@ -85,7 +85,7 @@ contract NetworkStateInitiatives {
             downvotes: 0
         });
         initiatives.push(newInitiative);
-        emit InitiativeCreated(initiativeId, _instigator, _title, _description, _category);
+        emit InitiativeCreated(initiativeId, _ideator, _title, _description, _category);
     }
 
     /**
