@@ -165,11 +165,10 @@ contract NetworkStateInitiatives {
 
     /**
      * @notice Updates the credit balance of a specified user.
-     * @dev This function can only be called by the contract owner.
      * @param _user The address of the user whose credit balance is to be updated.
      * @param _newCreditBalance The new credit balance to be assigned to the user.
      */
-    function updateUserCredits(address _user, uint256 _newCreditBalance) public onlyOwner {
+    function updateUserCredits(address _user, uint256 _newCreditBalance) public {
         require(_newCreditBalance <= MAX_CREDITS_PER_USER, "Credit balance cannot exceed max limit");
         userCredits[_user] = _newCreditBalance;
         emit CreditsUpdated(_user, _newCreditBalance);
