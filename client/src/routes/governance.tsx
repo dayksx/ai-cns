@@ -1,7 +1,7 @@
 import { Suspense, use, useEffect, useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import { PageHeader } from "../components/page-header";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Plus, Minus, ThumbsUp, ThumbsDown } from "lucide-react";
 import { getInitiatives } from "@/contracts/get-initiatives";
 import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
@@ -157,38 +157,29 @@ function InitiativesList({
                                         {initiative.description}
                                     </p>
                                 </div>
-                                <div className="absolute flex  bottom-[-70px] flex-row items-center gap-5">
-                                    <div className="flex flex-col bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+                                <div className="absolute flex flex-col bottom-[-70px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+                                    <div className="flex flex-row items-center gap-1">
+                                        Total
+                                    </div>
+                                    <div className="flex flex-row items-center gap-3">
+                                        <ThumbsUp className="w-6 h-6 text-green-500" />
+                                        <span>{initiative.upvotes}</span>
+                                    </div>
+                                    <div className="flex flex-row items-center gap-3">
+                                        <ThumbsDown className="w-6 h-6 text-red-500" />
+                                        <span>{initiative.downvotes}</span>
+                                    </div>
+                                </div>
+                                {voteType !== undefined && (
+                                    <div className="absolute flex flex-col bottom-[-50px] right-[190px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
                                         <div className="flex flex-row items-center gap-1">
-                                            Total
+                                            ME
                                         </div>
                                         <div className="flex flex-row items-center gap-3">
-                                            <ThumbsUp className="w-6 h-6 text-green-500" />
-                                            <span>{initiative.upvotes}</span>
-                                        </div>
-                                        <div className="flex flex-row items-center gap-3">
-                                            <ThumbsDown className="w-6 h-6 text-red-500" />
-                                            <span>{initiative.downvotes}</span>
+                                            <span>{votesCount}</span>
                                         </div>
                                     </div>
-                                    {voteType !== undefined && (
-                                        <div className="flex flex-col bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
-                                            <div className="flex flex-row items-center gap-1">
-                                                ME
-                                            </div>
-                                            <div className="flex flex-row items-center gap-3">
-                                                {voteType ? (
-                                                    <ThumbsUp className="w-6 h-6 text-green-500" />
-                                                ) : (
-                                                    <ThumbsDown className="w-6 h-6 text-red-500" />
-                                                )}
-                                                <span>
-                                                    {Math.abs(votesCount)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                )}
                             </div>
                             <div className="flex flex-col">
                                 {userVoted[initiative.initiativeId] ? (
@@ -210,7 +201,7 @@ function InitiativesList({
                                                                 )
                                                             }
                                                         >
-                                                            <ThumbsUp className="w-6 h-6" />
+                                                            <Plus className="w-6 h-6" />
                                                         </button>
                                                         <button
                                                             className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-red-500"
@@ -221,7 +212,7 @@ function InitiativesList({
                                                                 )
                                                             }
                                                         >
-                                                            <ThumbsDown className="w-6 h-6" />
+                                                            <Minus className="w-6 h-6" />
                                                         </button>
                                                     </div>
                                                     <div className="flex flex-col gap-4">
