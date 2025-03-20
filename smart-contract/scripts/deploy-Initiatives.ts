@@ -1,15 +1,9 @@
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/dist/src/signer-with-address";
 import { ethers } from "hardhat";
 
-
-
 import { verify } from "../scripts/VerifyContract";
 import type { NetworkStateInitiatives } from "../src/types/NetworkStateInitiatives";
 import type { NetworkStateInitiatives__factory } from "../src/types/factories/NetworkStateInitiatives__factory";
-
-
-
-
 
 main().catch((error) => {
   console.error(error);
@@ -17,8 +11,8 @@ main().catch((error) => {
 });
 
 async function main() {
-  const [deployer, acc] = await ethers.getSigners();
-  await deployNetworkStateInitiatives(acc, true, true);
+  const [deployer] = await ethers.getSigners();
+  await deployNetworkStateInitiatives(deployer, true, true);
 }
 
 export async function deployNetworkStateInitiatives(
@@ -135,6 +129,4 @@ async function updateInitiatives(contract: NetworkStateInitiatives, acc1: Signer
     await contract.connect(acc1).addTeamMember(initiative.id, addr1.address);
     await contract.connect(acc1).addTeamMember(initiative.id, addr2.address);
   }
-
-  
 }
