@@ -6,13 +6,6 @@ import { getInitiatives } from "@/contracts/get-initiatives";
 import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
 import { getUserCredits } from "@/contracts/get-user-credits";
-import { createPublicClient, http } from "viem";
-import { lineaSepolia } from "wagmi/chains";
-
-const publicClient = createPublicClient({
-    chain: lineaSepolia,
-    transport: http(),
-});
 
 function InitiativesList({
     dataPromise,
