@@ -1,1 +1,2 @@
-export * from "./registerIdea.ts"
+export * from "./issueAttestation.ts"
+export * from "./tipCNSToken.ts"
