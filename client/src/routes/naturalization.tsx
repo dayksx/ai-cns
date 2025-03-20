@@ -82,6 +82,7 @@ export default function Naturalization() {
             });
             console.log("contract written...");
             console.log(hash);
+            window.location.href = "/census"; // redirecting new citizen to census
         } else {
             console.log("missing data to write contract");
         }
@@ -182,7 +183,7 @@ export default function Naturalization() {
                                     return (
                                         <span
                                             key={index}
-                                            className="text-lg text-gray-200"
+                                            className="text-sm text-gray-200"
                                         >
                                             {index + 1}. {value}
                                         </span>
@@ -268,7 +269,7 @@ export default function Naturalization() {
                             {isPending && <span>Joining...</span>}
                             {!isPending && (
                                 <Button
-                                    variant="secondary"
+                                    className="bg-yellow-500 text-black"
                                     disabled={
                                         !isConnected ||
                                         ![59141, 59144].includes(chainId ?? 0)

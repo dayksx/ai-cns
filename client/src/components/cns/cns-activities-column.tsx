@@ -26,7 +26,7 @@ export function ActivitiesColumn({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <div className="border border-yellow-500 rounded p-2 my-2">
-                                    <div className="text-lg font-bold">
+                                    <div className="text-sm font-bold">
                                         {a.title}
                                     </div>
                                     <div className="text-xs text-gray-400">
