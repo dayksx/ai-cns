@@ -3,7 +3,7 @@ import { lineaSepolia } from "viem/chains";
 
 const LINEA_SEPOLIA_START_BLOCK = 10549643n; // when CNS project launched
 const LINEA_START_BLOCK = 17000000n; // when CNS project launched
-const CNS_WALLET_ADDRESS = "0x01f8e269cadcd36c945f012d2eeae814c42d1159";
+export const CNS_WALLET_ADDRESS = "0x01f8e269cadcd36c945f012d2eeae814c42d1159";
 
 const getFallbackTransports = (rpcUrls: string[]) =>
     rpcUrls.map((url) => http(url));

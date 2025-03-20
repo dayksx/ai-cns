@@ -1,15 +1,19 @@
 import { Star } from "lucide-react";
-import { shortenAddress } from "../../lib/utils";
 import { Button } from "../ui/button";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { Badge } from "../ui/badge";
 import { Address } from "./address";
+import { useSendTransaction, useAccount } from "wagmi";
+import { CNS_WALLET_ADDRESS } from "../../lib/viem-utils";
 
 export function InitiativeCapitalAllocation({
     initiative,
 }: {
     initiative: any;
 }) {
+    const { isConnected } = useAccount();
+    const { sendTransaction } = useSendTransaction();
+
     const randomTeamMembers: `0x${string}`[] = [];
     if (initiative.ideator !== "0x0000000000000000000000000000000000000000")
         randomTeamMembers.push(initiative.ideator);
@@ -47,7 +51,10 @@ export function InitiativeCapitalAllocation({
                                 return (
                                     <div key={m} className="flex gap-3">
                                         <div>
-                                            <Address address={m as `0x${string}`} showFullAddress={false} />
+                                            <Address
+                                                address={m as `0x${string}`}
+                                                showFullAddress={false}
+                                            />
                                         </div>
                                         <div>
                                             <Badge className="">
@@ -84,13 +91,27 @@ export function InitiativeCapitalAllocation({
                 </div>
 
                 <div>
-                    <Button className="w-full bg-blue-600 text-white font-bold">
-                        Join Team
+                    <Button
+                        className="w-full bg-blue-600 text-white font-bold"
+                        disabled={!isConnected}
+                    >
+                        {isConnected ? "Join Team" : "Connect Wallet to Join"}
                     </Button>
                 </div>
                 <div>
-                    <Button className="w-full bg-yellow-500 text-lg font-bold">
-                        Allocate Funds
+                    <Button
+                        className="w-full bg-yellow-500 text-lg font-bold"
+                        onClick={() => {
+                            sendTransaction({
+                                to: CNS_WALLET_ADDRESS,
+                                value: parseEther("0.05"),
+                            });
+                        }}
+                        disabled={!isConnected}
+                    >
+                        {isConnected
+                            ? "Allocate Funds"
+                            : "Connect Wallet to Allocate Funds"}
                     </Button>
                 </div>
             </div>

@@ -3,7 +3,6 @@ import { Button } from "./ui/button";
 import { mmConnector } from "../lib/wagmi";
 import { useEffect, useState } from "react";
 import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
-import { shortenAddress } from "../lib/utils";
 import { Badge } from "./ui/badge";
 import { Address } from "./cns/address";
 
