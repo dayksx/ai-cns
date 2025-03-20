@@ -3,11 +3,11 @@ import { useAccount, useWriteContract } from "wagmi";
 import { PageHeader } from "../components/page-header";
 import { Plus, Minus, ThumbsUp, ThumbsDown } from "lucide-react";
 import { getInitiatives } from "@/contracts/get-initiatives";
-import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
 import { getUserCredits } from "@/contracts/get-user-credits";
 import { createPublicClient, http } from "viem";
 import { lineaSepolia } from "wagmi/chains";
+import { InitiativeAbi } from "@/abi/Initiative.abi";
 
 const publicClient = createPublicClient({
     chain: lineaSepolia, // Ensure it's the correct chain
@@ -113,8 +113,9 @@ function InitiativesList({
             // Initiate transaction (but it doesn’t return a hash)
             writeContract(
                 {
-                    address: contractAddress,
-                    abi: contractAbi,
+                    address: import.meta.env
+                        .VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+                    abi: InitiativeAbi,
                     functionName: isUpvote ? "upvote" : "downvote",
                     args: [initiativeId, Math.abs(voteCount)],
                 },

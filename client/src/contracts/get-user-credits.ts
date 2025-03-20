@@ -1,6 +1,6 @@
+import { InitiativeAbi } from "@/abi/Initiative.abi";
 import { createPublicClient, http } from "viem";
 import { lineaSepolia } from "viem/chains";
-import { contractAbi, contractAddress } from "./Initiative";
 
 // Initialize the Viem public client
 const publicClient = createPublicClient({
@@ -12,8 +12,8 @@ const publicClient = createPublicClient({
 export async function getUserCredits(address: `0x${string}`) {
     try {
         const userCredits = await publicClient.readContract({
-            address: contractAddress,
-            abi: contractAbi,
+            address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+            abi: InitiativeAbi,
             functionName: "userCredits",
             args: [address],
         });

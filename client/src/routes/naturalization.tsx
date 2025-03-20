@@ -9,7 +9,7 @@ import { NetworkAgreementAbi } from "../abi/NetworkAgreement.abi";
 import { keccak256, parseEther, stringToBytes } from "viem";
 import DownloadButton from "../components/download-button";
 import { constitutionTextAsMarkdown } from "../cns-constitution";
-import { checkIsNetizen, getCnsNetizens } from "../lib/cns/get-cns-netizens";
+import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
 
 export default function Naturalization() {
     const [cnsValues, setCnsValues] = useState<string[]>([]);
