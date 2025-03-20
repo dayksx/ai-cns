@@ -15,7 +15,7 @@ export async function getInitiatives() {
         const events = await publicClient.getLogs({
             address: contractAddress,
             event: parseAbiItem(
-                "event InitiativeCreated(bytes32 initiativeId, address instigator, string title, string description, string category)"
+                "event InitiativeCreated(bytes32 initiativeId, address ideator, string title, string description, string category)"
             ),
             fromBlock: BigInt(0),
             toBlock: "latest",
@@ -35,14 +35,15 @@ export async function getInitiatives() {
         // Format initiatives
         return initiatives.map((initiative) => ({
             initiativeId: initiative[0], // bytes32 id
-            instigator: initiative[1], // address
-            title: initiative[2], // string title
-            description: initiative[3], // string description
-            category: initiative[4], // string category
-            timestamp: Number(initiative[5]), // uint256 timestamp
-            status: initiative[6], // string status
-            upvotes: Number(initiative[7]), // uint256 upvotes
-            downvotes: Number(initiative[8]), // uint256 downvotes
+            ideator: initiative[1], // address
+            instigator: initiative[2], // address
+            title: initiative[3], // string title
+            description: initiative[4], // string description
+            category: initiative[5], // string category
+            timestamp: Number(initiative[6]), // uint256 timestamp
+            status: initiative[7], // string status
+            upvotes: Number(initiative[8]), // uint256 upvotes
+            downvotes: Number(initiative[9]), // uint256 downvotes
         }));
     } catch (error) {
         console.error("Error fetching initiatives:", error);
