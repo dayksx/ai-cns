@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getCnsEthBalance } from "../../lib/viem-utils";
 import { formatEther } from "viem";
 
-export function CnsTreasury({ treasury }: { treasury: any }) {
+export function CnsTreasury() {
     const [balance, setBalance] = useState<bigint>(0n);
     useEffect(() => {
         getCnsEthBalance().then((ethBalance) => {
@@ -20,9 +20,7 @@ export function CnsTreasury({ treasury }: { treasury: any }) {
                     Ξ {formatEther(balance)?.substring(0, 5)}
                 </div>
             </div>
-            <div className="flex flex-col text-xl gap-2">
-               
-            </div>
+            <div className="flex flex-col text-xl gap-2"></div>
             <div className="flex flex-col gap-2">ETH in/out txs</div>
         </div>
     );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "../components/page-header";
-import { CnsActivities } from "../components/cns/cns-core-needs";
+import { CnsActivities } from "../components/cns/cns-activities";
 import { CnsCoreGoods } from "../components/cns/cns-core-goods";
 import { CnsDemography } from "../components/cns/cns-demography";
 import { CnsTreasury } from "../components/cns/cns-treasury";
@@ -28,13 +28,13 @@ export default function Census() {
                             <span className="text-3xl font-bold text-blue-400 uppercase">
                                 Assets
                             </span>
-                            <CnsTreasury treasury={[]} />
-                            <CnsCoreGoods goods={[]} />
+                            <CnsTreasury />
+                            <CnsCoreGoods />
                         </div>
                     </div>
                     <div>
                         <div className="flex flex-col gap-4">
-                            <CnsActivities activities={[]} />
+                            <CnsActivities />
                         </div>
                     </div>
                 </div>

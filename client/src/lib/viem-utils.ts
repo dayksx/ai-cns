@@ -1,5 +1,5 @@
 import { createPublicClient, fallback, http, parseAbiItem } from "viem";
-import { linea, lineaSepolia } from "viem/chains";
+import { lineaSepolia } from "viem/chains";
 
 const LINEA_SEPOLIA_START_BLOCK = 10549643n; // when CNS project launched
 const LINEA_START_BLOCK = 17000000n; // when CNS project launched
@@ -19,18 +19,12 @@ const publicClient = createPublicClient({
 
 export async function fetchAgreementSignedEvents(useTestnet = true) {
     //FIXME only works with Linea Sepolia atm
-    /*const publicClient = createPublicClient({
-        chain: useTestnet ? lineaSepolia : linea,
-        transport: fallback([
-            http(),
-            ...getFallbackTransports([
-                import.meta.env.VITE_LINEA_SEPOLIA_RPC_URL,
-            ]),
-        ]),
-    });*/
-
+    console.log(
+        "Getting netizens from " +
+            import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS
+    );
     const logs = await publicClient.getLogs({
-        address: import.meta.env.CNS_AGREEMENT_CONTRACT_ADDRESS,
+        address: import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS,
         event: parseAbiItem(
             "event AgreementSigned(address indexed user, string userProfileType, string userNatureAgent,bytes32 constitutionHash, uint256 etherAmount, uint256 timestamp)"
         ),
