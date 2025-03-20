@@ -9,6 +9,12 @@ import Chat from "./routes/chat";
 import Overview from "./routes/overview";
 import Home from "./routes/home";
 import useVersion from "./hooks/use-version";
+import Naturalization from "./routes/naturalization";
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "./lib/wagmi";
+import Governance from "./routes/governance";
+import Census from "./routes/census";
+import Core from "./routes/core";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,38 +27,59 @@ const queryClient = new QueryClient({
 function App() {
     useVersion();
     return (
-        <QueryClientProvider client={queryClient}>
-            <div
-                className="dark antialiased"
-                style={{
-                    colorScheme: "dark",
-                }}
-            >
-                <BrowserRouter>
-                    <TooltipProvider delayDuration={0}>
-                        <SidebarProvider>
-                            <AppSidebar />
-                            <SidebarInset>
-                                <div className="flex flex-1 flex-col gap-4 size-full container">
-                                    <Routes>
-                                        <Route path="/" element={<Home />} />
-                                        <Route
-                                            path="chat/:agentId"
-                                            element={<Chat />}
-                                        />
-                                        <Route
-                                            path="settings/:agentId"
-                                            element={<Overview />}
-                                        />
-                                    </Routes>
-                                </div>
-                            </SidebarInset>
-                        </SidebarProvider>
-                        <Toaster />
-                    </TooltipProvider>
-                </BrowserRouter>
-            </div>
-        </QueryClientProvider>
+        <WagmiProvider config={wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+                <div
+                    className="dark antialiased"
+                    style={{
+                        colorScheme: "dark",
+                    }}
+                >
+                    <BrowserRouter>
+                        <TooltipProvider delayDuration={0}>
+                            <SidebarProvider>
+                                <AppSidebar />
+                                <SidebarInset>
+                                    <div className="flex flex-1 flex-col gap-4 size-full container">
+                                        <Routes>
+                                            <Route
+                                                path="/"
+                                                element={<Home />}
+                                            />
+                                            <Route
+                                                path="chat/:agentId"
+                                                element={<Chat />}
+                                            />
+                                            <Route
+                                                path="settings/:agentId"
+                                                element={<Overview />}
+                                            />
+                                            <Route
+                                                path="naturalization"
+                                                element={<Naturalization />}
+                                            />
+                                            <Route
+                                                path="governance"
+                                                element={<Governance />}
+                                            />
+                                            <Route
+                                                path="census"
+                                                element={<Census />}
+                                            />
+                                            <Route
+                                                path="core"
+                                                element={<Core />}
+                                            />
+                                        </Routes>
+                                    </div>
+                                </SidebarInset>
+                            </SidebarProvider>
+                            <Toaster />
+                        </TooltipProvider>
+                    </BrowserRouter>
+                </div>
+            </QueryClientProvider>
+        </WagmiProvider>
     );
 }
 

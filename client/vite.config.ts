@@ -27,7 +27,20 @@ export default defineConfig(({ mode }) => {
             ),
             "import.meta.env.VITE_SERVER_BASE_URL": JSON.stringify(
                 env.SERVER_BASE_URL
-            )
+            ),
+            "import.meta.env.VITE_LINEA_RPC_URL": JSON.stringify(
+                env.LINEA_RPC_URL
+            ),
+            "import.meta.env.VITE_LINEA_SEPOLIA_RPC_URL": JSON.stringify(
+                env.LINEA_SEPOLIA_RPC_URL
+            ),
+            "import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS":
+                JSON.stringify(env.CNS_AGREEMENT_CONTRACT_ADDRESS),
+            "import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS":
+                JSON.stringify(env.CNS_INITIATIVE_CONTRACT_ADDRESS),
+            "import.meta.env.VITE_CNS_CONSTITUTION_HASH": JSON.stringify(
+                env.CNS_CONSTITUTION_HASH
+            ),
         },
         build: {
             outDir: "dist",
