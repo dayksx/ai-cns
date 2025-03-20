@@ -16,7 +16,16 @@ import {
 import { apiClient } from "@/lib/api";
 import { NavLink, useLocation } from "react-router";
 import type { UUID } from "@elizaos/core";
-import { Book, Cog, User } from "lucide-react";
+import {
+    Book,
+    ChartColumnIncreasing,
+    Cog,
+    Landmark,
+    SquareActivity,
+    ThumbsUp,
+    User,
+    UserRoundPlus,
+} from "lucide-react";
 import ConnectionStatus from "./connection-status";
 
 export function AppSidebar() {
@@ -107,37 +116,38 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <NavLink to="/core">
                             <SidebarMenuButton>
-                                <Book /> Core Infrastructure
+                                <Landmark /> Core Infrastructure
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <NavLink to="/census">
                             <SidebarMenuButton>
-                                <Book /> Census
+                                <SquareActivity /> Census
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <NavLink to="/naturalization">
                             <SidebarMenuButton>
-                                <Book /> Naturalization
+                                <UserRoundPlus /> Naturalization
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <NavLink to="/governance">
                             <SidebarMenuButton>
-                                <Book /> Governance
+                                <ThumbsUp /> Governance
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
+                    <span className="py-4" />
                     <SidebarMenuItem>
                         <NavLink
                             to="https://elizaos.github.io/eliza/docs/intro/"
                             target="_blank"
                         >
-                            <SidebarMenuButton>
+                            <SidebarMenuButton disabled>
                                 <Book /> Documentation
                             </SidebarMenuButton>
                         </NavLink>

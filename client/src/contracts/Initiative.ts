@@ -1,4 +1,5 @@
-export const contractAddress = "0xF6a04D1377A91e3b79e1A6B76C0aAB7152167EB6"; // Replace with your deployed contract address
+export const contractAddress = import.meta.env
+    .VITE_CNS_INITIATIVE_CONTRACT_ADDRESS;
 
 export const contractAbi = [
     {

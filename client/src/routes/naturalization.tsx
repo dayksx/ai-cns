@@ -1,13 +1,14 @@
 import { Suspense, use, useState } from "react";
 import { Button } from "../components/ui/button";
 import { getCNSValues } from "../lib/cns/get-cns-values";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, useSignMessage, useWriteContract } from "wagmi";
 import { PageHeader } from "../components/page-header";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { NetworkAgreementAbi } from "../abi/NetworkAgreement.abi";
-import { parseEther } from "viem";
+import { keccak256, parseEther, stringToBytes } from "viem";
 import DownloadButton from "../components/download-button";
+import { constitutionTextAsMarkdown } from "../cns-constitution";
 
 function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
     const values = use(dataPromise);
@@ -25,40 +26,62 @@ export default function Naturalization() {
     const [agentNature, setAgentNature] = useState("human");
     const [contribution, setContribution] = useState(0.001);
     const { isConnected, chainId } = useAccount();
-    const { data: hash, writeContract, isPending } = useWriteContract();
-    const { switchChain } = useSwitchChain();
+    const { data: hash, writeContractAsync, isPending } = useWriteContract();
+    const { signMessageAsync, data } = useSignMessage();
+
+    async function signConstitution(): Promise<{
+        signature: `0x${string}` | undefined;
+        constitutionHash: string;
+    }> {
+        const constitutionHash = keccak256(
+            stringToBytes(constitutionTextAsMarkdown)
+        );
+
+        const res = await signMessageAsync({
+            message: constitutionHash,
+        });
+        console.log(res);
+        console.log(data);
+        console.log(constitutionHash);
+        return { signature: res, constitutionHash };
+    }
 
     async function handleAgreementSubmit() {
         console.log("joining...");
         // maker, investor, instigator
         // human, AI
-        console.log(
-            profileType,
-            agentNature,
-            import.meta.env.VITE_CNS_CONSTITUTION_HASH,
-            contribution
-        );
+
+        console.log("signing constitution...");
+        const { signature, constitutionHash } = await signConstitution();
+        console.log("constitution signed...");
         const contributionInEther = parseEther(contribution.toString());
         console.log(
             profileType,
             agentNature,
-            import.meta.env.VITE_CNS_CONSTITUTION_HASH,
+            constitutionHash,
+            signature,
             contributionInEther
         );
-        const params = {
-            address: import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS,
-            abi: NetworkAgreementAbi,
-            functionName: "signAgreement",
-            args: [profileType, agentNature, contributionInEther, contribution],
-        };
-        console.log(params);
-        writeContract({
-            address: import.meta.env.CNS_AGREEMENT_CONTRACT_ADDRESS,
-            abi: NetworkAgreementAbi,
-            functionName: "signAgreement",
-            args: [profileType, agentNature, contributionInEther, contribution],
-        });
-        console.log(hash);
+        console.log("writing contract...");
+        if (
+            profileType &&
+            agentNature &&
+            constitutionHash &&
+            signature &&
+            contributionInEther
+        ) {
+            await writeContractAsync({
+                address: import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS,
+                abi: NetworkAgreementAbi,
+                functionName: "signAgreement",
+                value: contributionInEther,
+                args: [profileType, agentNature, constitutionHash, signature],
+            });
+            console.log("contract written...");
+            console.log(hash);
+        } else {
+            console.log("missing data to write contract");
+        }
     }
 
     return (

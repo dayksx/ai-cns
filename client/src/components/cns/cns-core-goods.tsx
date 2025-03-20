@@ -19,7 +19,7 @@ const physicalAssets: { label: string; link?: string }[] = [
     },
 ];
 
-export function CnsCoreGoods({ goods }: { goods: any[] }) {
+export function CnsCoreGoods() {
     return (
         <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
             <span className="text-xl font-bold">Physical</span>

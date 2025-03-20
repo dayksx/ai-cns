@@ -36,6 +36,8 @@ export default defineConfig(({ mode }) => {
             ),
             "import.meta.env.VITE_CNS_AGREEMENT_CONTRACT_ADDRESS":
                 JSON.stringify(env.CNS_AGREEMENT_CONTRACT_ADDRESS),
+            "import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS":
+                JSON.stringify(env.CNS_INITIATIVE_CONTRACT_ADDRESS),
             "import.meta.env.VITE_CNS_CONSTITUTION_HASH": JSON.stringify(
                 env.CNS_CONSTITUTION_HASH
             ),
