@@ -72,7 +72,7 @@ export function AppSidebar() {
                     <SidebarMenu>
                         <ConnectionStatus />
                     </SidebarMenu>
-                    <SidebarGroupLabel>AI Agent Netizens</SidebarGroupLabel>
+                    <SidebarGroupLabel>AI Netizens</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {query?.isPending ? (
@@ -113,53 +113,56 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
-                <SidebarGroupLabel>Human Agent Netizens</SidebarGroupLabel>
-                <SidebarGroupContent>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <NavLink to="/netizens/0x44dc4e3309b80ef7abf41c7d0a68f0337a88f044">
-                                <SidebarMenuButton>
-                                    <User />
-                                        <span>
-                                            dayan.linea.eth
-                                        </span>
-                                </SidebarMenuButton>
-                            </NavLink>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <NavLink to="/netizens/0x65a4CeC9f1c6060f3b987d9332Bedf26e8E86D17">
-                                <SidebarMenuButton>
-                                    <User />
-                                        <span>
-                                            satya.linea.eth
-                                        </span>
-                                </SidebarMenuButton>
-                            </NavLink>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <NavLink to="/netizens/0x17757544f255c78D3492bc2534DBfaDD7C1bD007">
-                                <SidebarMenuButton>
-                                    <User />
-                                        <span>
-                                            fred.linea.eth
-                                        </span>
-                                </SidebarMenuButton>
-                            </NavLink>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <NavLink to="/netizens/0x2754265A82705CEe4Fca6343a5cdD36850348780">
-                                <SidebarMenuButton>
-                                    <User />
-                                        <span>
-                                            jb.linea.eth
-                                        </span>
-                                </SidebarMenuButton>
-                            </NavLink>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroupContent>
+                <SidebarGroup>
+                    <SidebarGroupContent>
+                        <SidebarGroupLabel>Human Netizens</SidebarGroupLabel>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <NavLink to="/netizens/0x44dc4e3309b80ef7abf41c7d0a68f0337a88f044">
+                                    <SidebarMenuButton>
+                                        <User />
+                                            <span>
+                                                dayan.linea.eth
+                                            </span>
+                                    </SidebarMenuButton>
+                                </NavLink>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <NavLink to="/netizens/0x65a4CeC9f1c6060f3b987d9332Bedf26e8E86D17">
+                                    <SidebarMenuButton>
+                                        <User />
+                                            <span>
+                                                satya.linea.eth
+                                            </span>
+                                    </SidebarMenuButton>
+                                </NavLink>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <NavLink to="/netizens/0x17757544f255c78D3492bc2534DBfaDD7C1bD007">
+                                    <SidebarMenuButton>
+                                        <User />
+                                            <span>
+                                                fred.linea.eth
+                                            </span>
+                                    </SidebarMenuButton>
+                                </NavLink>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <NavLink to="/netizens/0x2754265A82705CEe4Fca6343a5cdD36850348780">
+                                    <SidebarMenuButton>
+                                        <User />
+                                            <span>
+                                                jb.linea.eth
+                                            </span>
+                                    </SidebarMenuButton>
+                                </NavLink>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
+                <SidebarGroupLabel>Services</SidebarGroupLabel>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <NavLink to="/naturalization">
@@ -183,16 +186,16 @@ export function AppSidebar() {
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <NavLink to="/core">
+                        <NavLink to="/allocation">
                             <SidebarMenuButton>
-                                <Landmark /> Infrastructure
+                                <HandCoins /> Capital Allocation
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <NavLink to="/allocation">
+                        <NavLink to="/core">
                             <SidebarMenuButton>
-                                <HandCoins /> Capital Allocation
+                                <Landmark /> Infrastructure
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
