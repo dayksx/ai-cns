@@ -9,10 +9,9 @@ export default function CapitalAllocation() {
 
     useEffect(() => {
         getInitiatives().then((initiatives) => {
-            //FIXME change status for CAPITAL_ALLOCATION
             setCapitalAllocation(
                 initiatives?.filter(
-                    (initiative) => initiative.status === "IDEATION"
+                    (initiative) => initiative.status === "CAPITAL_ALLOCATION"
                 )
             );
         });

@@ -2,18 +2,28 @@ import { Star } from "lucide-react";
 import { shortenAddress } from "../../lib/utils";
 import { Button } from "../ui/button";
 import { formatEther } from "viem";
+import { Badge } from "../ui/badge";
+import { Address } from "./address";
 
 export function InitiativeCapitalAllocation({
     initiative,
 }: {
     initiative: any;
 }) {
-    const randomTeamMembers = [
-        "0x1234567890123456789012345678901234567890",
-        "0x1234567890123456789012345678901234567890",
-        "0x1234567890123456789012345678901234567890",
-        "0x1234567890123456789012345678901234567890",
-    ];
+    const randomTeamMembers: `0x${string}`[] = [];
+    if (initiative.ideator !== "0x0000000000000000000000000000000000000000")
+        randomTeamMembers.push(initiative.ideator);
+    if (initiative.instigator !== "0x0000000000000000000000000000000000000000")
+        randomTeamMembers.push(initiative.instigator);
+
+    function getRole(initiative: any, address: `0x${string}`): string {
+        return initiative.instigator === address
+            ? "instigator"
+            : initiative.ideator === address
+            ? "ideator"
+            : "member";
+    }
+
     return (
         <div className="grid grid-cols-3 gap-4 border border-blue-500 rounded-lg p-4 ">
             <div className="grid col-span-2">
@@ -35,8 +45,15 @@ export function InitiativeCapitalAllocation({
                         <div>
                             {randomTeamMembers.map((m) => {
                                 return (
-                                    <div>
-                                        {shortenAddress(m as `0x${string}`)}
+                                    <div key={m} className="flex gap-3">
+                                        <div>
+                                            <Address address={m as `0x${string}`} showFullAddress={false} />
+                                        </div>
+                                        <div>
+                                            <Badge className="">
+                                                {getRole(initiative, m)}
+                                            </Badge>
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -60,7 +77,7 @@ export function InitiativeCapitalAllocation({
                         <div className="mr-4">AI score</div>
                         <div className="flex gap-1">
                             <Star className="text-yellow-500" />
-                            <Star className="text-gray-500" />
+                            <Star className="text-yellow-500" />
                             <Star className="text-gray-500" />
                         </div>
                     </div>
