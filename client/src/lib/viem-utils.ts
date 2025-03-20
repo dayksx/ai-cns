@@ -44,6 +44,19 @@ export async function fetchAgreementSignedEvents(useTestnet = true) {
     return logs;
 }
 
+export async function fetchScoreUpdatedEvents(useTestnet = true) {
+    //FIXME only works with Linea Sepolia atm
+    const logs = await publicClient.getLogs({
+        address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+        event: parseAbiItem(
+            "event ScoreUpdated(bytes32 initiativeId, uint256 newScore)"
+        ),
+        fromBlock: useTestnet ? LINEA_SEPOLIA_START_BLOCK : LINEA_START_BLOCK,
+        toBlock: "latest",
+    });
+    return logs;
+}
+
 export async function getCnsEthBalance() {
     return await publicClient.getBalance({
         address: CNS_WALLET_ADDRESS,
