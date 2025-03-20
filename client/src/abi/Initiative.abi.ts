@@ -1,7 +1,4 @@
-export const contractAddress = import.meta.env
-    .VITE_CNS_INITIATIVE_CONTRACT_ADDRESS;
-
-export const contractAbi = [
+export const InitiativeAbi = [
     { inputs: [], stateMutability: "nonpayable", type: "constructor" },
     {
         anonymous: false,
@@ -82,6 +79,25 @@ export const contractAbi = [
             },
         ],
         name: "InitiativeCreated",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "bytes32",
+                name: "initiativeId",
+                type: "bytes32",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "newScore",
+                type: "uint256",
+            },
+        ],
+        name: "ScoreUpdated",
         type: "event",
     },
     {
@@ -243,6 +259,7 @@ export const contractAbi = [
             { internalType: "string", name: "status", type: "string" },
             { internalType: "uint256", name: "upvotes", type: "uint256" },
             { internalType: "uint256", name: "downvotes", type: "uint256" },
+            { internalType: "uint256", name: "score", type: "uint256" },
         ],
         stateMutability: "view",
         type: "function",
@@ -269,6 +286,16 @@ export const contractAbi = [
         name: "statusList",
         outputs: [{ internalType: "string", name: "", type: "string" }],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "bytes32", name: "_initiativeId", type: "bytes32" },
+            { internalType: "uint256", name: "_newScore", type: "uint256" },
+        ],
+        name: "updateScore",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
