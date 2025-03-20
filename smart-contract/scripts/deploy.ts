@@ -7,10 +7,10 @@ async function main() {
   const [deployer] = await ethers.getSigners();
 
   // Deploy NetworkStateAgreement
-  await deployNetworkStateAgreement(deployer);
+  await deployNetworkStateAgreement(deployer, true);
 
   // Deploy NetworkStateInitiatives
-  await deployNetworkStateInitiatives(deployer);
+  await deployNetworkStateInitiatives(deployer, true);
 }
 
 main().catch((error) => {

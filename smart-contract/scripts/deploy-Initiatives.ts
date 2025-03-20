@@ -5,9 +5,19 @@ import { verify } from "../scripts/VerifyContract";
 import type { NetworkStateInitiatives } from "../src/types/NetworkStateInitiatives";
 import type { NetworkStateInitiatives__factory } from "../src/types/factories/NetworkStateInitiatives__factory";
 
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+
+async function main() {
+  const [deployer] = await ethers.getSigners();
+  await deployNetworkStateInitiatives(deployer, true);
+}
+
 export async function deployNetworkStateInitiatives(
   deployer: SignerWithAddress,
-  verifyContract: boolean = true,
+  verifyContract: boolean,
 ): Promise<string> {
   console.log("Deployer:", deployer.address);
   const factory = (await ethers.getContractFactory("NetworkStateInitiatives")) as NetworkStateInitiatives__factory;
