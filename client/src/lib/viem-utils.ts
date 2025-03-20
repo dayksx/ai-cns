@@ -17,6 +17,16 @@ const publicClient = createPublicClient({
     ]),
 });
 
+const erc20Abi = [
+    {
+        inputs: [{ internalType: "address", name: "account", type: "address" }],
+        name: "balanceOf",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+    },
+] as const;
+
 export async function fetchAgreementSignedEvents(useTestnet = true) {
     //FIXME only works with Linea Sepolia atm
     console.log(
@@ -37,5 +47,30 @@ export async function fetchAgreementSignedEvents(useTestnet = true) {
 export async function getCnsEthBalance() {
     return await publicClient.getBalance({
         address: CNS_WALLET_ADDRESS,
+    });
+}
+
+export async function getCnsTokenBalance() {
+    return await getTokenBalance(
+        import.meta.env.VITE_CNS_TOKEN_ADDRESS,
+        CNS_WALLET_ADDRESS
+    );
+}
+
+export async function getTokenBalance(
+    tokenAddress: `0x${string}`,
+    walletAddress: `0x${string}`
+): Promise<bigint> {
+    console.log({
+        address: tokenAddress,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [walletAddress],
+    });
+    return await publicClient.readContract({
+        address: tokenAddress,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [walletAddress],
     });
 }

@@ -41,6 +41,9 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_CNS_CONSTITUTION_HASH": JSON.stringify(
                 env.CNS_CONSTITUTION_HASH
             ),
+            "import.meta.env.VITE_CNS_TOKEN_ADDRESS": JSON.stringify(
+                env.CNS_TOKEN_ADDRESS
+            ),
         },
         build: {
             outDir: "dist",
