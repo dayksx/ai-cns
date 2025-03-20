@@ -5,6 +5,7 @@ import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { getInitiatives } from "@/contracts/get-initiatives";
 import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
+import { getUserCredits } from "@/contracts/get-user-credits";
 
 function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
     const initiatives = use(dataPromise);
@@ -36,9 +37,7 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
                         }
                         setVotes((prev) => ({
                             ...prev,
-                            [initiative.initiativeId]: Math.sqrt(
-                                voteInfo.votesNumber
-                            ),
+                            [initiative.initiativeId]: voteInfo.votesNumber,
                         }));
 
                         setVoteTypes((prev) => ({
@@ -109,6 +108,8 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
         <div className="flex flex-col gap-8 items-center w-full">
             {initiatives.length > 0 ? (
                 initiatives.map((initiative) => {
+                    const votesCount = votes[initiative.initiativeId] || 0;
+                    const voteType = voteTypes[initiative.initiativeId];
                     return (
                         <div
                             className="flex flex-row gap-4"
@@ -123,73 +124,116 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
                                         {initiative.description}
                                     </p>
                                 </div>
-                                <div className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600">
-                                    {voteTypes[initiative.initiativeId] !==
-                                    undefined ? (
-                                        voteTypes[initiative.initiativeId] ===
-                                        true ? (
-                                            <ThumbsUp className="w-6 h-6" />
-                                        ) : (
-                                            <ThumbsDown className="w-6 h-6" />
-                                        )
-                                    ) : undefined}
-                                    Credits Used :{" "}
-                                    {creditsUsed[initiative.initiativeId] ?? 0}
+                                <div className="absolute flex  bottom-[-70px] flex-row items-center gap-5">
+                                    <div className="flex flex-col bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+                                        <div className="flex flex-row items-center gap-1">
+                                            Total
+                                        </div>
+                                        <div className="flex flex-row items-center gap-3">
+                                            <ThumbsUp className="w-6 h-6 text-green-500" />
+                                            <span>{initiative.upvotes}</span>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-3">
+                                            <ThumbsDown className="w-6 h-6 text-red-500" />
+                                            <span>{initiative.downvotes}</span>
+                                        </div>
+                                    </div>
+                                    {voteType !== undefined && (
+                                        <div className="flex flex-col bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+                                            <div className="flex flex-row items-center gap-1">
+                                                ME
+                                            </div>
+                                            <div className="flex flex-row items-center gap-3">
+                                                {voteType ? (
+                                                    <ThumbsUp className="w-6 h-6 text-green-500" />
+                                                ) : (
+                                                    <ThumbsDown className="w-6 h-6 text-red-500" />
+                                                )}
+                                                <span>
+                                                    {Math.abs(votesCount)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex flex-col">
                                 {userVoted[initiative.initiativeId] ? (
                                     <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
-                                        <div className="flex flex-col gap-4">
-                                            <button
-                                                className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-green-500"
-                                                onClick={() =>
-                                                    handleVote(
-                                                        initiative.initiativeId,
-                                                        true
-                                                    )
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex flex-row gap-4 items-center">
+                                                <div className="flex flex-col gap-4">
+                                                    <button
+                                                        className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-green-500"
+                                                        onClick={() =>
+                                                            handleVote(
+                                                                initiative.initiativeId,
+                                                                true
+                                                            )
+                                                        }
+                                                    >
+                                                        <ThumbsUp className="w-6 h-6" />
+                                                    </button>
+                                                    <button
+                                                        className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-red-500"
+                                                        onClick={() =>
+                                                            handleVote(
+                                                                initiative.initiativeId,
+                                                                false
+                                                            )
+                                                        }
+                                                    >
+                                                        <ThumbsDown className="w-6 h-6" />
+                                                    </button>
+                                                </div>
+                                                <div className="flex flex-col gap-4">
+                                                    <button
+                                                        className={`px-4 py-2 rounded-lg shadow-md text-white ${
+                                                            creditsUsed[
+                                                                initiative
+                                                                    .initiativeId
+                                                            ] === 0
+                                                                ? "bg-gray-500 cursor-not-allowed"
+                                                                : "bg-blue-500 hover:bg-blue-600"
+                                                        }`}
+                                                        disabled={
+                                                            creditsUsed[
+                                                                initiative
+                                                                    .initiativeId
+                                                            ] === 0
+                                                        }
+                                                        onClick={() =>
+                                                            handleVoteSubmit(
+                                                                initiative.initiativeId
+                                                            )
+                                                        }
+                                                    >
+                                                        Vote
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-row gap-4">
+                                                Credits used :{" "}
+                                                {
+                                                    creditsUsed[
+                                                        initiative.initiativeId
+                                                    ]
                                                 }
-                                            >
-                                                <ThumbsUp className="w-6 h-6" />
-                                            </button>
-                                            <button
-                                                className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-red-500"
-                                                onClick={() =>
-                                                    handleVote(
-                                                        initiative.initiativeId,
-                                                        false
-                                                    )
-                                                }
-                                            >
-                                                <ThumbsDown className="w-6 h-6" />
-                                            </button>
+                                            </div>
                                         </div>
-                                        <button
-                                            className={`px-4 py-2 rounded-lg shadow-md text-white ${
-                                                creditsUsed[
-                                                    initiative.initiativeId
-                                                ] === 0
-                                                    ? "bg-gray-500 cursor-not-allowed"
-                                                    : "bg-blue-500 hover:bg-blue-600"
-                                            }`}
-                                            disabled={
-                                                creditsUsed[
-                                                    initiative.initiativeId
-                                                ] === 0
-                                            }
-                                            onClick={() =>
-                                                handleVoteSubmit(
-                                                    initiative.initiativeId
-                                                )
-                                            }
-                                        >
-                                            Vote
-                                        </button>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
-                                        <div className="flex flex-col gap-4">
-                                            Already Voted
+                                    <div className="flex flex-col items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
+                                        <div className="flex flex-row gap-4 text-lg font-bold">
+                                            Voted
+                                        </div>
+                                        <div className="flex flex-row gap-4">
+                                            Credits used :{" "}
+                                            {
+                                                creditsUsed[
+                                                    initiative.initiativeId
+                                                ]
+                                            }
                                         </div>
                                     </div>
                                 )}
@@ -205,6 +249,21 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
 }
 
 export default function Governance() {
+    const { address } = useAccount();
+    const [remainingCredits, setRemainingCredits] = useState<number>(100);
+
+    useEffect(() => {
+        if (address) {
+            const fetchCredits = async () => {
+                const credits: number = (await getUserCredits(
+                    address
+                )) as number;
+                setRemainingCredits(credits);
+            };
+            fetchCredits();
+        }
+    }, []);
+
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
             <div className="flex-1 overflow-y-auto">
@@ -229,7 +288,7 @@ export default function Governance() {
                             Your Credit
                         </h2>
                         <div className="w-full h-[40px] flex items-center justify-center bg-gray-700 text-white font-bold rounded-md border border-gray-600">
-                            {100}
+                            {remainingCredits}
                         </div>
                     </div>
                 </div>
