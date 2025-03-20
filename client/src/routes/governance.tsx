@@ -6,8 +6,21 @@ import { getInitiatives } from "@/contracts/get-initiatives";
 import { contractAddress, contractAbi } from "@/contracts/Initiative";
 import { getVoteInfo } from "@/contracts/get-vote-info";
 import { getUserCredits } from "@/contracts/get-user-credits";
+import { createPublicClient, http } from "viem";
+import { lineaSepolia } from "wagmi/chains";
 
-function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
+const publicClient = createPublicClient({
+    chain: lineaSepolia,
+    transport: http(),
+});
+
+function InitiativesList({
+    dataPromise,
+    creditBalance,
+}: {
+    dataPromise: Promise<any[]>;
+    creditBalance: number;
+}) {
     const initiatives = use(dataPromise);
     const { address } = useAccount();
     const [votes, setVotes] = useState<{ [key: string]: number }>({});
@@ -18,40 +31,42 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
         {}
     );
     const [userVoted, setUserVoted] = useState<{ [key: string]: boolean }>({});
-    const { writeContract } = useWriteContract();
+    const [pendingVotes, setPendingVotes] = useState<{
+        [key: string]: boolean;
+    }>({});
+    const { data: txHash, writeContract, isError } = useWriteContract();
+    const fetchCredits = async () => {
+        const creditsData = await Promise.all(
+            initiatives.map(async (initiative) => {
+                const voteInfo = await getVoteInfo(
+                    initiative.initiativeId,
+                    address
+                );
+                if (voteInfo.votesNumber === 0) {
+                    setUserVoted((prev) => ({
+                        ...prev,
+                        [initiative.initiativeId]: true,
+                    }));
+                }
+                setVotes((prev) => ({
+                    ...prev,
+                    [initiative.initiativeId]: voteInfo.votesNumber,
+                }));
+
+                setVoteTypes((prev) => ({
+                    ...prev,
+                    [initiative.initiativeId]: voteInfo.upvote,
+                }));
+                return {
+                    [initiative.initiativeId]: voteInfo.votesNumber ** 2,
+                };
+            })
+        );
+        setCreditsUsed(Object.assign({}, ...creditsData));
+    };
 
     useEffect(() => {
         if (address) {
-            const fetchCredits = async () => {
-                const creditsData = await Promise.all(
-                    initiatives.map(async (initiative) => {
-                        const voteInfo = await getVoteInfo(
-                            initiative.initiativeId,
-                            address
-                        );
-                        if (voteInfo.votesNumber === 0) {
-                            setUserVoted((prev) => ({
-                                ...prev,
-                                [initiative.initiativeId]: true,
-                            }));
-                        }
-                        setVotes((prev) => ({
-                            ...prev,
-                            [initiative.initiativeId]: voteInfo.votesNumber,
-                        }));
-
-                        setVoteTypes((prev) => ({
-                            ...prev,
-                            [initiative.initiativeId]: voteInfo.upvote,
-                        }));
-                        return {
-                            [initiative.initiativeId]:
-                                voteInfo.votesNumber ** 2,
-                        };
-                    })
-                );
-                setCreditsUsed(Object.assign({}, ...creditsData));
-            };
             fetchCredits();
         }
     }, [address, initiatives]);
@@ -60,6 +75,7 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
         setVotes((prevVotes) => {
             const currentVotes = prevVotes[initiativeId] || 0;
             let newVotes = isIncrease ? currentVotes + 1 : currentVotes - 1;
+            if (newVotes ** 2 > creditBalance) return prevVotes;
             setVoteTypes((prev) => ({
                 ...prev,
                 [initiativeId]:
@@ -90,17 +106,41 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
         const isUpvote = voteCount > 0;
 
         try {
-            await writeContract({
+            // Start tracking pending vote
+            setPendingVotes((prev) => ({ ...prev, [initiativeId]: true }));
+
+            // Initiate transaction (but it doesn’t return a hash)
+            writeContract({
                 address: contractAddress,
                 abi: contractAbi,
                 functionName: isUpvote ? "upvote" : "downvote",
                 args: [initiativeId, Math.abs(voteCount)],
             });
-            alert("Vote submitted successfully!");
+
+            // Start timeout (120 seconds)
+            const timeout = 120000;
+            const startTime = Date.now();
+
+            // Wait for transaction hash (user confirmation)
+            while (!txHash) {
+                if (Date.now() - startTime > timeout || isError) {
+                    throw new Error(
+                        "Transaction timeout! User may have abandoned it."
+                    );
+                }
+                await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+
+            // Mark vote as completed
             setUserVoted((prev) => ({ ...prev, [initiativeId]: true }));
+            fetchCredits();
+            alert("Vote submitted successfully!");
         } catch (error) {
             console.error("Error submitting vote:", error);
             alert("Vote failed!");
+        } finally {
+            // Remove pending state for this specific initiative
+            setPendingVotes((prev) => ({ ...prev, [initiativeId]: false }));
         }
     };
 
@@ -159,69 +199,76 @@ function InitiativesList({ dataPromise }: { dataPromise: Promise<any[]> }) {
                             </div>
                             <div className="flex flex-col">
                                 {userVoted[initiative.initiativeId] ? (
-                                    <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
-                                        <div className="flex flex-col gap-2">
-                                            <div className="flex flex-row gap-4 items-center">
-                                                <div className="flex flex-col gap-4">
-                                                    <button
-                                                        className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-green-500"
-                                                        onClick={() =>
-                                                            handleVote(
-                                                                initiative.initiativeId,
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        <ThumbsUp className="w-6 h-6" />
-                                                    </button>
-                                                    <button
-                                                        className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-red-500"
-                                                        onClick={() =>
-                                                            handleVote(
-                                                                initiative.initiativeId,
-                                                                false
-                                                            )
-                                                        }
-                                                    >
-                                                        <ThumbsDown className="w-6 h-6" />
-                                                    </button>
+                                    pendingVotes[initiative.initiativeId] ? (
+                                        <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
+                                            Voting...
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-row items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-row gap-4 items-center">
+                                                    <div className="flex flex-col gap-4">
+                                                        <button
+                                                            className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-green-500"
+                                                            onClick={() =>
+                                                                handleVote(
+                                                                    initiative.initiativeId,
+                                                                    true
+                                                                )
+                                                            }
+                                                        >
+                                                            <ThumbsUp className="w-6 h-6" />
+                                                        </button>
+                                                        <button
+                                                            className="bg-gray-700 text-white p-2 rounded-full shadow-md hover:bg-red-500"
+                                                            onClick={() =>
+                                                                handleVote(
+                                                                    initiative.initiativeId,
+                                                                    false
+                                                                )
+                                                            }
+                                                        >
+                                                            <ThumbsDown className="w-6 h-6" />
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex flex-col gap-4">
+                                                        <button
+                                                            className={`px-4 py-2 rounded-lg shadow-md text-white ${
+                                                                creditsUsed[
+                                                                    initiative
+                                                                        .initiativeId
+                                                                ] === 0
+                                                                    ? "bg-gray-500 cursor-not-allowed"
+                                                                    : "bg-blue-500 hover:bg-blue-600"
+                                                            }`}
+                                                            disabled={
+                                                                creditsUsed[
+                                                                    initiative
+                                                                        .initiativeId
+                                                                ] === 0
+                                                            }
+                                                            onClick={() =>
+                                                                handleVoteSubmit(
+                                                                    initiative.initiativeId
+                                                                )
+                                                            }
+                                                        >
+                                                            Vote
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="flex flex-col gap-4">
-                                                    <button
-                                                        className={`px-4 py-2 rounded-lg shadow-md text-white ${
-                                                            creditsUsed[
-                                                                initiative
-                                                                    .initiativeId
-                                                            ] === 0
-                                                                ? "bg-gray-500 cursor-not-allowed"
-                                                                : "bg-blue-500 hover:bg-blue-600"
-                                                        }`}
-                                                        disabled={
-                                                            creditsUsed[
-                                                                initiative
-                                                                    .initiativeId
-                                                            ] === 0
-                                                        }
-                                                        onClick={() =>
-                                                            handleVoteSubmit(
-                                                                initiative.initiativeId
-                                                            )
-                                                        }
-                                                    >
-                                                        Vote
-                                                    </button>
+                                                <div className="flex flex-row gap-4">
+                                                    Credits used :{" "}
+                                                    {
+                                                        creditsUsed[
+                                                            initiative
+                                                                .initiativeId
+                                                        ]
+                                                    }
                                                 </div>
-                                            </div>
-                                            <div className="flex flex-row gap-4">
-                                                Credits used :{" "}
-                                                {
-                                                    creditsUsed[
-                                                        initiative.initiativeId
-                                                    ]
-                                                }
                                             </div>
                                         </div>
-                                    </div>
+                                    )
                                 ) : (
                                     <div className="flex flex-col items-center gap-4 bg-gray-900 p-4 rounded-lg shadow-md min-w-[180px] border border-gray-700">
                                         <div className="flex flex-row gap-4 text-lg font-bold">
@@ -262,7 +309,7 @@ export default function Governance() {
             };
             fetchCredits();
         }
-    }, []);
+    }, [remainingCredits]);
 
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
@@ -280,12 +327,15 @@ export default function Governance() {
                                 </p>
                             }
                         >
-                            <InitiativesList dataPromise={getInitiatives()} />
+                            <InitiativesList
+                                dataPromise={getInitiatives()}
+                                creditBalance={remainingCredits}
+                            />
                         </Suspense>
                     </div>
                     <div className="flex flex-col items-center gap-4 p-4 border border-gray-700 rounded-lg w-[200px] min-h-[140px] shadow-md bg-gray-900">
                         <h2 className="text-md font-semibold text-white">
-                            Your Credit
+                            Credit Balanace
                         </h2>
                         <div className="w-full h-[40px] flex items-center justify-center bg-gray-700 text-white font-bold rounded-md border border-gray-600">
                             {remainingCredits}
