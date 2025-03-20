@@ -13,7 +13,7 @@ main().catch((error) => {
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  await deployNetworkStateAgreement(deployer, true, false);
+  await deployNetworkStateAgreement(deployer, true, true);
 }
 
 export async function deployNetworkStateAgreement(

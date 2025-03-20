@@ -16,6 +16,7 @@ contract NetworkStateInitiatives {
         uint256 upvotes;
         uint256 downvotes;
         address[] teamMembers;
+        uint256 score;
     }
 
     string[] public statusList = ["IDEATION", "CAPITAL_ALLOCATION", "BUILDING"];
@@ -40,6 +41,8 @@ contract NetworkStateInitiatives {
     event TeamMemberAdded(bytes32 initiativeId, address member);
     // Event emitted when a team member is removed
     event TeamMemberRemoved(bytes32 initiativeId, address member);
+    // Event emitted when a score is updated
+    event ScoreUpdated(bytes32 initiativeId, uint256 newScore);
 
     /**
      * @dev Modifier to make a function callable only by the owner.
@@ -86,7 +89,8 @@ contract NetworkStateInitiatives {
             status: statusList[0],
             upvotes: 0,
             downvotes: 0,
-            teamMembers: new address[](0)
+            teamMembers: new address[](0),
+            score: 0
         });
         initiatives.push(newInitiative);
         emit InitiativeCreated(initiativeId, _ideator, _title, _description, _category);
@@ -172,6 +176,22 @@ contract NetworkStateInitiatives {
         require(_newCreditBalance <= MAX_CREDITS_PER_USER, "Credit balance cannot exceed max limit");
         userCredits[_user] = _newCreditBalance;
         emit CreditsUpdated(_user, _newCreditBalance);
+    }
+
+    /**
+     * @notice Updates the score of a specific initiative.
+     * @dev Iterates through the list of initiatives to find the one with the matching ID and updates its score.
+     * @param _initiativeId The ID of the initiative to update.
+     * @param _newScore The new score to assign to the initiative.
+     */
+    function updateScore(bytes32 _initiativeId, uint256 _newScore) public {
+        for (uint256 i = 0; i < initiatives.length; i++) {
+            if (initiatives[i].id == _initiativeId) {
+                initiatives[i].score = _newScore;
+                emit ScoreUpdated(_initiativeId, _newScore);
+                break;
+            }
+        }
     }
 
     /**
