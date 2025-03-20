@@ -9,7 +9,7 @@ import { NetworkAgreementAbi } from "../abi/NetworkAgreement.abi";
 import { keccak256, parseEther, stringToBytes } from "viem";
 import DownloadButton from "../components/download-button";
 import { constitutionTextAsMarkdown } from "../cns-constitution";
-import { getCnsNetizens } from "../lib/cns/get-cns-netizens";
+import { checkIsNetizen, getCnsNetizens } from "../lib/cns/get-cns-netizens";
 
 export default function Naturalization() {
     const [cnsValues, setCnsValues] = useState<string[]>([]);
@@ -29,9 +29,8 @@ export default function Naturalization() {
 
     useEffect(() => {
         if (isConnected && address) {
-            getCnsNetizens().then((netizens) => {
-                const found = netizens?.find((n) => n.address === address);
-                setIsNetizen(found !== undefined);
+            checkIsNetizen(address).then((bool) => {
+                setIsNetizen(bool);
             });
         }
     }, [address]);
@@ -175,8 +174,39 @@ export default function Naturalization() {
                             </span>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 py-6">
-                        <div className="flex flex-col gap-2 mb-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
+                            <span className="text-xl font-bold">Values</span>
+                            <div className="flex flex-col gap-2">
+                                {cnsValues?.slice(0, 10).map((value, index) => {
+                                    return (
+                                        <span
+                                            key={index}
+                                            className="text-lg text-gray-200"
+                                        >
+                                            {index + 1}. {value}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                            <div className="text-sm text-gray-400 flex flex-col gap-1">
+                                <span>
+                                    Those values are dynamically voted by the
+                                    community through ETH staking.
+                                </span>
+                                <span>
+                                    <a
+                                        href="https://ethereum-values.consensys.io"
+                                        target="_blank"
+                                        className="text-blue-400"
+                                    >
+                                        More details available here
+                                    </a>
+                                </span>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div className="flex flex-col gap-2 mt-6">
                             <div className="grid grid-cols-2 items-center gap-2">
                                 <div className="font-bold text-blue-400">
                                     Profile
@@ -254,23 +284,6 @@ export default function Naturalization() {
                                         : "Join the State"}
                                 </Button>
                             )}
-                        </div>
-                        <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
-                            <span className="text-xl font-bold">
-                                Our Values
-                            </span>
-                            <div className="flex flex-col gap-2">
-                                {cnsValues?.slice(0, 10).map((value, index) => {
-                                    return (
-                                        <span
-                                            key={index}
-                                            className="text-lg text-gray-500"
-                                        >
-                                            {index + 1}. {value}
-                                        </span>
-                                    );
-                                })}
-                            </div>
                         </div>
                     </div>
                 </div>

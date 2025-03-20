@@ -5,7 +5,7 @@ import { getInitiatives } from "../../contracts/get-initiatives";
 
 export function CnsActivities() {
     const [ideas, setIdeas] = useState<any[]>([]);
-    const [capitalFormation, setCapitalFormation] = useState<any[]>([]);
+    const [capitalAllocation, setCapitalAllocation] = useState<any[]>([]);
     const [ongoing, setOngoing] = useState<any[]>([]);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ export function CnsActivities() {
                     (initiative) => initiative.status === "IDEATION"
                 )
             );
-            setCapitalFormation(
+            setCapitalAllocation(
                 initiatives?.filter(
                     (initiative) => initiative.status === "CAPITAL_ALLOCATION"
                 )
@@ -35,9 +35,9 @@ export function CnsActivities() {
                 <ActivitiesColumn title="Ideas" activities={ideas} />
                 <ActivitiesColumn
                     title="Capital Allocation"
-                    activities={[capitalFormation]}
+                    activities={capitalAllocation}
                 />
-                <ActivitiesColumn title="Building" activities={[ongoing]} />
+                <ActivitiesColumn title="Building" activities={ongoing} />
             </div>
         </div>
     );

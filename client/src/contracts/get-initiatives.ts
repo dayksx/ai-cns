@@ -20,7 +20,7 @@ export async function getInitiatives() {
             fromBlock: BigInt(0),
             toBlock: "latest",
         });
-        const totalInitiatives = events.length;
+        const totalInitiatives = events?.length;
 
         const initiatives: any[] = await Promise.all(
             Array.from({ length: Number(totalInitiatives) }, (_, index) =>

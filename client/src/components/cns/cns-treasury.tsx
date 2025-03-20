@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { getCnsEthBalance, getCnsTokenBalance } from "../../lib/viem-utils";
 import { formatEther } from "viem";
+import { FinanceChart } from "./finance-chart";
 
 export function CnsTreasury() {
     const [balance, setBalance] = useState<bigint>(0n);
@@ -28,8 +29,9 @@ export function CnsTreasury() {
                     $CNS {formatEther(tokenBalance)?.substring(0, 5)}
                 </div>
             </div>
-            <div className="flex flex-col text-xl gap-2"></div>
-            <div className="flex flex-col gap-2">ETH in/out txs</div>
+            <div>
+                <FinanceChart />
+            </div>
         </div>
     );
 }

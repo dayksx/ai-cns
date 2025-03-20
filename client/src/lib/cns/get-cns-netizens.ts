@@ -27,3 +27,10 @@ export async function getCnsNetizens(): Promise<Netizen[]> {
         };
     });
 }
+
+export async function checkIsNetizen(address: `0x${string}`): Promise<boolean> {
+    const netizens = await getCnsNetizens();
+    return (
+        netizens.find((netizen) => netizen.address === address) !== undefined
+    );
+}

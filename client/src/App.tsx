@@ -15,6 +15,7 @@ import { wagmiConfig } from "./lib/wagmi";
 import Governance from "./routes/governance";
 import Census from "./routes/census";
 import Core from "./routes/core";
+import CapitalAllocation from "./routes/allocation";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -69,6 +70,10 @@ function App() {
                                             <Route
                                                 path="core"
                                                 element={<Core />}
+                                            />
+                                            <Route
+                                                path="allocation"
+                                                element={<CapitalAllocation />}
                                             />
                                         </Routes>
                                     </div>

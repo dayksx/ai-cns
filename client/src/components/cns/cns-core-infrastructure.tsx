@@ -66,7 +66,7 @@ export function CnsCoreInfrastructure() {
                                 {item.label}
                             </span>
                             {item.link && (
-                                <a href={item.link}>
+                                <a href={item.link} target="_blank">
                                     <SquareArrowOutUpRight className="w-4 h-4" />
                                 </a>
                             )}

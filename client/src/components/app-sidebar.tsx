@@ -19,6 +19,7 @@ import type { UUID } from "@elizaos/core";
 import {
     Book,
     Cog,
+    HandCoins,
     Landmark,
     SquareActivity,
     ThumbsUp,
@@ -137,6 +138,13 @@ export function AppSidebar() {
                         <NavLink to="/governance">
                             <SidebarMenuButton>
                                 <ThumbsUp /> Governance
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <NavLink to="/allocation">
+                            <SidebarMenuButton>
+                                <HandCoins /> Capital Allocation
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
