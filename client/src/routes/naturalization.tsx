@@ -1,4 +1,4 @@
-import { Suspense, use, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
 import { getCNSValues } from "../lib/cns/get-cns-values";
 import { useAccount, useSignMessage, useWriteContract } from "wagmi";
@@ -9,25 +9,32 @@ import { NetworkAgreementAbi } from "../abi/NetworkAgreement.abi";
 import { keccak256, parseEther, stringToBytes } from "viem";
 import DownloadButton from "../components/download-button";
 import { constitutionTextAsMarkdown } from "../cns-constitution";
-
-function CNSValues({ dataPromise }: { dataPromise: Promise<string[]> }) {
-    const values = use(dataPromise);
-    return values.slice(0, 10).map((value, index) => {
-        return (
-            <span className="text-lg text-gray-500">
-                {index + 1}. {value}
-            </span>
-        );
-    });
-}
+import { getCnsNetizens } from "../lib/cns/get-cns-netizens";
 
 export default function Naturalization() {
+    const [cnsValues, setCnsValues] = useState<string[]>([]);
     const [profileType, setProfileType] = useState("maker");
     const [agentNature, setAgentNature] = useState("human");
     const [contribution, setContribution] = useState(0.001);
-    const { isConnected, chainId } = useAccount();
+    const [isNetizen, setIsNetizen] = useState(false);
+    const { isConnected, address, chainId } = useAccount();
     const { data: hash, writeContractAsync, isPending } = useWriteContract();
     const { signMessageAsync, data } = useSignMessage();
+
+    useEffect(() => {
+        getCNSValues().then((values) => {
+            setCnsValues(values);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (isConnected && address) {
+            getCnsNetizens().then((netizens) => {
+                const found = netizens?.find((n) => n.address === address);
+                setIsNetizen(found !== undefined);
+            });
+        }
+    }, [address]);
 
     async function signConstitution(): Promise<{
         signature: `0x${string}` | undefined;
@@ -48,9 +55,6 @@ export default function Naturalization() {
 
     async function handleAgreementSubmit() {
         console.log("joining...");
-        // maker, investor, instigator
-        // human, AI
-
         console.log("signing constitution...");
         const { signature, constitutionHash } = await signConstitution();
         console.log("constitution signed...");
@@ -175,42 +179,49 @@ export default function Naturalization() {
                         <div className="flex flex-col gap-2 mb-6">
                             <div className="grid grid-cols-2 items-center gap-2">
                                 <div className="font-bold text-blue-400">
-                                    My Profile Type
+                                    Profile
                                 </div>
-                                <Input
-                                    className={cn(
-                                        "h-8 bg-background border-white shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                                    )}
+                                <select
                                     name="profileType"
-                                    value={profileType}
+                                    className="border border-gray-300 rounded-lg p-2"
                                     onChange={(e) =>
                                         setProfileType(e.target.value)
                                     }
-                                />
+                                >
+                                    <option value="maker" selected>
+                                        Maker
+                                    </option>
+                                    <option value="investor">Investor</option>
+                                    <option value="instigator">
+                                        Instigator
+                                    </option>
+                                </select>
                             </div>
                             <div className="grid grid-cols-2 items-center gap-2">
                                 <div className="font-bold text-blue-400">
-                                    My Nature
+                                    Nature
                                 </div>
-                                <Input
-                                    className={cn(
-                                        "h-8 bg-background border-white shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                                    )}
+                                <select
                                     name="agentNature"
-                                    value={agentNature}
+                                    className="border border-gray-300 rounded-lg p-2"
                                     onChange={(e) =>
                                         setAgentNature(e.target.value)
                                     }
-                                />
+                                >
+                                    <option value="human" selected>
+                                        Human
+                                    </option>
+                                    <option value="AI">AI Agent</option>
+                                </select>
                             </div>
                             <div className="grid grid-cols-2 items-center gap-2">
                                 <div className="font-bold text-blue-400">
-                                    My Contribution
+                                    Contribution
                                 </div>
                                 <div className="grid grid-cols-2 items-center gap-2">
                                     <Input
                                         className={cn(
-                                            "h-8 bg-background border-white shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                                            "h-8 bg-background border-white shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring p-4"
                                         )}
                                         name="contribution"
                                         value={contribution}
@@ -238,6 +249,8 @@ export default function Naturalization() {
                                         ? "Connect Wallet to Join"
                                         : ![59141, 59144].includes(chainId ?? 0)
                                         ? "Switch Network to Join"
+                                        : isNetizen
+                                        ? "You're already a CNS netizen"
                                         : "Join the State"}
                                 </Button>
                             )}
@@ -247,9 +260,16 @@ export default function Naturalization() {
                                 Our Values
                             </span>
                             <div className="flex flex-col gap-2">
-                                <Suspense fallback={<div>Loading...</div>}>
-                                    <CNSValues dataPromise={getCNSValues()} />
-                                </Suspense>
+                                {cnsValues?.slice(0, 10).map((value, index) => {
+                                    return (
+                                        <span
+                                            key={index}
+                                            className="text-lg text-gray-500"
+                                        >
+                                            {index + 1}. {value}
+                                        </span>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

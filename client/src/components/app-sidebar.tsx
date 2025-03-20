@@ -18,7 +18,6 @@ import { NavLink, useLocation } from "react-router";
 import type { UUID } from "@elizaos/core";
 import {
     Book,
-    ChartColumnIncreasing,
     Cog,
     Landmark,
     SquareActivity,

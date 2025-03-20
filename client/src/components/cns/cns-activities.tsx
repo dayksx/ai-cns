@@ -4,16 +4,12 @@ import { ActivitiesColumn } from "./cns-activities-column";
 import { getInitiatives } from "../../contracts/get-initiatives";
 
 export function CnsActivities() {
-    const [initiatives, setInitiatives] = useState<any[]>([]);
     const [ideas, setIdeas] = useState<any[]>([]);
     const [capitalFormation, setCapitalFormation] = useState<any[]>([]);
     const [ongoing, setOngoing] = useState<any[]>([]);
 
     useEffect(() => {
         getInitiatives().then((initiatives) => {
-            console.log("HERE");
-            setInitiatives(initiatives);
-            console.log(initiatives);
             setIdeas(
                 initiatives?.filter(
                     (initiative) => initiative.status === "IDEATION"
@@ -37,8 +33,11 @@ export function CnsActivities() {
             <span className="text-xl font-bold">Activities</span>
             <div className="grid grid-cols-3 gap-4">
                 <ActivitiesColumn title="Ideas" activities={ideas} />
-                <ActivitiesColumn title="Capital Allocation" activities={[]} />
-                <ActivitiesColumn title="Building" activities={[]} />
+                <ActivitiesColumn
+                    title="Capital Allocation"
+                    activities={[capitalFormation]}
+                />
+                <ActivitiesColumn title="Building" activities={[ongoing]} />
             </div>
         </div>
     );
