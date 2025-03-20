@@ -23,7 +23,9 @@ function InitiativesList({
     creditBalance: number;
     refreshCredits: () => void;
 }) {
-    const initiatives = use(dataPromise);
+    const [initiativesDataPromise, setInitiativesDataPromise] =
+        useState(dataPromise);
+    const initiatives = use(initiativesDataPromise);
     const { address } = useAccount();
     const [votes, setVotes] = useState<{ [key: string]: number }>({});
     const [voteTypes, setVoteTypes] = useState<{
@@ -34,6 +36,9 @@ function InitiativesList({
     );
     const [userVoted, setUserVoted] = useState<{ [key: string]: boolean }>({});
     const [pendingVotes, setPendingVotes] = useState<{
+        [key: string]: boolean;
+    }>({});
+    const [pendingLaunch, setPendingLaunch] = useState<{
         [key: string]: boolean;
     }>({});
     const { writeContract } = useWriteContract();
@@ -137,6 +142,7 @@ function InitiativesList({
                             ...prev,
                             [initiativeId]: false,
                         }));
+                        setInitiativesDataPromise(getInitiatives());
                         refreshCredits();
                         alert("Vote submitted successfully!");
                     },
@@ -160,6 +166,48 @@ function InitiativesList({
                 ...prev,
                 [initiativeId]: false,
             }));
+        }
+    };
+
+    const handleLaunch = async (initiativeId: string) => {
+        try {
+            setPendingLaunch((prev) => ({ ...prev, [initiativeId]: true }));
+            await writeContract(
+                {
+                    address: import.meta.env
+                        .VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+                    abi: InitiativeAbi,
+                    functionName: "updateStatus",
+                    args: [initiativeId, "CAPITAL_ALLOCATION"],
+                },
+                {
+                    onSuccess: async (tx) => {
+                        console.log("Transaction sent! Hash:", tx);
+
+                        await publicClient.waitForTransactionReceipt({
+                            hash: tx,
+                        });
+                        setPendingLaunch((prev) => ({
+                            ...prev,
+                            [initiativeId]: false,
+                        }));
+                        setInitiativesDataPromise(getInitiatives());
+                        alert("Initiative launched successfully!");
+                    },
+                    onError: (error) => {
+                        console.error("Transaction failed:", error);
+                        setPendingLaunch((prev) => ({
+                            ...prev,
+                            [initiativeId]: false,
+                        }));
+                        alert("Launch failed!");
+                    },
+                }
+            );
+        } catch (error) {
+            console.error("Error launching initiative:", error);
+            setPendingLaunch((prev) => ({ ...prev, [initiativeId]: false }));
+            alert("Launch failed!");
         }
     };
 
@@ -197,13 +245,49 @@ function InitiativesList({
                                     </div>
                                 </div>
                                 {voteType !== undefined && (
-                                    <div className="absolute flex flex-col bottom-[-50px] right-[190px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+                                    <div className="absolute flex flex-col bottom-[-50px] right-[190px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 items-center gap-1">
                                         <div className="flex flex-row items-center gap-1">
                                             ME
                                         </div>
                                         <div className="flex flex-row items-center gap-3">
-                                            <span>{votesCount}</span>
+                                            <span>
+                                                {(voteTypes[
+                                                    initiative.initiativeId
+                                                ]
+                                                    ? "+"
+                                                    : "-") +
+                                                    Math.abs(votesCount)}
+                                            </span>
                                         </div>
+                                    </div>
+                                )}
+                                {initiative.upvotes - initiative.downvotes >=
+                                    5 &&
+                                    initiative.status === "IDEATION" &&
+                                    !pendingLaunch[initiative.initiativeId] && (
+                                        <button
+                                            className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md hover:bg-gray-600"
+                                            onClick={() =>
+                                                handleLaunch(
+                                                    initiative.initiativeId
+                                                )
+                                            }
+                                        >
+                                            Launch
+                                        </button>
+                                    )}
+                                {initiative.status !== "IDEATION" &&
+                                    !pendingLaunch[initiative.initiativeId] && (
+                                        <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md">
+                                            {initiative.status ===
+                                            "CAPITAL_ALLOCATION"
+                                                ? " Launched"
+                                                : " Building"}
+                                        </div>
+                                    )}
+                                {pendingLaunch[initiative.initiativeId] && (
+                                    <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md">
+                                        Launching...
                                     </div>
                                 )}
                             </div>
@@ -324,9 +408,9 @@ export default function Governance() {
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Governance" />
                 <div className="grid grid-cols-[3fr_1fr] gap-6 items-start">
-                    <div className="flex flex-col items-center justify-center border border-gray-700 rounded-lg p-6 min-h-[400px] bg-black w-full">
+                    <div className="flex flex-col items-center justify-center rounded-lg p-6 min-h-[400px] w-full">
                         <h2 className="text-xl font-bold text-white mb-8">
-                            Initiatives
+                            Ideas
                         </h2>
                         <Suspense
                             fallback={
