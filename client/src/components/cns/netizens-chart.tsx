@@ -8,8 +8,6 @@ export function NetizensChart({ netizens }: { netizens: Netizen[] }) {
         (netizen) => netizen.agentNature === "human"
     ).length;
     const ai = netizens.length - human;
-    console.log(human);
-    console.log(ai);
     const data = {
         labels: ["Human agents", "AI agents"],
         datasets: [
