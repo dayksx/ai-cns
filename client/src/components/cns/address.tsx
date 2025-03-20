@@ -19,6 +19,46 @@ const demoEnsTweakForMembers = [
         address: "0x44dc4e3309b80ef7abf41c7d0a68f0337a88f044",
         ensName: "dayan.linea.eth",
     },
+    {
+        address: "0x74CE467673E4D276914b80D452ceF6981FE6A01B",
+        ensName: "julia.linea.eth",
+    },
+    {
+        address: "0x644d7d4057FE667cd000038f6032C1F825b66EE0",
+        ensName: "0xbuidler.linea.eth",
+    },
+    {
+        address: "0x2bf8c39fb9733E11A81211f574364d6F601e286f",
+        ensName: "danielfox.linea.eth",
+    },
+    {
+        address: "0x01F8e269CADCD36C945F012d2EeAe814c42D1159",
+        ensName: "zorg.linea.eth",
+    },
+    {
+        address: "0xAf38d70E2Bfa1d13f025dB50315c9B4ec00a2b0c",
+        ensName: "esteban.linea.eth",
+    },
+    {
+        address: "0x2799A7D358C347a40293ab996FeD08aff8157393",
+        ensName: "isabel-pro.linea.eth",
+    },
+    {
+        address: "0x1e963CE147bd7e5FB29AE306c2f4145874593556",
+        ensName: "hotchili.linea.eth",
+    },
+    {
+        address: "0x65a4CeC9f1c6060f3b987d9332Bedf26e8E86D17",
+        ensName: "ethrules.linea.eth",
+    },
+    {
+        address: "0xF49A92AaEc31CeBfcFcd084e9953cde251f28fd2",
+        ensName: "guesswho.linea.eth",
+    },
+    {
+        address: "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
+        ensName: "mahomes.linea.eth",
+    },
 ];
 
 export function Address({
