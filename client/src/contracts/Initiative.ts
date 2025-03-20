@@ -281,4 +281,28 @@ export const contractAbi = [
         stateMutability: "nonpayable",
         type: "function",
     },
+    {
+        inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        name: "initiatives",
+        outputs: [
+            { internalType: "bytes32", name: "id", type: "bytes32" },
+            { internalType: "address", name: "instigator", type: "address" },
+            { internalType: "string", name: "title", type: "string" },
+            { internalType: "string", name: "description", type: "string" },
+            { internalType: "string", name: "category", type: "string" },
+            { internalType: "uint256", name: "timestamp", type: "uint256" },
+            { internalType: "string", name: "status", type: "string" },
+            { internalType: "uint256", name: "upvotes", type: "uint256" },
+            { internalType: "uint256", name: "downvotes", type: "uint256" },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [{ internalType: "address", name: "", type: "address" }],
+        name: "userCredits",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+    },
 ];
