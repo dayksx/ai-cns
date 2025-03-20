@@ -18,6 +18,13 @@ const isValidEVMAddress = (address: string) => {
     return ethers.isAddress(address);
 };
 
+type tipInformation = {
+    address: string | null;
+    sender: string | null;
+    amount: string | null;
+    reason: string | null;
+};
+
 const tipTemplate = `Respond with a JSON markdown block containing only the extracted values. Use the \`null\` special value (without quotes) for any values that cannot be determined.
 
 Example response:
@@ -95,7 +102,7 @@ export const tipCNSTokenAction: Action = {
             state,
             template: tipTemplate,
         });
-        const tipInformation = await generateObjectDeprecated({
+        const tipInformation: tipInformation = await generateObjectDeprecated({
             runtime,
             context: tipContext,
             modelClass: ModelClass.SMALL,
@@ -114,21 +121,21 @@ export const tipCNSTokenAction: Action = {
         });
         console.log('Message asking missing tipping information: ', tipMissingInfoAsking);
         
-        let { address, sender, amount, currency, reason } = tipInformation;
+        let { address, sender, amount, reason } = tipInformation;
 
         if (callback) {
-            if (isValidEVMAddress(address) && amount != 'null' && currency != 'null' && reason != 'null') {
+            if (isValidEVMAddress(address) && amount != 'null' && reason != 'null') {
                 const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
                 const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
                 const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, ["function mint(address recipient, uint256 amount) public"], signer);
                 
                 // Step 3: Mint tokens
-                const amount = ethers.parseUnits("10", 18); // Mint 10 tokens
-                const tx = await contract.mint(address, amount);
+                const parsedAmount = ethers.parseUnits(amount, 18);
+                const tx = await contract.mint(address, parsedAmount);
                 await tx.wait();
         
                 callback({
-                    text: `${sender} tipped 10 $CNS token to ${address} for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
+                    text: `${address} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
                     tipInformation: {
                         tip: {
                             tipInformation

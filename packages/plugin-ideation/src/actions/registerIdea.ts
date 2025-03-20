@@ -81,7 +81,6 @@ Missing required details:
 
 To proceed, please provide the missing details. If you're still refining your idea, feel free to share more context or take the time to develop it further before submission.`;
 
-const SMART_CONTRACT_ADDRESS = "0xAb62C6A194ED8Fd6c96db2d63957Db7e1578144F";
 const SMART_CONTRACT_ABI = [
     {
         "inputs": [
@@ -105,19 +104,7 @@ export const registerIdeaAction: Action = {
 
     validate: async (runtime: IAgentRuntime, message: Memory, state: State) => {
         elizaLogger.info(`👀 Action validate: Validating idea registration request`);
-
-        if (!state) {
-            state = (await runtime.composeState(message)) as State;
-        } else {
-            state = await runtime.updateRecentMessageState(state);
-        }
-        const ideaContextData = composeContext({
-            state,
-            template: isAnIdeaContext,
-        });
-        console.log("@@@@@@@@@@@@@@@@ avant");
-
-        console.log("@@@@@@@@@@@@@@@@ apres");       
+   
         return true;
     },
     
@@ -156,15 +143,12 @@ export const registerIdeaAction: Action = {
             let { instigator, title, description, tags, category } = ideaInformation;
 
             // Treatment in case of missing information
-            console.log("🔧 Treating idea information");
             if (!instigator || !isValidEVMAddress(instigator) || !title || !description) {
-                console.log('🔧 Missing idea information: ', !isValidEVMAddress(instigator));
 
                 const missingInfoContext = composeContext({
                     state,
                     template: missingIdeaInfoTemplate,
                 });
-                console.log("🔧 idea Context: ", missingIdeaInfoTemplate);
                 const missingInfoMessage = await generateText({
                     runtime,
                     context: missingInfoContext,
@@ -174,15 +158,13 @@ export const registerIdeaAction: Action = {
                 if (callback) {
                     callback({ text: missingInfoMessage });
                 }
-                console.log("🔧 return false")
                 return false;
 
             // Treatment in case of valid information
             } else {
-                console.log('🔧 All information have been extracted ');
                 const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
                 const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-                const contract = new ethers.Contract(process.env.CNS_INITIATIVES_REGISTRY_ADDRESS, SMART_CONTRACT_ABI, signer);
+                const contract = new ethers.Contract(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
                 
                 console.log("🔧=== Registering initiative on-chain ===");
                 
