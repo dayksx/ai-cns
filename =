@@ -1,0 +1,14 @@
+version: "2"
+authtoken: 2tZlh0hGqk869IGAsX2CV5JwRg4_5d8ipDSmPBoYrd9dpgYFg
+
+tunnels:
+  bot1:
+    addr: 3069
+    proto: http
+  bot2:
+    addr: 3070
+    proto: http
+  bot3:
+    addr: 3071
+    proto: http
+

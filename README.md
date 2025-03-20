@@ -37,6 +37,18 @@ Required environment variables:
 # LLM Configuration
 OPENAI_API_KEY=
 
+# EVM
+EVM_PRIVATE_KEY=0x71092af342a22e058747efd5a67e7259f9dd0935cbb913fb6ec58f9834e87c74          # Add the "0x" prefix infront of your private key string                  
+EVM_PROVIDER_URL2=https://polygon-amoy.drpc.org #Polygon Amoy
+EVM_PROVIDER_URL=https://linea-sepolia.infura.io/v3/296Owf7VKF2IhHACZCp2Y8Rrqbm #Linea Sepolia
+EVM_PUBLIC_KEY=0x01f8e269cadcd36c945f012d2eeae814c42d1159
+
+# CNS
+CNS_NETIZEN_REGISTRY_ADDRESS=0xd76e2D52923024ec706fE7334BD534cACC91bc3B
+CNS_INITIATIVES_REGISTRY_ADDRESS=0x742EE0Bce7738f9b3315b7Bc4c0A57A656c4498d #Linea Sepolia
+CNS_VERAX_PORTAL_ID=0x4787Fd2DfE83C0e5d07d2BA1aEF12Afc5c4fe306
+CNS_VERAX_SCHEMA_ID=0x8660da4093987072670aba14868d8dc4112ea88a777f7434a54ea8e7925a1a73
+
 # Supabase Configuration
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
@@ -83,6 +95,7 @@ or use lubain
 
 ```bash
 pnpm start --characters="lubain.character.json"
+pnpm start --character="lubain.character.json,vitalaik.character.json,satoshai.character.json"
 ```
 Then read the [Documentation](https://elizaos.github.io/eliza/) to learn how to customize your Eliza.
 
@@ -115,6 +128,32 @@ npx elizaos plugins add @elizaos-plugins/adapter-supabase
 `git submodule add git@github.com:elizaos-plugins/adapter-supabase.git packages/adapter-supabase`
 
 ---
+## Ngrok configuration
+Ngrok API Gateway is required in order to integrate Slack with our agents.
+LubAIn, VitalAIk and SatoshAI are each running on the following ports: 3069, 3070, 3071
+
+```bash
+vim ~/.ngrok2/ngrok.yml
+```
+
+```bash
+version: 2
+authtoken: access-token
+tunnels:
+  tunnel-3069:
+    proto: http
+    addr: 3069
+  tunnel-3070:
+    proto: http
+    addr: 3070
+  tunnel-3071:
+    proto: http
+    addr: 3071
+```
+
+```bash
+ngrok start --config ~/.ngrok2/ngrok.yml --all
+```
 
 ## Using Your Custom Plugins
 Plugins that are not in the official registry for ElizaOS can be used as well. Here's how:
