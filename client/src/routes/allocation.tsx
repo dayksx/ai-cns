@@ -30,7 +30,7 @@ export default function CapitalAllocation() {
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
             <div className="flex-1 overflow-y-auto">
-                <PageHeader title="Capital Allocation" />
+                <PageHeader title="Resource Allocation" />
                 <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-4">
                         {capitalAllocation.map((a, i) => {

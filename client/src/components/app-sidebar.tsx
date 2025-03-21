@@ -178,32 +178,19 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <NavLink to="/allocation">
                             <SidebarMenuButton>
-                                <HandCoins /> Capital Allocation
-                            </SidebarMenuButton>
-                        </NavLink>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <NavLink to="/core">
-                            <SidebarMenuButton>
-                                <Landmark /> Infrastructure
+                                <HandCoins /> Resource Allocation
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
                     <span className="py-4" />
                     <SidebarMenuItem>
                         <NavLink
-                            to="https://github.com/dayksx/ai-cns/blob/main/README.md"
-                            target="_blank"
+                                to="/core"
                         >
                             <SidebarMenuButton disabled>
-                                <Book /> Documentation
+                                <Cog /> Resources
                             </SidebarMenuButton>
                         </NavLink>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton disabled>
-                            <Cog /> Settings
-                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
