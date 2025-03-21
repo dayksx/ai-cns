@@ -16,10 +16,8 @@ import { apiClient } from "@/lib/api";
 import { NavLink, useLocation } from "react-router";
 import type { UUID } from "@elizaos/core";
 import {
-    Book,
     Cog,
     HandCoins,
-    Landmark,
     SquareActivity,
     ThumbsUp,
     User,
