@@ -18,7 +18,7 @@ export async function getUserCredits(address: `0x${string}`) {
             args: [address],
         });
         // Format initiatives
-        return userCredits;
+        return userCredits as number;
     } catch (error) {
         console.error("Error fetching userCredits:", error);
         return 0;
