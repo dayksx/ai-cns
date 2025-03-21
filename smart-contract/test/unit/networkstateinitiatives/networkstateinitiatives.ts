@@ -35,6 +35,7 @@ describe("NetworkStateInitiatives", function () {
           "this is a zk passport",
           "digital identity",
           this.tags,
+          50,
         );
       this.initiative = await this.networkStateInitiatives.initiatives(0);
     });
@@ -46,6 +47,7 @@ describe("NetworkStateInitiatives", function () {
       expect(initiative.description).to.equal("this is a zk passport");
       expect(initiative.category).to.equal("digital identity");
       expect(initiative.status).to.equal("IDEATION");
+      expect(initiative.score).to.equal(50);
     });
 
     it("should initialize voter credits on first vote", async function () {

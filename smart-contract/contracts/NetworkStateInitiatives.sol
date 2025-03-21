@@ -30,7 +30,14 @@ contract NetworkStateInitiatives {
     // event emitted when a user's credit balance is updated
     event CreditsUpdated(address user, uint256 newCreditBalance);
     // Event emitted when a new initiative is created
-    event InitiativeCreated(bytes32 initiativeId, address ideator, string title, string description, string category);
+    event InitiativeCreated(
+        bytes32 initiativeId,
+        address ideator,
+        string title,
+        string description,
+        string category,
+        uint256 score
+    );
     // Event emitted when a down vote is casted
     event Downvoted(bytes32 initiativeId, address voter, uint256 votesNumber);
     // Event emitted when a status is updated
@@ -61,20 +68,24 @@ contract NetworkStateInitiatives {
     }
 
     /**
-     * @notice Allows the owner to create a new initiative.
-     * @dev This function creates a new initiative and emits an InitiativeCreated event.
-     * @param _ideator The address of the ideator creating the initiative.
+     * @notice Creates a new initiative with the given details.
+     * @param _ideator The address of the ideator who proposes the initiative.
      * @param _title The title of the initiative.
-     * @param _description The description of the initiative.
-     * @param _category The category of the initiative.
-     * @param _tags The tags associated with the initiative.
+     * @param _description A detailed description of the initiative.
+     * @param _category The category under which the initiative falls.
+     * @param _tags An array of tags associated with the initiative.
+     * @param _score The initial score of the initiative.
+     * @dev Generates a pseudo-UUID for the initiative and stores it in the initiatives array.
+     * @dev Emits an InitiativeCreated event upon successful creation of the initiative.
      */
+
     function createInitiatives(
         address _ideator,
         string memory _title,
         string memory _description,
         string memory _category,
-        string[] memory _tags
+        string[] memory _tags,
+        uint256 _score
     ) public {
         bytes32 initiativeId = generatePseudoUUID();
         Initiative memory newInitiative = Initiative({
@@ -90,10 +101,10 @@ contract NetworkStateInitiatives {
             upvotes: 0,
             downvotes: 0,
             teamMembers: new address[](0),
-            score: 0
+            score: _score
         });
         initiatives.push(newInitiative);
-        emit InitiativeCreated(initiativeId, _ideator, _title, _description, _category);
+        emit InitiativeCreated(initiativeId, _ideator, _title, _description, _category, _score);
     }
 
     /**
