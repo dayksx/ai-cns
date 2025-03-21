@@ -1,6 +1,5 @@
 import { createPublicClient, http, parseAbiItem } from "viem";
 import { lineaSepolia } from "viem/chains";
-import { contractAddress } from "./Initiative";
 
 const publicClient = createPublicClient({
     chain: lineaSepolia,
@@ -23,7 +22,7 @@ export async function getVoteInfo(
     try {
         // Fetch Upvoted logs
         const upvoteLogs = await publicClient.getLogs({
-            address: contractAddress,
+            address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
             event: parseAbiItem(
                 "event Upvoted(bytes32 initiativeId, address voter, uint256 votesNumber)"
             ),
@@ -40,7 +39,7 @@ export async function getVoteInfo(
 
         // Fetch Downvoted logs
         const downvoteLogs = await publicClient.getLogs({
-            address: contractAddress,
+            address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
             event: parseAbiItem(
                 "event Downvoted(bytes32 initiativeId, address voter, uint256 votesNumber)"
             ),

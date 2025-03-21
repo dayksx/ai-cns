@@ -1,24 +1,34 @@
-import { Star } from "lucide-react";
 import { Button } from "../ui/button";
 import { formatEther, parseEther } from "viem";
 import { Badge } from "../ui/badge";
 import { Address } from "./address";
-import { useSendTransaction, useAccount } from "wagmi";
+import { useSendTransaction, useAccount, useWriteContract } from "wagmi";
 import { CNS_WALLET_ADDRESS } from "../../lib/viem-utils";
+import { InitiativeScore } from "./cns-initiative-score";
+import { InitiativeAbi } from "../../abi/Initiative.abi";
+import { useState } from "react";
 
 export function InitiativeCapitalAllocation({
     initiative,
 }: {
     initiative: any;
 }) {
-    const { isConnected } = useAccount();
+    const { isConnected, address } = useAccount();
     const { sendTransaction } = useSendTransaction();
+    const { writeContractAsync } = useWriteContract();
+    const [teamMembers, setTeamMembers] = useState<`0x${string}`[]>([]);
 
-    const randomTeamMembers: `0x${string}`[] = [];
-    if (initiative.ideator !== "0x0000000000000000000000000000000000000000")
-        randomTeamMembers.push(initiative.ideator);
-    if (initiative.instigator !== "0x0000000000000000000000000000000000000000")
-        randomTeamMembers.push(initiative.instigator);
+    if (
+        initiative.ideator !== "0x0000000000000000000000000000000000000000" &&
+        !teamMembers.includes(initiative.ideator)
+    )
+        teamMembers.push(initiative.ideator);
+    if (
+        initiative.instigator !==
+            "0x0000000000000000000000000000000000000000" &&
+        !teamMembers.includes(initiative.instigator)
+    )
+        teamMembers.push(initiative.instigator);
 
     function getRole(initiative: any, address: `0x${string}`): string {
         return initiative.instigator === address
@@ -26,6 +36,18 @@ export function InitiativeCapitalAllocation({
             : initiative.ideator === address
             ? "ideator"
             : "member";
+    }
+
+    async function joinTeam() {
+        await writeContractAsync({
+            address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+            abi: InitiativeAbi,
+            functionName: "addTeamMember",
+            args: [initiative.initiativeId, address],
+        });
+        if (address && !teamMembers.includes(address)) {
+            setTeamMembers([...teamMembers, address]);
+        }
     }
 
     return (
@@ -47,7 +69,7 @@ export function InitiativeCapitalAllocation({
                             Team
                         </div>
                         <div>
-                            {randomTeamMembers.map((m) => {
+                            {teamMembers.map((m) => {
                                 return (
                                     <div key={m} className="flex gap-3">
                                         <div>
@@ -81,12 +103,7 @@ export function InitiativeCapitalAllocation({
                         </div>
                     </div>
                     <div className="flex">
-                        <div className="mr-4">AI score</div>
-                        <div className="flex gap-1">
-                            <Star className="text-yellow-500" />
-                            <Star className="text-yellow-500" />
-                            <Star className="text-gray-500" />
-                        </div>
+                        <InitiativeScore score={initiative.score ?? 1n} />
                     </div>
                 </div>
 
@@ -94,13 +111,16 @@ export function InitiativeCapitalAllocation({
                     <Button
                         className="w-full bg-blue-600 text-white font-bold"
                         disabled={!isConnected}
+                        onClick={() => {
+                            joinTeam();
+                        }}
                     >
                         {isConnected ? "Join Team" : "Connect Wallet to Join"}
                     </Button>
                 </div>
                 <div>
                     <Button
-                        className="w-full bg-yellow-500 text-lg font-bold"
+                        className="w-full bg-yellow-500 text-sm font-bold"
                         onClick={() => {
                             sendTransaction({
                                 to: CNS_WALLET_ADDRESS,
