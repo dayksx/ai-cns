@@ -11,7 +11,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { apiClient } from "@/lib/api";
 import { NavLink, useLocation } from "react-router";
@@ -81,8 +80,7 @@ export function AppSidebar() {
                                         (_, _index) => (
                                             <SidebarMenuItem
                                                 key={"skeleton-item"}
-                                            >
-                                            </SidebarMenuItem>
+                                            ></SidebarMenuItem>
                                         )
                                     )}
                                 </div>
@@ -121,9 +119,7 @@ export function AppSidebar() {
                                 <NavLink to="/netizens/0x44dc4e3309b80ef7abf41c7d0a68f0337a88f044">
                                     <SidebarMenuButton>
                                         <User />
-                                            <span>
-                                                dayan.linea.eth
-                                            </span>
+                                        <span>dayan.linea.eth</span>
                                     </SidebarMenuButton>
                                 </NavLink>
                             </SidebarMenuItem>
@@ -131,9 +127,7 @@ export function AppSidebar() {
                                 <NavLink to="/netizens/0x65a4CeC9f1c6060f3b987d9332Bedf26e8E86D17">
                                     <SidebarMenuButton>
                                         <User />
-                                            <span>
-                                                satya.linea.eth
-                                            </span>
+                                        <span>satya.linea.eth</span>
                                     </SidebarMenuButton>
                                 </NavLink>
                             </SidebarMenuItem>
@@ -141,9 +135,7 @@ export function AppSidebar() {
                                 <NavLink to="/netizens/0x17757544f255c78D3492bc2534DBfaDD7C1bD007">
                                     <SidebarMenuButton>
                                         <User />
-                                            <span>
-                                                fred.linea.eth
-                                            </span>
+                                        <span>fred.linea.eth</span>
                                     </SidebarMenuButton>
                                 </NavLink>
                             </SidebarMenuItem>
@@ -151,9 +143,7 @@ export function AppSidebar() {
                                 <NavLink to="/netizens/0x2754265A82705CEe4Fca6343a5cdD36850348780">
                                     <SidebarMenuButton>
                                         <User />
-                                            <span>
-                                                jb.linea.eth
-                                            </span>
+                                        <span>jb.linea.eth</span>
                                     </SidebarMenuButton>
                                 </NavLink>
                             </SidebarMenuItem>

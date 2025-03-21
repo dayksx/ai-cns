@@ -1,6 +1,6 @@
+import { InitiativeAbi } from "@/abi/Initiative.abi";
 import { createPublicClient, http, parseAbiItem } from "viem";
 import { lineaSepolia } from "viem/chains";
-import { contractAbi, contractAddress } from "./Initiative";
 
 // Initialize the Viem public client
 const publicClient = createPublicClient({
@@ -13,7 +13,7 @@ export async function getInitiatives() {
     try {
         // Get the total number of initiatives
         const events = await publicClient.getLogs({
-            address: contractAddress,
+            address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
             event: parseAbiItem(
                 "event InitiativeCreated(bytes32 initiativeId, address ideator, string title, string description, string category)"
             ),
@@ -25,8 +25,9 @@ export async function getInitiatives() {
         const initiatives: any[] = await Promise.all(
             Array.from({ length: Number(totalInitiatives) }, (_, index) =>
                 publicClient.readContract({
-                    address: contractAddress,
-                    abi: contractAbi,
+                    address: import.meta.env
+                        .VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+                    abi: InitiativeAbi,
                     functionName: "initiatives",
                     args: [BigInt(index)], // Fetch each initiative by index
                 })
