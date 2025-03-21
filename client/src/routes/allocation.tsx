@@ -35,10 +35,12 @@ export default function CapitalAllocation() {
                     <div className="flex flex-col gap-4">
                         {capitalAllocation.map((a, i) => {
                             // temp for demo, fake balance
-                            a.balance =
-                                a.balance === 0
-                                    ? a.balance
-                                    : 1252600000000000000 * (i + 1);
+                            if (i <= 2) {
+                                a.balance =
+                                    a.balance === 0
+                                        ? a.balance
+                                        : 1252600000000000000 * (i + 1) * 1.333;
+                            }
                             return (
                                 <InitiativeCapitalAllocation
                                     key={a.initiativeId}
