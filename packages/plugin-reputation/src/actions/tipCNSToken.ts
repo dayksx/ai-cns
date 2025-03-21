@@ -19,7 +19,7 @@ const isValidEVMAddress = (address: string) => {
 };
 
 type tipInformation = {
-    receipient: string | null;
+    recipient: string | null;
     sender: string | null;
     amount: string | null;
     reason: string | null;
@@ -42,8 +42,8 @@ Respond with a JSON markdown block containing the relevant $CNS tipping details 
 \`\`\`
 
 ## **Instructions**
-{{senderName}} intends to send $CNS tokens to express gratitude or respect.  
-Your task is to extract the necessary details and return a JSON object for minting and transferring $CNS ERC-20 tokens.
+{{senderName}} intends to send $CNS tokens to express gratitude or respect to a netizen.  
+Your task is to extract the necessary details and return a JSON object for minting and transferring the $CNS ERC-20 tokens to the recipient.
 
 ### **Mandatory Fields to Extract**  
 - **Recipient's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.  
@@ -57,7 +57,6 @@ If conflicting details are present, **favor the most explicit and recent stateme
 
 ### **Response Format**  
 Return **only** the extracted data as a JSON markdown block.`;
-
 
 
 const missingElementTemplate = `# Request for Missing Information for $CNS Tipping
@@ -129,10 +128,10 @@ export const tipCNSTokenAction: Action = {
             });
             console.log('🛠 Tipping information: ', tipInformation);
             
-            let { receipient, sender, amount, reason } = tipInformation;
+            let { recipient, amount, reason } = tipInformation;
 
             if (callback) {
-                if (isValidEVMAddress(receipient) && amount != 'null' && reason != 'null') {
+                if (isValidEVMAddress(recipient) && amount != 'null' && reason != 'null') {
                     console.log('🚀 ==== Minting and transfering $CNS token ===');
 
                     const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
@@ -141,17 +140,13 @@ export const tipCNSTokenAction: Action = {
                     
                     // Step 3: Mint tokens
                     const parsedAmount = ethers.parseUnits(amount, 18);
-                    const tx = await contract.mint(receipient, parsedAmount);
+                    console.log(`contract.mint(${recipient}, ${parsedAmount})`)
+                    const tx = await contract.mint(recipient, parsedAmount);
                     await tx.wait();
             
                     elizaLogger.info(`✅ $CNS token successfully transfered: ${tx.hash}`);
                     callback({
-                        text: `${receipient} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
-                        tipInformation: {
-                            tip: {
-                                tipInformation
-                            },
-                        },
+                        text: `${recipient} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
                     });
 
                     return true;
