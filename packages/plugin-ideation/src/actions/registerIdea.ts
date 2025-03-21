@@ -147,7 +147,8 @@ const SMART_CONTRACT_ABI = [
             { "internalType": "string", "name": "_title", "type": "string" },
             { "internalType": "string", "name": "_description", "type": "string" },
             { "internalType": "string", "name": "_category", "type": "string" },
-            { "internalType": "string[]", "name": "_tags", "type": "string[]" }
+            { "internalType": "string[]", "name": "_tags", "type": "string[]" },
+            { "internalType":"uint256","name":"_score","type":"uint256" }
         ],
         "name": "createInitiatives",
         "outputs": [],
@@ -155,6 +156,8 @@ const SMART_CONTRACT_ABI = [
         "type": "function"
     }
 ];
+
+
 
 export const registerIdeaAction: Action = {
     name: "REGISTER_IDEA",
@@ -211,20 +214,26 @@ export const registerIdeaAction: Action = {
             });
             console.log('🔧 Idea scoring: ', ideaScoring);
 
+            let { globalRating } = ideaScoring;
             let { instigator, title, description, tags, category } = ideaInformation;
 
             // Registration of the idea onchain
-            if (isValidEVMAddress(instigator) && title && description) {
+            if (isValidEVMAddress(instigator) && title && description && globalRating) {
                 console.log('🚀 ==== Registering idea onchain ===');
                 const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+                
+                if (await provider.getCode(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS) === "0x") {
+                    console.error("❌ No contract deployed at this address!");
+                    return false;
+                }
+                
+                // Check if the dayly credit 
                 const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
                 const contract = new ethers.Contract(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
-                
-                const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || []);
+                const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || [], globalRating);
                 await tx.wait();
-                
                 elizaLogger.info(`✅ Idea successfully registered on-chain: ${tx.hash}`);
-    
+
                 if (callback) {
                     callback({
                         text: `Your idea "${title}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
@@ -232,10 +241,11 @@ export const registerIdeaAction: Action = {
                     });
                 }
                 return true;
+    
 
             } else {
                 // Missing information for registration
-                console.log('🚫 ==== Missing information for idea registration ===', {isvalidEVMAddress: isValidEVMAddress(instigator), title: title, description: description});
+                console.log('🚫 ==== Missing information for idea registration ===', {isvalidEVMAddress: isValidEVMAddress(instigator), title: title, description: description, globalRating: globalRating});
 
                 const missingInfoContext = composeContext({
                     state,

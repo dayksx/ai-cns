@@ -78,10 +78,74 @@ Your task is to **ask for the missing information directly**, without acknowledg
 
 ## **Response Format**  
 - Respond in **{{agentName}}'s** style and personality.  
-- Ask for all missing details in **a single message**.  
+- Please don't ask for information you already have in recent messages, ask only missing information in **a single message**.  
 - Do **not** acknowledge the request—just ask for the required information.  
 - Do **not** generate any output if all required fields are already provided.  
 `;
+const CNS_MINT_DAILY_CREDIT = 100;
+
+const SMART_CONTRACT_ABI = [
+    {
+        "inputs": [
+            { "internalType": "address", "name": "recipient", "type": "address" },
+            { "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "mintedToday",
+        "outputs": [
+            { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+];
+
+const fetchMintedToday = async (provider: ethers.JsonRpcProvider): Promise<bigint> => {
+    try {
+        const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, SMART_CONTRACT_ABI, provider);
+        return await contract.mintedToday();
+    } catch (error) {
+        elizaLogger.error(`Failed to fetch mintedToday: ${error.message}`);
+        throw new Error("Blockchain query failed");
+    }
+};
+
+const executeMintTransaction = async (recipient: string, amount: string) => {
+    const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+    const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
+    const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, SMART_CONTRACT_ABI, signer);
+    const parsedAmount = ethers.parseUnits(amount, 18);
+    
+    let attempt = 0;
+    const MAX_RETRIES = 3;
+    
+    while (attempt < MAX_RETRIES) {
+        try {
+            const tx = await contract.mint(recipient, parsedAmount);
+            elizaLogger.info(`Transaction sent: ${tx.hash}`);
+            const receipt = await tx.wait();
+            if (receipt.status === 1) {
+                elizaLogger.info(`Transaction confirmed: ${tx.hash}`);
+                return tx.hash;
+            } else {
+                throw new Error("Transaction failed: reverted on-chain");
+            }
+        } catch (error) {
+            attempt++;
+            elizaLogger.error(`Transaction attempt ${attempt} failed: ${error.message}`);
+            if (attempt >= MAX_RETRIES) {
+                throw new Error("All transaction attempts failed. Please try again later.");
+            }
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+    }
+};
 
 export const tipCNSTokenAction: Action = {
     name: "TIP",
@@ -110,66 +174,46 @@ export const tipCNSTokenAction: Action = {
         elizaLogger.info("🚀 Handling $CNS token transfer");
 
         try {
-            if (!state) {
-                state = (await runtime.composeState(message)) as State;
-            } else {
-                state = await runtime.updateRecentMessageState(state);
-            }
+            state = state ? await runtime.updateRecentMessageState(state) : (await runtime.composeState(message)) as State;
 
             // Extract tipping information
-            const tipContext = composeContext({
-                state,
-                template: tippingContext,
-            });
-            const tipInformation: tipInformation = await generateObjectDeprecated({
+            const tipContext = composeContext({ state, template: tippingContext });
+            const { recipient, amount, reason } = await generateObjectDeprecated({
                 runtime,
                 context: tipContext,
                 modelClass: ModelClass.SMALL,
             });
-            console.log('🛠 Tipping information: ', tipInformation);
-            
-            let { recipient, amount, reason } = tipInformation;
 
-            if (callback) {
-                if (isValidEVMAddress(recipient) && amount != 'null' && reason != 'null') {
-                    console.log('🚀 ==== Minting and transfering $CNS token ===');
-
-                    const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-                    const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-                    const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, ["function mint(address recipient, uint256 amount) public"], signer);
-                    
-                    // Step 3: Mint tokens
-                    const parsedAmount = ethers.parseUnits(amount, 18);
-                    console.log(`contract.mint(${recipient}, ${parsedAmount})`)
-                    const tx = await contract.mint(recipient, parsedAmount);
-                    await tx.wait();
-            
-                    elizaLogger.info(`✅ $CNS token successfully transfered: ${tx.hash}`);
-                    callback({
-                        text: `${recipient} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
-                    });
-
-                    return true;
-
-                } else {
-                    console.log('🚫 ==== Missing information for tipping ===', {isvalidEVMAddress: isValidEVMAddress(receipient), amount: amount, reason: reason});
-                    // Ask for missing tipping information
-                    const tipMissingInfoContext = composeContext({
-                        state,
-                        template: missingElementTemplate,
-                    });
-                    const tipMissingInfoAsking = await generateText({
-                        runtime,
-                        context: tipMissingInfoContext,
-                        modelClass: ModelClass.SMALL,
-                    });
-
-                    callback({
-                        text: tipMissingInfoAsking,
-                    });
-                }
+            if (!isValidEVMAddress(recipient) || amount == 'null' || reason == 'null') {
+                console.log('🚫 ==== Missing information for tipping ===', {recipient: recipient, isvalidEVMAddress: isValidEVMAddress(recipient), amount: amount, reason: reason});
+                const missingInfoContext = composeContext({ state, template: missingElementTemplate });
+                const missingDetails = await generateText({ runtime, context: missingInfoContext, modelClass: ModelClass.SMALL });
+                callback?.({ text: missingDetails });
+                return false;
             }
-            return false;
+
+            console.log('🚀 ==== Minting and transfering $CNS token ===');
+            const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+            const mintedToday = await fetchMintedToday(provider);
+            console.log("là");
+            const amountBN = ethers.parseUnits(amount.toString(), 18);
+            const maxAmountBN = ethers.parseUnits(CNS_MINT_DAILY_CREDIT.toString(), 18)
+            console.log("ici");
+            console.log("$CNS mint: ", {mintedToday: mintedToday, amount: amount, amountBN: amountBN, maxAmountBN: maxAmountBN});
+
+            if (mintedToday + amountBN > maxAmountBN) {
+                callback?.({ text: "The daily credit for $CNS tipping has been reached." });
+                return false;
+            }
+
+            try {
+                const txHash = await executeMintTransaction(recipient, amount);
+                callback?.({ text: `${recipient} received ${amount} $CNS tokens for "${reason}". Tx: https://sepolia.lineascan.build/tx/${txHash}` });
+                return true;
+            } catch (error) {
+                callback?.({ text: `❌ Transaction failed: ${error.message}` });
+                return false;
+            }
 
         } catch (error) {
             elizaLogger.error(`Oops, something went wrong: ${error}`);

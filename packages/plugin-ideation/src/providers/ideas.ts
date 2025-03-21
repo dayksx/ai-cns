@@ -63,11 +63,12 @@ const ideasProvider: Provider = {
             const formattedInitiatives = allInitiatives.map((initiative, index) => {
                 return `
                     **Initiative #${index + 1}**
-                    - **ID:** ${initiative.initiativeId}
-                    - **Instigator:** ${initiative.instigator}
+                    - **Ideator:** ${initiative.instigator}
                     - **Title:** ${initiative.title}
                     - **Description:** ${initiative.description}
-                    - **Category:** ${initiative.category}`;
+                    - **Category:** ${initiative.category}
+                    - **ID:** ${initiative.initiativeId}
+                    `;
             }).join("\n");
 
             return `**The Consensys Network State (CNS) initiatives registered on-chain by the community (smart contract address: ${process.env.CNS_INITIATIVE_CONTRACT_ADDRESS}): ** ${formattedInitiatives}`;
