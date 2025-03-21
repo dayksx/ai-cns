@@ -26,6 +26,7 @@ import {
     UserRoundPlus,
 } from "lucide-react";
 import ConnectionStatus from "./connection-status";
+import { UserProfile } from "@/routes/userprofile";
 
 export function AppSidebar() {
     const location = useLocation();
