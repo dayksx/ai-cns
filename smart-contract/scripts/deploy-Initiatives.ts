@@ -110,7 +110,7 @@ async function fillData(contract: NetworkStateInitiatives) {
   ];
 
   for (const [account, title, description, category, tags] of initiatives) {
-    await contract.connect(account).createInitiatives(account, title, description, category, tags);
+    await contract.connect(account).createInitiatives(account, title, description, category, tags, 0);
   }
 
   await updateInitiatives(contract, acc1);
