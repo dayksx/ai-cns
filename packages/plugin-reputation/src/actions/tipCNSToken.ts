@@ -19,51 +19,70 @@ const isValidEVMAddress = (address: string) => {
 };
 
 type tipInformation = {
-    address: string | null;
+    receipient: string | null;
     sender: string | null;
     amount: string | null;
     reason: string | null;
 };
 
-const tipTemplate = `Respond with a JSON markdown block containing only the extracted values. Use the \`null\` special value (without quotes) for any values that cannot be determined.
+const tippingContext = `# Extract $CNS Tipping Details
+Respond with a JSON markdown block containing the relevant $CNS tipping details based on {{senderName}}'s request.
 
-Example response:
+## **Recent Messages**
+{{recentMessages}}
+
+## **Example Response**
 \`\`\`json
 {
-    "address": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
-    "sender": "@name",
-    "amount": 10,
-    "reason": "ReasonForTippingHere"
+    "recipient": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
+    "issuer": "0xd6EdD1484D45f8EF0f2eEB04db9DDDC401F09FC0",
+    "amount": 100,
+    "reason": "For supporting the team during the last social hack"
 }
 \`\`\`
 
-Given the last message of {{senderName}} use the relevent recent messages to gather the tipping information in the JSON data structure.
+## **Instructions**
+{{senderName}} intends to send $CNS tokens to express gratitude or respect.  
+Your task is to extract the necessary details and return a JSON object for minting and transferring $CNS ERC-20 tokens.
+
+### **Mandatory Fields to Extract**  
+- **Recipient's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.  
+- **Amount** → The exact amount of $CNS tokens to be sent.  
+
+### **Optional Fields**  
+- **Issuer's identity** → This need to be infer without asking, it can be an EVM address, username, petname, or client identifier.  
+- **Reason** → If no explicit reason is mentioned, infer one from the tipping context.  
+
+If conflicting details are present, **favor the most explicit and recent statements**.
+
+### **Response Format**  
+Return **only** the extracted data as a JSON markdown block.`;
+
+
+
+const missingElementTemplate = `# Request for Missing Information for $CNS Tipping
+Based on {{senderName}}'s recent messages, identify the missing details required to complete the $CNS token transfer.
+
+## **Recent Messages**
 {{recentMessages}}
 
-Given the recent messages from {{senderName}} who expresses the intention to tip a specific @recipient, extract the following information shared by {{senderName}} about the requested tip:
-- Recipient EVM address
-- Sender name
-- Amount to tip
-- Reason for tipping (optional)
+## **Instructions**
+{{senderName}} wants to tip a recipient with $CNS, but some required details are missing.  
+Your task is to **ask for the missing information directly**, without acknowledgment or extra explanations.
 
-Ensure that the JSON payload is specific to the tipping intent identified by the recipient's identifier, which could be the @name or the Ethereum address.
+### **Mandatory Missing Details**  
+{{#if !recipient}}- **Recipient's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.{{/if}}  
+{{#if !amount}}- **Amount of $CNS** → The exact number of tokens to be sent.{{/if}}  
 
-Respond with a JSON markdown block containing only the extracted values.`;
+### **Optional Missing Details**  
+{{#if !reason}}- **Reason for the tip** → This is optional, but you can ask {{senderName}} for more context.{{/if}}  
 
-
-export const missingElementTemplate = `# Messages from which we are requesting missing tipping information for the tipping for a given @recipient
-{{recentMessages}}
-
-# Instructions: {{senderName}} is requesting to tip a specific @recipient. Your goal is to determine the missing information required to complete the tipping process.
-Identify any missing information that is required to complete the tip. This includes the recipient's EVM address, recipient's name, amount, currency, and reason.
-
-Based on the recent messages, extract the following information about the requested tip:
-- Recipient's EVM address (mandatory)
-- Sender's name (optional)
-- Amount to tip (mandatory)
-- Reason for tipping (optional)
-
-If any mandatory information is missing, ask the user for the specific missing information to fulfill the request in the {{agentName}} style. If any optional information is missing, ask the user if they could provide it to offer more context, also in the {{agentName}} style. Do not acknowledge this request; just ask for the missing information directly. Only respond with the text asking for the missing information in the {{agentName}} personality.`;
+## **Response Format**  
+- Respond in **{{agentName}}'s** style and personality.  
+- Ask for all missing details in **a single message**.  
+- Do **not** acknowledge the request—just ask for the required information.  
+- Do **not** generate any output if all required fields are already provided.  
+`;
 
 export const tipCNSTokenAction: Action = {
     name: "TIP",
@@ -78,7 +97,6 @@ export const tipCNSTokenAction: Action = {
     validate: async (_runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.info(`Tipping validation`);
 
-
         // placeholder: check if the given user is allowed to tip
         return true;
     },
@@ -89,69 +107,79 @@ export const tipCNSTokenAction: Action = {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ): Promise<boolean> => {
-        elizaLogger.info("🚀 Handling CNS token transfer");
 
-        if (!state) {
-            state = (await runtime.composeState(message)) as State;
-        } else {
-            state = await runtime.updateRecentMessageState(state);
-        }
+        elizaLogger.info("🚀 Handling $CNS token transfer");
 
-        // Extract and store tipping information
-        const tipContext = composeContext({
-            state,
-            template: tipTemplate,
-        });
-        const tipInformation: tipInformation = await generateObjectDeprecated({
-            runtime,
-            context: tipContext,
-            modelClass: ModelClass.SMALL,
-        });
-        console.log('Tipping information: ', tipInformation);
-        
-        // Ask for missing tipping information
-        const tipMissingInfoContext = composeContext({
-            state,
-            template: missingElementTemplate,
-        });
-        const tipMissingInfoAsking = await generateText({
-            runtime,
-            context: tipMissingInfoContext,
-            modelClass: ModelClass.SMALL,
-        });
-        console.log('Message asking missing tipping information: ', tipMissingInfoAsking);
-        
-        let { address, sender, amount, reason } = tipInformation;
-
-        if (callback) {
-            if (isValidEVMAddress(address) && amount != 'null' && reason != 'null') {
-                const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-                const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-                const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, ["function mint(address recipient, uint256 amount) public"], signer);
-                
-                // Step 3: Mint tokens
-                const parsedAmount = ethers.parseUnits(amount, 18);
-                const tx = await contract.mint(address, parsedAmount);
-                await tx.wait();
-        
-                callback({
-                    text: `${address} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
-                    tipInformation: {
-                        tip: {
-                            tipInformation
-                        },
-                    },
-                });
+        try {
+            if (!state) {
+                state = (await runtime.composeState(message)) as State;
             } else {
-                callback({
-                    text: tipMissingInfoAsking,
-                    content: {
-                        error: true
-                    },
-                });
+                state = await runtime.updateRecentMessageState(state);
             }
+
+            // Extract tipping information
+            const tipContext = composeContext({
+                state,
+                template: tippingContext,
+            });
+            const tipInformation: tipInformation = await generateObjectDeprecated({
+                runtime,
+                context: tipContext,
+                modelClass: ModelClass.SMALL,
+            });
+            console.log('🛠 Tipping information: ', tipInformation);
+            
+            let { receipient, sender, amount, reason } = tipInformation;
+
+            if (callback) {
+                if (isValidEVMAddress(receipient) && amount != 'null' && reason != 'null') {
+                    console.log('🚀 ==== Minting and transfering $CNS token ===');
+
+                    const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+                    const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
+                    const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, ["function mint(address recipient, uint256 amount) public"], signer);
+                    
+                    // Step 3: Mint tokens
+                    const parsedAmount = ethers.parseUnits(amount, 18);
+                    const tx = await contract.mint(receipient, parsedAmount);
+                    await tx.wait();
+            
+                    elizaLogger.info(`✅ $CNS token successfully transfered: ${tx.hash}`);
+                    callback({
+                        text: `${receipient} has been tipped ${amount} $CNS token for "${reason}". Tx: ${tx.hash}. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
+                        tipInformation: {
+                            tip: {
+                                tipInformation
+                            },
+                        },
+                    });
+
+                    return true;
+
+                } else {
+                    console.log('🚫 ==== Missing information for tipping ===', {isvalidEVMAddress: isValidEVMAddress(receipient), amount: amount, reason: reason});
+                    // Ask for missing tipping information
+                    const tipMissingInfoContext = composeContext({
+                        state,
+                        template: missingElementTemplate,
+                    });
+                    const tipMissingInfoAsking = await generateText({
+                        runtime,
+                        context: tipMissingInfoContext,
+                        modelClass: ModelClass.SMALL,
+                    });
+
+                    callback({
+                        text: tipMissingInfoAsking,
+                    });
+                }
+            }
+            return false;
+
+        } catch (error) {
+            elizaLogger.error(`Oops, something went wrong: ${error}`);
+            return false;
         }
-        return true;
     },
     examples: [
         [

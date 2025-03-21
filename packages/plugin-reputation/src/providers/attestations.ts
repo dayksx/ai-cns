@@ -33,7 +33,6 @@ const attestationsProvider: Provider = {
                     - **Trustworthiness:** ${isTrustworthy ? 'Trusted' : 'Not Trusted'}`;
             }).join("\n");
             
-            console.log("## attestation info: ", formattedAttestations);
             return `**The Consensys Network State (CNS) issued Verax Trust attestations registered on-chain by the community reflecting trustworthy and untrustworthy agents / CNS netizens: **\n${formattedAttestations}`;
 
         } catch (error) {
