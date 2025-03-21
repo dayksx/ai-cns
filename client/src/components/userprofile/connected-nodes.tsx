@@ -39,7 +39,7 @@ export const ConnectedNodes: React.FC<{ data: ConnectedNodesProps }> = ({
 
     useEffect(() => {
         const width = 1248;
-        const height = 457;
+        const height = 430;
 
         const links: Link[] = data.links.map((link) => ({ ...link }));
         const nodes: Node[] = data.nodes.map((node) => ({

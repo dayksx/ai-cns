@@ -221,7 +221,8 @@ function InitiativesList({
                             key={initiative.initiativeId}
                         >
                             <div className="relative flex flex-col items-center justify-between border border-gray-600 rounded-lg p-6 bg-gray-900 shadow-md w-[700px] min-h-[140px] mb-12">
-                                <div className="flex flex-col justify-center flex-grow">
+                                {/* New wrapper to keep title & description left-aligned */}
+                                <div className="w-full flex flex-col items-start text-left">
                                     <h3 className="text-md font-bold text-white mb-3 truncate">
                                         {initiative.title}
                                     </h3>
@@ -229,7 +230,9 @@ function InitiativesList({
                                         {initiative.description}
                                     </p>
                                 </div>
-                                <div className="absolute flex flex-col bottom-[-70px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 flex items-center gap-1">
+
+                                {/* Voting Section */}
+                                <div className="absolute flex flex-col bottom-[-70px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 items-center gap-1">
                                     <div className="flex flex-row items-center gap-1">
                                         Total
                                     </div>
@@ -242,6 +245,7 @@ function InitiativesList({
                                         <span>{initiative.downvotes}</span>
                                     </div>
                                 </div>
+
                                 {voteType !== undefined && (
                                     <div className="absolute flex flex-col bottom-[-50px] right-[190px] bg-gray-700 text-white text-sm font-bold px-4 py-2 rounded-md shadow-md border border-gray-600 items-center gap-1">
                                         <div className="flex flex-row items-center gap-1">
@@ -259,12 +263,13 @@ function InitiativesList({
                                         </div>
                                     </div>
                                 )}
+
                                 {initiative.upvotes - initiative.downvotes >=
                                     5 &&
                                     initiative.status === "IDEATION" &&
                                     !pendingLaunch[initiative.initiativeId] && (
                                         <Button
-                                            className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-yellow-500 text-sm font-bold"
+                                            className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-yellow-500 text-sm font-bold m-2"
                                             onClick={() =>
                                                 handleLaunch(
                                                     initiative.initiativeId
@@ -274,17 +279,19 @@ function InitiativesList({
                                             Launch
                                         </Button>
                                     )}
+
                                 {initiative.status !== "IDEATION" &&
                                     !pendingLaunch[initiative.initiativeId] && (
-                                        <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md">
+                                        <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md m-2 text-center">
                                             {initiative.status ===
                                             "CAPITAL_ALLOCATION"
-                                                ? " Launched"
-                                                : " Building"}
+                                                ? "Launched"
+                                                : "Building"}
                                         </div>
                                     )}
+
                                 {pendingLaunch[initiative.initiativeId] && (
-                                    <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md">
+                                    <div className="absolute flex flex-col items-center right-[1px] top-[1px] px-4 py-2 rounded-md bg-gray-800 text-white shadow-md m-2 text-center">
                                         Launching...
                                     </div>
                                 )}
@@ -407,7 +414,7 @@ export default function Governance() {
                 <PageHeader title="Governance" />
                 <div className="grid grid-cols-[3fr_1fr] gap-6 items-start">
                     <div className="flex flex-col items-center justify-center rounded-lg p-6 min-h-[400px]">
-                        <h2 className="text-xl font-bold text-white mb-8">
+                        <h2 className="text-xl font-bold text-white mb-8 ml-8 self-start">
                             Ideas
                         </h2>
                         <Suspense
@@ -424,11 +431,11 @@ export default function Governance() {
                             />
                         </Suspense>
                     </div>
-                    <div className="flex flex-col items-start p-4 border border-gray-700 rounded-lg w-[160px] min-h-[140px] shadow-md bg-gray-900">
-                        <h2 className="text-md font-semibold text-white">
-                            Credit Balanace
+                    <div className="flex flex-col items-center justify-center p-4 border border-gray-700 rounded-lg w-[160px] min-h-[140px] shadow-md bg-gray-900">
+                        <h2 className="text-md font-semibold text-white text-center">
+                            Credit Balance
                         </h2>
-                        <div className="w-full h-[40px] flex items-center justify-center bg-gray-700 text-white font-bold rounded-md border border-gray-600">
+                        <div className="w-full h-[40px] flex items-center justify-center bg-gray-700 text-white font-bold rounded-md border border-gray-600 mt-4">
                             {remainingCredits}
                         </div>
                     </div>
