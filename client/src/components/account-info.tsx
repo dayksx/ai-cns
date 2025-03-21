@@ -15,34 +15,7 @@ export type AccountInfoProps = {
     badges: string[];
     activities: string[];
     creditBalance: number;
-};
-
-// Function to generate a Jazzicon-like gradient
-const getGradientFromAddress = (address: Hex) => {
-    const seed = parseInt(address.slice(2, 10), 16);
-    const icon = Jazzicon(100, seed);
-
-    // Extract computed style
-    const computedStyle = window.getComputedStyle(icon);
-    const primaryColor = computedStyle.backgroundColor || "#3498db"; // Default fallback
-
-    // Convert RGB string to RGB values
-    const rgbMatch = primaryColor.match(/\d+/g);
-    if (!rgbMatch) return "linear-gradient(160deg, #3498db, #2980b9)"; // Fallback gradient
-
-    let [r, g, b] = rgbMatch.map(Number);
-
-    // Generate lighter and darker shades
-    const lighterColor = `rgb(${Math.min(r + 50, 255)}, ${Math.min(
-        g + 50,
-        255
-    )}, ${Math.min(b + 50, 255)})`;
-    const darkerColor = `rgb(${Math.max(r - 50, 0)}, ${Math.max(
-        g - 50,
-        0
-    )}, ${Math.max(b - 50, 0)})`;
-
-    return `linear-gradient(160deg, ${lighterColor}, ${primaryColor}, ${darkerColor})`;
+    cnsBalance: number;
 };
 
 export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
@@ -50,6 +23,7 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
     badges,
     activities,
     creditBalance,
+    cnsBalance,
 }) => {
     const { data: ensName, isLoading } = useEnsName({
         address,
@@ -67,31 +41,26 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
     };
 
     return (
-        <div
-            className="flex flex-col h-screen"
-            style={{
-                background: getGradientFromAddress(address),
-            }}
-        >
+        <div className="flex flex-col h-screen text-white">
             {/* Top Section: Connected Nodes */}
             <div className="flex-1 flex flex-col items-center justify-center relative">
                 <ConnectedNodes data={connectedNodes} />
-                <div className="absolute bottom-2 text-lg font-semibold text-white">
+                <div className="absolute bottom-2 text-lg font-semibold">
                     {getDisplayName()}
                 </div>
             </div>
 
-            {/* Bottom Section: Badges, Activities & Credit Balance */}
-            <div className="bg-white p-6 flex rounded-t-3xl shadow-lg">
+            {/* Bottom Section: Badges, Activities & Balances */}
+            <div className="p-6 flex shadow-md border-t border-gray-700">
                 {/* Left Side: Badges & Activities */}
                 <div className="w-2/3 pr-6">
                     {/* Badges Section */}
-                    <div className="bg-gray-50 shadow-sm rounded-lg p-4 mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    <div className="bg-gray-800 shadow-md p-4 mb-4">
+                        <h3 className="text-lg font-semibold text-gray-200 mb-2">
                             🎖️ Badges Earned
                         </h3>
                         {badges.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-700">
+                            <ul className="list-disc pl-5 text-gray-300">
                                 {badges.map((badge, index) => (
                                     <li key={index}>{badge}</li>
                                 ))}
@@ -104,12 +73,12 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                     </div>
 
                     {/* Activities Section */}
-                    <div className="bg-gray-50 shadow-sm rounded-lg p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    <div className="bg-gray-800 shadow-md p-4">
+                        <h3 className="text-lg font-semibold text-gray-200 mb-2">
                             📜 Recent Activities
                         </h3>
                         {activities.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-700">
+                            <ul className="list-disc pl-5 text-gray-300">
                                 {activities.map((activity, index) => (
                                     <li key={index}>{activity}</li>
                                 ))}
@@ -122,14 +91,27 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                     </div>
                 </div>
 
-                {/* Right Side: Credit Balance */}
-                <div className="w-1/4 bg-gray-50 shadow-sm rounded-lg p-4 flex flex-col items-center justify-center">
-                    <h3 className="text-md font-semibold text-gray-700">
-                        💰 Credit Balance
-                    </h3>
-                    <p className="text-lg font-bold text-green-600 mt-2">
-                        {creditBalance} Credits
-                    </p>
+                {/* Right Side: Balances */}
+                <div className="w-1/3 flex flex-col space-y-4">
+                    {/* CNS Balance Box */}
+                    <div className="bg-gray-800 shadow-md p-4 flex flex-col items-center justify-center">
+                        <h3 className="text-md font-semibold text-gray-300">
+                            🌐 CNS Balance
+                        </h3>
+                        <p className="text-lg font-bold text-blue-400 mt-2">
+                            {cnsBalance} CNS
+                        </p>
+                    </div>
+
+                    {/* Credit Balance Box */}
+                    <div className="bg-gray-800 shadow-md p-4 flex flex-col items-center justify-center">
+                        <h3 className="text-md font-semibold text-gray-300">
+                            💰 Credit Balance
+                        </h3>
+                        <p className="text-lg font-bold text-green-400 mt-2">
+                            {creditBalance} Credits
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

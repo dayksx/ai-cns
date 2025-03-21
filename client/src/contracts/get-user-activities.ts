@@ -32,7 +32,7 @@ const eventFilters = {
     ),
 };
 
-export const getUserInitiativeEvents = async (netizenAddress: Hex) => {
+export const getUserInitiativeEvents: any = async (netizenAddress: Hex) => {
     try {
         const events = [];
 
@@ -50,7 +50,7 @@ export const getUserInitiativeEvents = async (netizenAddress: Hex) => {
             );
 
             events.push(
-                ...filteredLogs.map((log) => ({ eventName, ...log.args }))
+                ...filteredLogs.map((log) => ({ eventName, args: log.args }))
             );
         }
 
