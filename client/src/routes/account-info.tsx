@@ -7,6 +7,7 @@ import { FunctionComponent, useMemo } from "react";
 import { Hex } from "viem";
 import { lineaSepolia } from "viem/chains";
 import { useEnsName } from "wagmi";
+// @ts-ignore
 import Jazzicon from "@metamask/jazzicon";
 
 export type AccountInfoProps = {
