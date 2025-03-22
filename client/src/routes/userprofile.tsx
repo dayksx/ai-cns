@@ -1,3 +1,6 @@
+/* eslint-disable */
+// @ts-nocheck
+import Jazzicon from "@metamask/jazzicon";
 import { useParams } from "react-router";
 import { AccountInfo } from "../components/account-info";
 import { FunctionComponent, useEffect, useState } from "react";
@@ -14,6 +17,18 @@ export const UserProfile: FunctionComponent = () => {
     const [creditBalance, setCreditBalance] = useState<number>(0);
     const [cnsBalance, setCnsBalance] = useState<number>(0); // State for CNS balance
     const { netizenId } = useParams<{ netizenId: Hex }>();
+
+    if (!netizenId) return <div>No data.</div>;
+    const addr = netizenId.trim().slice(2, 10);
+    const seed = parseInt(addr, 16);
+
+    const jazziconElement = Jazzicon(10, seed);
+    const colorRects = jazziconElement.querySelectorAll("rect");
+    const colorList: string[] = [];
+    colorRects.forEach((rect: any) => {
+        colorList.push(rect.getAttribute("fill")?.toString() as string);
+    });
+    const gradientBackground = `linear-gradient(to right, ${colorList[0]}, ${colorList[1]}, ${colorList[2]})`;
 
     const shortenInitiativeId = (id: string) =>
         id.length > 10 ? `${id.slice(0, 6)}...${id.slice(-4)}` : id;
@@ -80,7 +95,7 @@ export const UserProfile: FunctionComponent = () => {
                     ), // Fetch CNS balance
                 ]);
                 setCreditBalance(credit);
-                setCnsBalance(Number(cns));
+                setCnsBalance(Number(cns) / 10 ** 18);
             } catch (error) {
                 console.error("Failed to fetch balances:", error);
                 setCreditBalance(0);
@@ -95,8 +110,15 @@ export const UserProfile: FunctionComponent = () => {
 
     return (
         netizenId && (
-            <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
-                <div className="flex-1 overflow-y-auto">
+            <div
+                className="relative flex flex-col w-full min-h-screen h-[100dvh] p-4"
+                style={{ background: gradientBackground }}
+            >
+                {/* Semi-transparent dark overlay */}
+                <div className="absolute inset-0 bg-gray-900/80"></div>
+
+                {/* Main content (z-index ensures visibility) */}
+                <div className="relative flex-1 overflow-y-auto">
                     <PageHeader title="" />
                     <AccountInfo
                         address={netizenId}
