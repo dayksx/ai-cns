@@ -55,16 +55,35 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                 {/* Left Side: Badges & Activities */}
                 <div className="w-2/3 pr-6">
                     {/* Badges Section */}
-                    <div className="bg-gray-800 shadow-md p-4 mb-4">
+                    <div className="bg-gray-800 shadow-md p-4 mb-4 rounded-lg">
                         <h3 className="text-lg font-semibold text-gray-200 mb-2">
                             🎖️ Badges Earned
                         </h3>
                         {badges.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-300">
-                                {badges.map((badge, index) => (
-                                    <li key={index}>{badge}</li>
-                                ))}
-                            </ul>
+                            <div className="flex flex-wrap gap-2">
+                                {badges.map((badge, index) => {
+                                    // Define random colors for each badge
+                                    const colors = [
+                                        "bg-blue-500",
+                                        "bg-green-500",
+                                        "bg-yellow-500",
+                                        "bg-purple-500",
+                                        "bg-pink-500",
+                                        "bg-red-500",
+                                    ];
+                                    const randomColor =
+                                        colors[index % colors.length]; // Rotate colors
+
+                                    return (
+                                        <span
+                                            key={index}
+                                            className={`px-3 py-1 text-sm font-semibold text-white ${randomColor} bg-opacity-70 rounded-md`}
+                                        >
+                                            {badge}
+                                        </span>
+                                    );
+                                })}
+                            </div>
                         ) : (
                             <p className="text-gray-500">
                                 No badges earned yet.
@@ -73,16 +92,33 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                     </div>
 
                     {/* Activities Section */}
-                    <div className="bg-gray-800 shadow-md p-4">
-                        <h3 className="text-lg font-semibold text-gray-200 mb-2">
+                    <div className="bg-gray-800 shadow-md p-4 rounded-lg">
+                        <h3 className="text-lg font-semibold text-gray-200 mb-3">
                             📜 Recent Activities
                         </h3>
                         {activities.length > 0 ? (
-                            <ul className="list-disc pl-5 text-gray-300">
-                                {activities.map((activity, index) => (
-                                    <li key={index}>{activity}</li>
-                                ))}
-                            </ul>
+                            <div className="flex flex-col gap-3">
+                                {activities.map((activity, index) => {
+                                    // Define some border colors to differentiate activities
+                                    const colors = [
+                                        "border-blue-500",
+                                        "border-green-500",
+                                        "border-yellow-500",
+                                        "border-purple-500",
+                                    ];
+                                    const borderColor =
+                                        colors[index % colors.length];
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`p-3 bg-gray-700 text-gray-200 rounded-md shadow-sm border-l-4 ${borderColor}`}
+                                        >
+                                            {activity}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         ) : (
                             <p className="text-gray-500">
                                 No recent activities.
