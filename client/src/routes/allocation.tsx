@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getInitiatives } from "../contracts/get-initiatives";
-import { useState } from "react";
 import { PageHeader } from "../components/page-header";
 import { InitiativeCapitalAllocation } from "../components/cns/initiative-capital-allocation";
 
@@ -9,35 +8,44 @@ export default function CapitalAllocation() {
 
     useEffect(() => {
         getInitiatives().then((initiatives) => {
-            initiatives = initiatives?.filter(
+            const filteredInitiatives = initiatives?.filter(
                 (initiative) => initiative.status === "CAPITAL_ALLOCATION"
             );
-            setCapitalAllocation(initiatives);
+            setCapitalAllocation(filteredInitiatives || []);
         });
     }, []);
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col w-full h-[100dvh] p-6">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Resource Allocation" />
-                <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-4">
-                        {capitalAllocation.map((a, i) => {
-                            // temp for demo, fake balance
-                            if (i <= 2) {
-                                a.balance =
-                                    a.balance === 0
-                                        ? a.balance
-                                        : 1252600000000000000 * (i + 1) * 1.333;
+                <div className="flex flex-col gap-6">
+                    {capitalAllocation.length > 0 ? (
+                        capitalAllocation.map((initiative, index) => {
+                            if (index <= 2) {
+                                initiative.balance =
+                                    initiative.balance === 0
+                                        ? initiative.balance
+                                        : 1252600000000000000 *
+                                          (index + 1) *
+                                          1.333;
                             }
                             return (
-                                <InitiativeCapitalAllocation
-                                    key={a.initiativeId}
-                                    initiative={a}
-                                />
+                                <div
+                                    key={initiative.initiativeId}
+                                    className="p-4 bg-gray-800 rounded-2xl shadow-lg border border-gray-700"
+                                >
+                                    <InitiativeCapitalAllocation
+                                        initiative={initiative}
+                                    />
+                                </div>
                             );
-                        })}
-                    </div>
+                        })
+                    ) : (
+                        <p className="text-gray-400 text-center mt-6">
+                            No capital allocations available.
+                        </p>
+                    )}
                 </div>
             </div>
         </div>
