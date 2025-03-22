@@ -43,13 +43,10 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
     return (
         <div className="flex flex-col h-screen text-white">
             {/* Top Section: Connected Nodes */}
-            <div className="flex-1 flex flex-col items-center justify-center relative">
+            <div className="flex-1 flex flex-col items-center justify-center gap-4 pb-4">
                 <ConnectedNodes data={connectedNodes} />
-                <div className="absolute bottom-2 text-lg font-semibold">
-                    {getDisplayName()}
-                </div>
+                <div className="text-lg font-semibold">{getDisplayName()}</div>
             </div>
-
             {/* Bottom Section: Badges, Activities & Balances */}
             <div className="p-6 flex shadow-md border-t border-gray-700">
                 {/* Left Side: Badges & Activities */}
