@@ -1,5 +1,5 @@
 import { Netizen } from "../../lib/cns/get-cns-netizens";
-import { Address } from "./address";
+import { AccountsGridShort } from "../userprofile/account-grid-short";
 import { NetizensChart } from "./netizens-chart";
 
 export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
@@ -20,7 +20,8 @@ export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
                 <div className="flex flex-row gap-2">
                     <span className="text-xl font-bold">Demography</span>
                 </div>
-                <div className="flex flex-col gap-2 text-sm">
+                <AccountsGridShort netizens={netizens} />
+                {/* <div className="flex flex-col gap-2 text-sm">
                     <div>
                         {netizens.map((netizen) => {
                             return (
@@ -47,7 +48,7 @@ export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
                             );
                         })}
                     </div>
-                </div>
+                </div> */}
             </div>
         </>
     );
