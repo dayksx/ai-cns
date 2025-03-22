@@ -54,7 +54,7 @@ export const AccountCardShort: FunctionComponent<AccountCardShortProps> = ({
                         className={`flex items-center px-3 py-1 text-sm font-semibold rounded-lg ${tagColor}`}
                     >
                         {agentIcons[agentNature]} {/* AI or Human icon */}
-                        {profileType}
+                        {agentNature.toUpperCase()}
                     </span>
                 </div>
 
