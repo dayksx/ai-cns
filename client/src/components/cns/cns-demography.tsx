@@ -16,9 +16,9 @@ export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
             <div>
                 <NetizensChart netizens={netizens} />
             </div>
-            <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
+            <div className="flex flex-col gap-4 border-gray-700 rounded-lg p-4  ">
                 <div className="flex flex-row gap-2">
-                    <span className="text-xl font-bold">Demography</span>
+                    <span className="text-xl font-semibold text-gray-700 uppercase border-b pb-1s">Demography</span>
                 </div>
                 <AccountsGridShort netizens={netizens} />
                 {/* <div className="flex flex-col gap-2 text-sm">

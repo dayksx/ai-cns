@@ -1,23 +1,29 @@
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export function FinanceChart() {
     const data = {
-        labels: ["Build", "Invest", "“Support”", "Legal"],
+        labels: ["Infrastructure", "Grants & Growth", "Reserves", "Operations", "Public Goods"],
         datasets: [
             {
-                data: [50, 25, 5, 20],
+                label: "Finance Distribution",
+                data: [30, 25, 15, 20, 10],
                 backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384", "#98FB98"],
             },
         ],
     };
-    return (
-        <Pie
-            data={data}
-            width={300}
-            height={300}
-            options={{ maintainAspectRatio: false }}
-        />
-    );
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+            },
+        },
+    };
+
+    return <Bar data={data} options={options} width={300} height={300} />;
 }
