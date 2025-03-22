@@ -6,6 +6,11 @@ export const NetworkAgreementAbi = [
                 name: "_constitutionURL",
                 type: "string",
             },
+            {
+                internalType: "address",
+                name: "_initiativesAddress",
+                type: "address",
+            },
         ],
         stateMutability: "nonpayable",
         type: "constructor",
@@ -78,6 +83,25 @@ export const NetworkAgreementAbi = [
             {
                 indexed: false,
                 internalType: "address",
+                name: "newAddress",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "timestamp",
+                type: "uint256",
+            },
+        ],
+        name: "InitiativesContractAdressUpdated",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "address",
                 name: "newReceiver",
                 type: "address",
             },
@@ -93,8 +117,28 @@ export const NetworkAgreementAbi = [
     },
     {
         inputs: [],
+        name: "MAX_CREDITS_PER_USER",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
         name: "constitutionURL",
         outputs: [{ internalType: "string", name: "", type: "string" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "initiativesContract",
+        outputs: [
+            {
+                internalType: "contract NetworkStateInitiatives",
+                name: "",
+                type: "address",
+            },
+        ],
         stateMutability: "view",
         type: "function",
     },
@@ -147,6 +191,19 @@ export const NetworkAgreementAbi = [
             },
         ],
         name: "updateConstitutionURL",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "_initiativesContract",
+                type: "address",
+            },
+        ],
+        name: "updateInitiativesContract",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
