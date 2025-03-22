@@ -19,7 +19,7 @@ contract NetworkStateAgreement {
     address public owner; // Owner of the contract
     NetworkStateInitiatives public initiativesContract; // Reference to the Initiatives contract
 
-    address payable public networkdStateTreasury; // Address of the treasury contract
+    address payable public networkStateTreasury; // Address of the treasury contract
     string public constitutionURL; // URL pointing to the constitution document
     mapping(address => UserInfo) public userInformation; // Mapping of users to their information
 
@@ -55,7 +55,7 @@ contract NetworkStateAgreement {
      */
     constructor(string memory _constitutionURL, address _initiativesAddress) {
         owner = msg.sender;
-        networkdStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
+        networkStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
         initiativesContract = NetworkStateInitiatives(_initiativesAddress);
         constitutionURL = _constitutionURL;
     }
@@ -88,7 +88,7 @@ contract NetworkStateAgreement {
             hasAgreed: true
         });
         if (msg.value > 0) {
-            (bool success, ) = networkdStateTreasury.call{ value: msg.value }("");
+            (bool success, ) = networkStateTreasury.call{ value: msg.value }("");
             require(success, "Ether forwarding failed");
         }
         initiativesContract.updateUserCredits(msg.sender, MAX_CREDITS_PER_USER);
@@ -151,7 +151,7 @@ contract NetworkStateAgreement {
      */
     function updateNetworkStateTreasury(address payable _newReceiver) public onlyOwner {
         require(_newReceiver != address(0), "Invalid address");
-        networkdStateTreasury = _newReceiver;
+        networkStateTreasury = _newReceiver;
         emit NetworkStateTreasuryUpdated(_newReceiver, block.timestamp);
     }
 
