@@ -10,9 +10,14 @@ import { useEnsName } from "wagmi";
 // @ts-ignore
 import Jazzicon from "@metamask/jazzicon";
 
+export type BadgeInfo = {
+    title: string;
+    attestationId: string;
+};
+
 export type AccountInfoProps = {
     address: Hex;
-    badges: string[];
+    badgesInfo: BadgeInfo[];
     activities: string[];
     creditBalance: number;
     cnsBalance: number;
@@ -20,7 +25,7 @@ export type AccountInfoProps = {
 
 export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
     address,
-    badges,
+    badgesInfo,
     activities,
     creditBalance,
     cnsBalance,
@@ -47,6 +52,7 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                 <ConnectedNodes data={connectedNodes} />
                 <div className="text-lg font-semibold">{getDisplayName()}</div>
             </div>
+
             {/* Bottom Section: Badges, Activities & Balances */}
             <div className="p-6 flex shadow-md border-t border-gray-700">
                 {/* Left Side: Badges & Activities */}
@@ -56,9 +62,9 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                         <h3 className="text-lg font-semibold text-gray-200 mb-2">
                             🎖️ Badges Earned
                         </h3>
-                        {badges.length > 0 ? (
+                        {badgesInfo.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
-                                {badges.map((badge, index) => {
+                                {badgesInfo.map((badge, index) => {
                                     // Define random colors for each badge
                                     const colors = [
                                         "bg-blue-500",
@@ -72,12 +78,18 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                                         colors[index % colors.length]; // Rotate colors
 
                                     return (
-                                        <span
-                                            key={index}
-                                            className={`px-3 py-1 text-sm font-semibold text-white ${randomColor} bg-opacity-70 rounded-md`}
+                                        <button
+                                            key={badge.attestationId}
+                                            onClick={() =>
+                                                window.open(
+                                                    `https://explorer.ver.ax/linea-sepolia/attestations/${badge.attestationId}`,
+                                                    "_blank"
+                                                )
+                                            }
+                                            className={`px-3 py-1 text-sm font-semibold text-white ${randomColor} bg-opacity-70 rounded-md transition hover:bg-opacity-100`}
                                         >
-                                            {badge}
-                                        </span>
+                                            {badge.title}
+                                        </button>
                                     );
                                 })}
                             </div>

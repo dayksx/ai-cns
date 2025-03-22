@@ -17,6 +17,7 @@ import Census from "./routes/census";
 import Core from "./routes/core";
 import CapitalAllocation from "./routes/allocation";
 import { UserProfile } from "./routes/userprofile";
+import { AllNetizens } from "./routes/all-netizens";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -55,6 +56,10 @@ function App() {
                                             <Route
                                                 path="netizens/:netizenId"
                                                 element={<UserProfile />}
+                                            />
+                                            <Route
+                                                path="allnetizens"
+                                                element={<AllNetizens />}
                                             />
                                             <Route
                                                 path="settings/:agentId"
