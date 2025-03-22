@@ -59,7 +59,7 @@ export const AccountsGridShort: FunctionComponent<AccountsGridShortProps> = ({
                     >
                         {/* Bigger Profile Type Box (More Height & Slightly More Width) */}
                         <div
-                            className={`w-36 h-40 flex items-center justify-center text-lg font-semibold rounded-md ${styles.boxBg} ${styles.text}`}
+                            className={`w-32 h-40 flex items-center justify-center text-lg font-semibold rounded-md ${styles.boxBg} ${styles.text}`}
                         >
                             {profileType.charAt(0).toUpperCase() +
                                 profileType.slice(1)}
@@ -81,7 +81,7 @@ export const AccountsGridShort: FunctionComponent<AccountsGridShortProps> = ({
             })}
             <Link
                 to="/allnetizens"
-                className="mt-6 px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-600 transition-shadow w-fit shadow-md hover:shadow-lg"
+                className="px-5 py-2 text-sm font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-600 transition-shadow w-fit shadow-md hover:shadow-lg"
             >
                 Show All Netizens
             </Link>

@@ -68,7 +68,7 @@ export function InitiativeCapitalAllocation({
                         <div className="flex text-xs text-gray-400 uppercase mb-2">
                             Team
                         </div>
-                        <div>
+                        <div className="flex flex-col gap-2">
                             {teamMembers.map((m) => {
                                 return (
                                     <div key={m} className="flex gap-3">
