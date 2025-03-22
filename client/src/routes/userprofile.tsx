@@ -2,7 +2,6 @@
 // @ts-nocheck
 import Jazzicon from "@metamask/jazzicon";
 import { useParams } from "react-router";
-import { AccountInfo } from "../components/account-info";
 import { FunctionComponent, useEffect, useState } from "react";
 import { Hex } from "viem";
 import { getNetizenBadgeAttestations } from "@/verax/attestations-reader";
@@ -10,12 +9,15 @@ import { getUserCredits } from "@/contracts/get-user-credits";
 import { getUserInitiativeEvents } from "@/contracts/get-user-activities";
 import { getTokenBalance } from "@/lib/viem-utils";
 import { PageHeader } from "@/components/page-header";
+import { AccountInfo } from "@/components/account-info";
 
 export const UserProfile: FunctionComponent = () => {
-    const [badges, setBadges] = useState<string[]>([]);
+    const [badges, setBadges] = useState<
+        { title: string; attestationId: string }[]
+    >([]);
     const [activities, setActivities] = useState<string[]>([]);
     const [creditBalance, setCreditBalance] = useState<number>(0);
-    const [cnsBalance, setCnsBalance] = useState<number>(0); // State for CNS balance
+    const [cnsBalance, setCnsBalance] = useState<number>(0);
     const { netizenId } = useParams<{ netizenId: Hex }>();
 
     if (!netizenId) return <div>No data.</div>;
@@ -23,12 +25,7 @@ export const UserProfile: FunctionComponent = () => {
     const seed = parseInt(addr, 16);
 
     const jazziconElement = Jazzicon(10, seed);
-    const colorRects = jazziconElement.querySelectorAll("rect");
-    const colorList: string[] = [];
-    colorRects.forEach((rect: any) => {
-        colorList.push(rect.getAttribute("fill")?.toString() as string);
-    });
-    const gradientBackground = `linear-gradient(to right, ${colorList[0]}, ${colorList[1]}, ${colorList[2]})`;
+    const gradientBackground = `linear-gradient(to right, #ff7e5f, #feb47b)`; // Static gradient instead of color extraction
 
     const shortenInitiativeId = (id: string) =>
         id.length > 10 ? `${id.slice(0, 6)}...${id.slice(-4)}` : id;
@@ -53,11 +50,17 @@ export const UserProfile: FunctionComponent = () => {
     };
 
     useEffect(() => {
+        if (!netizenId) return;
+
         const fetchBadges = async () => {
-            if (!netizenId) return;
             try {
-                const badges = await getNetizenBadgeAttestations(netizenId);
-                setBadges(badges?.map((badge) => badge.scope) || []);
+                const badgeData = await getNetizenBadgeAttestations(netizenId);
+                setBadges(
+                    badgeData?.map((badge) => ({
+                        title: badge.scope,
+                        attestationId: badge.attestationId,
+                    })) || []
+                );
             } catch (error) {
                 console.error("Failed to fetch badges:", error);
                 setBadges([]);
@@ -65,7 +68,6 @@ export const UserProfile: FunctionComponent = () => {
         };
 
         const fetchActivities = async () => {
-            if (!netizenId) return;
             try {
                 const activityLogs = await getUserInitiativeEvents(netizenId);
                 const formattedActivities = activityLogs.map((log: any) => {
@@ -85,14 +87,13 @@ export const UserProfile: FunctionComponent = () => {
         };
 
         const fetchBalances = async () => {
-            if (!netizenId) return;
             try {
                 const [credit, cns] = await Promise.all([
                     getUserCredits(netizenId),
                     getTokenBalance(
                         import.meta.env.VITE_CNS_TOKEN_ADDRESS,
                         netizenId
-                    ), // Fetch CNS balance
+                    ),
                 ]);
                 setCreditBalance(credit);
                 setCnsBalance(Number(cns) / 10 ** 18);
@@ -109,26 +110,24 @@ export const UserProfile: FunctionComponent = () => {
     }, [netizenId]);
 
     return (
-        netizenId && (
-            <div
-                className="relative flex flex-col w-full min-h-screen h-[100dvh] p-4"
-                style={{ background: gradientBackground }}
-            >
-                {/* Semi-transparent dark overlay */}
-                <div className="absolute inset-0 bg-gray-900/80"></div>
+        <div
+            className="relative flex flex-col w-full min-h-screen h-[100dvh] p-4"
+            style={{ background: gradientBackground }}
+        >
+            {/* Semi-transparent dark overlay */}
+            <div className="absolute inset-0 bg-gray-900/80"></div>
 
-                {/* Main content (z-index ensures visibility) */}
-                <div className="relative flex-1 overflow-y-auto">
-                    <PageHeader title="" />
-                    <AccountInfo
-                        address={netizenId}
-                        badges={badges}
-                        activities={activities}
-                        creditBalance={creditBalance}
-                        cnsBalance={cnsBalance} // Pass CNS balance
-                    />
-                </div>
+            {/* Main content */}
+            <div className="relative flex-1 overflow-y-auto">
+                <PageHeader title="" />
+                <AccountInfo
+                    address={netizenId}
+                    badgesInfo={badges} // Corrected prop name
+                    activities={activities}
+                    creditBalance={creditBalance}
+                    cnsBalance={cnsBalance}
+                />
             </div>
-        )
+        </div>
     );
 };

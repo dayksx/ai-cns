@@ -24,7 +24,7 @@ export const getNetizenBadgeAttestations = async (netizenAddress: Hex) => {
         const formattedAttestations = netizenBadgeAttestations.map(
             (attestation) => {
                 const [scope, isTrustworthy] = attestation.decodedData;
-                return { scope, isTrustworthy };
+                return { scope, isTrustworthy, attestationId: attestation.id };
             }
         );
         return formattedAttestations;

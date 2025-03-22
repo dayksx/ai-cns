@@ -180,11 +180,16 @@ export function AppSidebar() {
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <NavLink to="/allnetizens">
+                            <SidebarMenuButton>
+                                🌐 Netizens Explorer
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
                     <span className="py-4" />
                     <SidebarMenuItem>
-                        <NavLink
-                                to="/core"
-                        >
+                        <NavLink to="/core">
                             <SidebarMenuButton disabled>
                                 <Cog /> Resources
                             </SidebarMenuButton>
