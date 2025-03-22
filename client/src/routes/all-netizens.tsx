@@ -34,6 +34,7 @@ export const AllNetizens: FunctionComponent = () => {
                         address={netizen.address}
                         profileType={netizen.profileType}
                         agentNature={netizen.agentNature}
+                        showOnlyProfileType={true}
                     />
                 ))}
             </div>

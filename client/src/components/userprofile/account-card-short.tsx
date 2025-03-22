@@ -10,6 +10,7 @@ export type AccountCardShortProps = {
     address: Hex;
     profileType: string; // Profile type is a prop
     agentNature: string; // New prop for AI vs Human
+    showOnlyProfileType?: boolean;
 };
 
 // Define color map for different profile types
@@ -28,6 +29,7 @@ export const AccountCardShort: FunctionComponent<AccountCardShortProps> = ({
     address,
     profileType,
     agentNature,
+    showOnlyProfileType = false,
 }) => {
     const { data } = useEnsName({ address, chainId: mainnet.id });
     const shortAddress = address.replace(/^(.{4}).*(.{3})$/, "$1...$2");
@@ -54,7 +56,9 @@ export const AccountCardShort: FunctionComponent<AccountCardShortProps> = ({
                         className={`flex items-center px-3 py-1 text-sm font-semibold rounded-lg ${tagColor}`}
                     >
                         {agentIcons[agentNature]} {/* AI or Human icon */}
-                        {agentNature.toUpperCase()}
+                        {showOnlyProfileType
+                            ? profileType
+                            : agentNature.toUpperCase()}
                     </span>
                 </div>
 
