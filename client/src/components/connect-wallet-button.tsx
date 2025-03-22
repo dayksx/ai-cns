@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
 import { Badge } from "./ui/badge";
 import { Address } from "./cns/address";
+import { Link } from "react-router";
 
 export function ConnectWalletButton() {
     const { connect } = useConnect();
@@ -36,10 +37,15 @@ export function ConnectWalletButton() {
                     </Button>
                 )}
                 <div className="text-blue-200">
-                    <Address
-                        address={address as `0x${string}`}
-                        showFullAddress={false}
-                    />
+                    <Link
+                        to={`/netizens/${address}`}
+                        className="hover:underline"
+                    >
+                        <Address
+                            address={address as `0x${string}`}
+                            showFullAddress={false}
+                        />
+                    </Link>
                 </div>
                 <Button
                     variant="secondary"
