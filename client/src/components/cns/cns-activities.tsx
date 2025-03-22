@@ -29,12 +29,12 @@ export function CnsActivities() {
     }, []);
 
     return (
-        <div className="flex flex-col gap-4 border border-gray-700 rounded-lg p-4  ">
-            <span className="text-xl font-bold">Activities</span>
+        <div className="flex flex-col gap-4 rounded-lg p-4  ">
+            <span className="text-xl font-semibold text-gray-600 uppercase border-b pb-1s">Activities</span>
             <div className="grid grid-cols-3 gap-4">
                 <ActivitiesColumn title="Ideas" activities={ideas} />
                 <ActivitiesColumn
-                    title="Capital Allocation"
+                    title="Resources Allocation"
                     activities={capitalAllocation}
                 />
                 <ActivitiesColumn title="Building" activities={ongoing} />
