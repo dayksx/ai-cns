@@ -20,9 +20,6 @@ const isValidEVMAddress = (address: string) => {
     return ethers.isAddress(address);
 };
 
-const ensureIng = (scope: string): string => 
-    scope.endsWith("ing") ? scope : `${scope}ing`;
-
 type AttestationInformation = {
     subject: string | null;
     scope: string | null;
@@ -40,7 +37,7 @@ Respond **only** with a JSON markdown block containing the extracted trust attes
 \`\`\`json
 {
     "subject": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
-    "scope": "Build",
+    "scope": "Builder",
     "isTrustworthy": true,
     "reasons": ["Former colleague", "Member of the Ethereum Foundation"]
 }
@@ -90,11 +87,8 @@ Identify any missing **mandatory** fields from the list below and request them n
 - Do **not** generate a response if all required fields are already provided.
 `;
 
-
-
 // Default portal address for Verax
-const DEFAULT_PORTAL_ADDRESS = "0xeea25bc2ec56cae601df33b8fc676673285e12cc";
-
+const PORTAL_ADDRESS = process.env.CNS_VERAX_PORTAL_ID as `0x${string}`;
 
 export const issueAttestationAction: Action = {
 
@@ -120,82 +114,49 @@ export const issueAttestationAction: Action = {
         elizaLogger.info(`🚀 Action handler: Issue attestation`);
         try {
             // Get recent messages for context
-            if (!state) {
-                state = (await runtime.composeState(message)) as State;
-            } else {
-                state = await runtime.updateRecentMessageState(state);
-            }
+            state = state ? await runtime.updateRecentMessageState(state) : (await runtime.composeState(message)) as State;
 
             // Extracting attestation information
-            const attestationContextData = composeContext({
-                state,
-                template: attestationContext,
-            });
+            const attestationContextData = composeContext({ state, template: attestationContext });
+            let { subject, scope, isTrustworthy } = await generateObjectDeprecated({ runtime, context: attestationContextData, modelClass: ModelClass.SMALL });
+            console.log('🛠 Extracted attestation information: ', { subject: subject, scope: scope, isTrustworthy: isTrustworthy });
+            let isTrustworthyBool = isTrustworthy === 'true';
 
-            const attestationInformation: AttestationInformation = await generateObjectDeprecated({
-                runtime,
-                context: attestationContextData,
-                modelClass: ModelClass.SMALL,
-            });
-
-            console.log('🛠 Extracted attestation information: ', attestationInformation);
-
-            let { subject, scope, isTrustworthy } = attestationInformation;
-
-            if (isValidEVMAddress(subject) && scope) {
-                console.log('🚀 ==== Issuing Verax Attestation onchain ===');
-                const veraxSdk = new VeraxSdk(
-                    VeraxSdk.DEFAULT_LINEA_SEPOLIA,
-                    undefined, // Replace with your public address
-                    process.env.EVM_PRIVATE_KEY as `0x${string}`    // Replace with your private key
-                );
-    
-                const portalAddress = process.env.CNS_VERAX_PORTAL_ID as `0x${string}`;
-                const schemaId = process.env.CNS_VERAX_SCHEMA_ID as `0x${string}`;
-                
-                if (subject && veraxSdk) {
-                    let expirationDate = 0;
-                    let receipt = await veraxSdk.portal.attest(
-                        portalAddress,
-                        {
-                            schemaId,
-                            expirationDate,
-                            subject: subject,
-                            attestationData: [{
-                                scope: scope,
-                                isTrustworthy: (isTrustworthy=='true')?true:false,
-                            }],
-                        },
-                        [],
-                        false
-                    );
-                    if (receipt.transactionHash) {
-                        elizaLogger.info(`✅ Attestation successfully registered on-chain: ${receipt.transactionHash}`);
-                        
-                        if (callback) {
-                            callback({
-                                text: `Your attestation claiming that you ${isTrustworthy?"trust":"distrust"} ${subject} on the scope of "${scope}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${receipt.transactionHash}, explorer: https://explorer.ver.ax/linea-sepolia/portals/0x4787fd2dfe83c0e5d07d2ba1aef12afc5c4fe306`,
-                                content: { transactionHash: receipt.transactionHash },
-                            });
-                        }
-                        return true;
-                    }
-                }
-
-            } else {
+            if (!isValidEVMAddress(subject) || !scope) {
                 console.log('🚫 ==== Missing information for attestation ===');
-                const missingInfoContext = composeContext({
-                    state,
-                    template: missingAttestationInfoTemplate,
-                });
-                const missingInfoMessage = await generateText({
-                    runtime,
-                    context: missingInfoContext,
-                    modelClass: ModelClass.SMALL,
-                });
+                const missingInfoContext = composeContext({ state, template: missingAttestationInfoTemplate });
+                const missingInfoMessage = await generateText({ runtime, context: missingInfoContext, modelClass: ModelClass.SMALL });
+                callback?.({ text: missingInfoMessage });
+                return false;
+            }
 
-                if (callback) {
-                    callback({ text: missingInfoMessage });
+            console.log('🚀 ==== Issuing Verax Attestation onchain ===');
+            const veraxSdk = new VeraxSdk(
+                VeraxSdk.DEFAULT_LINEA_SEPOLIA,
+                undefined,
+                process.env.EVM_PRIVATE_KEY as `0x${string}`
+            );
+            const schemaId = process.env.CNS_VERAX_SCHEMA_ID as `0x${string}`;
+            if (subject && veraxSdk) {
+                let expirationDate = 0;
+                let receipt = await veraxSdk.portal.attest(
+                    PORTAL_ADDRESS,
+                    {
+                        schemaId,
+                        expirationDate,
+                        subject: subject,
+                        attestationData: [{
+                            scope: scope,
+                            isTrustworthy: isTrustworthyBool,
+                        }],
+                    },
+                    [],
+                    false
+                );
+                if (receipt.transactionHash) {
+                    elizaLogger.info(`✅ Attestation successfully registered on-chain: ${receipt.transactionHash}`);
+                    callback?.({ text: `Your attestation claiming that you ${isTrustworthy?"trust":"distrust"} ${subject} on the scope of "${scope}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${receipt.transactionHash}, explorer: https://explorer.ver.ax/linea-sepolia/portals/0x4787fd2dfe83c0e5d07d2ba1aef12afc5c4fe306` });
+                    return true;
                 }
             }
             return false;

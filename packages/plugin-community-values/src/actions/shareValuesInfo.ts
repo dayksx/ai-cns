@@ -10,7 +10,6 @@ import {
     ModelClass,
     generateText
 } from "@elizaos/core";
-import { communityValuesURL, fetchCommunityValues } from "../providers";
 
 const valuesInfoTemplate = 
 `# Ensuring Understanding of Consensys Network State (CNS) Values  
@@ -31,6 +30,8 @@ Based on the conversation history, determine if the recipient lacks key context 
 🚨 **Do NOT repeat information already in {{recentMessages}}.**  
 ✍️ Keep the response **sharp, clear, and no longer than 2-3 sentences.**  
 
+You can also list values itselves to illustrate the explaination
+
 Respond in {{agentName}}'s natural speaking style.`;
 
 
@@ -38,7 +39,7 @@ export const shareValuesAction: Action = {
     name: "SHARE_VALUES",
     similes: ["FETCH_VALUES", "SHOW_VALUES", "LIST_VALUES"],
     description:
-        "Use this action only when user is asking about Consensys Network State (CNS) Values",
+        "Use this action only when user is asking about Consensys Network State (CNS) Values to give more details",
 
     validate: async (_runtime: IAgentRuntime, _message: Memory) => {
         elizaLogger.info(`👀 Action validate: Sharing values`);
@@ -57,34 +58,14 @@ export const shareValuesAction: Action = {
         
         try {
             // Setup state for context generation
-            if (!state) {
-                state = (await runtime.composeState(message)) as State;
-            } else {
-                state = await runtime.updateRecentMessageState(state);
-            }
+            state = state ? await runtime.updateRecentMessageState(state) : (await runtime.composeState(message)) as State; state = await runtime.updateRecentMessageState(state);
             
             // Generate additional context information about the community values
-            const valuesInfoContext = composeContext({
-                state,
-                template: valuesInfoTemplate,
-            });
-            
-            const communityValuesInfo = await generateText({
-                runtime,
-                context: valuesInfoContext,
-                modelClass: ModelClass.SMALL,
-            });
+            const valuesInfoContext = composeContext({ state, template: valuesInfoTemplate });
+            const communityValuesInfo = await generateText({ runtime, context: valuesInfoContext, modelClass: ModelClass.SMALL });
 
-            if (callback) {
-                callback({
-                    text: communityValuesInfo,
-                    content: {
-                        url: {
-                            communityValuesURL
-                        },
-                    },
-                });
-            }
+            callback?.({ text: communityValuesInfo });
+
         } catch (error) {
             elizaLogger.error("Error fetching network state values:", error);
         }

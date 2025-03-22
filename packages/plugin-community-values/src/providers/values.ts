@@ -1,6 +1,6 @@
 import { composeContext, elizaLogger, generateText, ModelClass, type HandlerCallback, type IAgentRuntime, type Memory, type Provider, type State } from "@elizaos/core";
 import axios from "axios";
-
+import { ethers } from "ethers";
 interface CommunityValue {
     id: string;
     name: string;
@@ -172,13 +172,13 @@ const valuesProvider: Provider = {
                 `- **${value.name}**: ${value.description}  
                   [🔗 Link](${value.url})  
                   📊 **Vault Stats**:  
-                  - **Total Shares**: ${value.vault.totalShares}  
-                  - **Position Count**: ${value.vault.positionCount}  
-                  - **Current Share Price**: ${value.vault.currentSharePrice}  
+                  - **Total Shares**: ${ethers.formatEther(value.vault.totalShares.toString())} $ETH
+                  - **Position Count**: ${ethers.formatEther(value.vault.positionCount)} $ETH
+                  - **Current Share Price**: ${ethers.formatEther(value.vault.currentSharePrice)} $ETH
                   🏦 **Counter Vault Stats**:  
-                  - **Total Shares**: ${value.counterVault.totalShares}  
-                  - **Position Count**: ${value.counterVault.positionCount}  
-                  - **Current Share Price**: ${value.counterVault.currentSharePrice}`
+                  - **Total Shares**: ${ethers.formatEther(value.counterVault.totalShares)} $ETH
+                  - **Position Count**: ${ethers.formatEther(value.counterVault.positionCount)} $ETH
+                  - **Current Share Price**: ${ethers.formatEther(value.counterVault.currentSharePrice)} $ETH`
             ).join("\n\n");
 
             if (!state) {
@@ -209,7 +209,7 @@ const valuesProvider: Provider = {
                 });
             }
 
-            return `**The Consensys Network State (CNS) values, voted on by the community through ETH staking on this platform ${communityValuesURL}, are:**\n\n${formattedValues}`;
+            return `**The Consensys Network State (CNS) community values, voted through ETH staking on this platform ${communityValuesURL}, are:**\n\n${formattedValues}`;
 
         } catch (error) {
             console.error("Error in valuesProvider:", error);

@@ -20,7 +20,7 @@ const isValidEVMAddress = (address: string) => {
 };
 
 type IdeaInformation = {
-    instigator: string | null;
+    ideator: string | null;
     title: string | null;
     description: string | null;
     tags?: string[];
@@ -42,6 +42,7 @@ interface IdeaScoring {
 
 const ideaContext = `# Extract CNS Idea Registration Details
 Respond with a JSON markdown block containing the relevant details of the last idea proposed by {{senderName}}.
+You need to make a clear difference between different mentioned ideas, if it's a new idea you should re-extract and infer the information.
 
 ## **Recent Messages**
 {{recentMessages}}
@@ -49,11 +50,12 @@ Respond with a JSON markdown block containing the relevant details of the last i
 ## **Example Response**
 \`\`\`json
 {
-    "instigator": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
+    "ideator": "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
     "title": "Title of the Idea",
     "description": "Detailed description of the idea",
     "tags": ["tag1", "tag2"],
     "category": "Category of the idea"
+    "exist": false
 }
 \`\`\`
 
@@ -62,13 +64,14 @@ Respond with a JSON markdown block containing the relevant details of the last i
 Your task is to extract the relevant details and return a **structured JSON object** for on-chain registration.
 
 ### **Mandatory Fields to Extract**  
-- **Instigator's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.  
+- **ideator's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.  
 - **Idea Title** → A concise yet meaningful title.  
 - **Idea Description** → A detailed explanation of the idea.  
 
 ### **Optional Fields**  
 - **Tags** → Keywords or themes associated with the idea.  
 - **Category** → A broader classification of the idea.  
+
 
 If conflicting details are present, **favor the most recent and explicit information**.  
 If no **tags or category** are provided, infer them from the context of the discussion.
@@ -82,16 +85,17 @@ Based on {{senderName}}'s recent messages, some details are missing to complete 
 ## **Recent Messages**
 {{recentMessages}}
 
-## **Missing Required Details** 
-Request only the missing information, or the information that cannot be infered
-{{#if !instigator}}- **Instigator's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address owned by the {{senderName}} .{{/if}}  
-{{#if !title}}- **Idea Title** → A clear and concise title for the idea.{{/if}}  
-{{#if !description}}- **Idea Description** → An explanation of the idea.{{/if}}  
+## **Missing Required Details**  
+Request only the missing information, or the information that cannot be inferred with the {{agentName}} personality and style. 
+
+{{#if !ideator}}- **Ideator's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address owned by {{senderName}}.{{/if}}  
+{{#if !description}}- **Idea Description** → Request {{senderName}} to provide additional context to fully clarify the vision behind the idea.  
+If not already done, according to recent messages, specify to {{senderName}} that this idea has the potential to shape the collective future of CNS. To maximize its impact, ask to ensure a clear description of the idea. If the idea is still in development, suggest refining it further. In the meantime, {{agentName}} can provide insights and feedback on how it could better align with the values of the Consensys Network State (CNS) if needed.{{/if}}  
 
 ## **Next Steps**  
-To proceed, please ask the missing details.
-In order to guide the ideator, if necessary, give some insight about how the idea could better meet the values of Consensys Network State (CNS) 
-If you feel that the idea needs to be refined, tell the {{senderName}} to feel free to come back later when the idea will be more refined and mature, taking the time to develop it further before submission.`;
+To proceed, request the missing details.  
+If necessary, provide guidance on how the idea could better align with the values of the **Consensys Network State (CNS)**.  
+If the idea requires further refinement, inform {{senderName}} that they can take additional time to develop it before submission, ensuring a stronger and more impactful proposal.`
 
 const valueAlignmentScoring = `## **Idea Evaluation & Scoring**
 
@@ -115,7 +119,7 @@ Assess the idea based on the following **key dimensions**:
 Return a **JSON markdown block** containing:
 - The **title** of the idea.
 - A **score (1-100) per criterion**.
-- A **global rating** (average of all scores).
+- A **global rating** (average of all scores) This should never be a float, just integers value.
 - A **concise rationale** explaining the evaluation.
 
 \`\`\`json
@@ -143,12 +147,12 @@ Return a **JSON markdown block** containing:
 const SMART_CONTRACT_ABI = [
     {
         "inputs": [
-            { "internalType":"address","name":"_instigator","type":"address"},
+            { "internalType": "address", "name": "_ideator", "type": "address" },
             { "internalType": "string", "name": "_title", "type": "string" },
             { "internalType": "string", "name": "_description", "type": "string" },
             { "internalType": "string", "name": "_category", "type": "string" },
             { "internalType": "string[]", "name": "_tags", "type": "string[]" },
-            { "internalType":"uint256","name":"_score","type":"uint256" }
+            { "internalType": "uint256", "name": "_score", "type": "uint256" }
         ],
         "name": "createInitiatives",
         "outputs": [],
@@ -157,12 +161,10 @@ const SMART_CONTRACT_ABI = [
     }
 ];
 
-
-
 export const registerIdeaAction: Action = {
     name: "REGISTER_IDEA",
     similes: ["REGISTER_NEED", "REGISTER_INITIATIVE", "REGISTER_PROJECT", "SUBMIT_IDEA", "SHARE_IDEA", "STORE_IDEA"],
-    description: "Only use this action when a new idea, need or initiative for Consensys Network State (CNS) is mentioned",
+    description: "Only use this action when a new idea, need or initiative for CNS is mentioned",
 
     validate: async (runtime: IAgentRuntime, message: Memory, state: State) => {
         elizaLogger.info(`👀 Action validate: Validating idea registration request`);
@@ -179,88 +181,48 @@ export const registerIdeaAction: Action = {
         elizaLogger.info(`🚀 Action handler: Idea registration`);
 
         try {
-            
-            if (!state) {
-                state = (await runtime.composeState(message)) as State;
-            } else {
-                state = await runtime.updateRecentMessageState(state);
-            }
-            
+            state = state ? await runtime.updateRecentMessageState(state) : (await runtime.composeState(message)) as State;
+
             // Extracting idea information
             console.log("🛠 Extracting idea information");
-            const ideaContextData = composeContext({
-                state,
-                template: ideaContext,
-            });
+            const ideaContextData = composeContext({ state, template: ideaContext });
+            let { ideator, title, description, tags, category } = await generateObjectDeprecated({ runtime, context: ideaContextData, modelClass: ModelClass.SMALL });
 
-            const ideaInformation: IdeaInformation = await generateObjectDeprecated({
-                runtime,
-                context: ideaContextData,
-                modelClass: ModelClass.SMALL,
-            });
-            console.log('🔧 Idea information: ', ideaInformation);
+            // Missing idea information
+            console.log("ideator check", {ideator:ideator, isvalidEVMAddress: isValidEVMAddress(ideator), title: title, description: description});
+            if (!isValidEVMAddress(ideator) || !title || !description) {
+                console.log('🚫 ==== Missing information for idea registration ===', {isvalidEVMAddress: isValidEVMAddress(ideator), title: title, description: description});
+                const missingInfoContext = composeContext({ state, template: missingIdeaInfoTemplate });
+                const missingInfoMessage = await generateText({ runtime, context: missingInfoContext, modelClass: ModelClass.SMALL});
+                callback?.({ text: missingInfoMessage });
+                return false;
+            }
+            console.log('🔧 Idea information: ', { ideator, title, description, tags, category });
             
             // Scoring idea
             console.log("🛠 Scoring idea information");
-            const ideaScoringData = composeContext({
-                state,
-                template: valueAlignmentScoring,
-            });
-            
-            const ideaScoring = await generateObjectDeprecated({
-                runtime,
-                context: ideaScoringData,
-                modelClass: ModelClass.SMALL,
-            });
+            const ideaScoringData = composeContext({ state, template: valueAlignmentScoring });
+            const ideaScoring = await generateObjectDeprecated({ runtime, context: ideaScoringData, modelClass: ModelClass.SMALL });
             console.log('🔧 Idea scoring: ', ideaScoring);
-
             let { globalRating } = ideaScoring;
-            let { instigator, title, description, tags, category } = ideaInformation;
-
-            // Registration of the idea onchain
-            if (isValidEVMAddress(instigator) && title && description && globalRating) {
-                console.log('🚀 ==== Registering idea onchain ===');
-                const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-                
-                if (await provider.getCode(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS) === "0x") {
-                    console.error("❌ No contract deployed at this address!");
-                    return false;
-                }
-                
-                // Check if the dayly credit 
-                const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-                const contract = new ethers.Contract(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
-                const tx = await contract.createInitiatives(instigator, title, description, category || "", tags || [], globalRating);
-                await tx.wait();
-                elizaLogger.info(`✅ Idea successfully registered on-chain: ${tx.hash}`);
-
-                if (callback) {
-                    callback({
-                        text: `Your idea "${title}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}`,
-                        content: { transactionHash: tx.hash },
-                    });
-                }
-                return true;
-    
-
-            } else {
-                // Missing information for registration
-                console.log('🚫 ==== Missing information for idea registration ===', {isvalidEVMAddress: isValidEVMAddress(instigator), title: title, description: description, globalRating: globalRating});
-
-                const missingInfoContext = composeContext({
-                    state,
-                    template: missingIdeaInfoTemplate,
-                });
-                const missingInfoMessage = await generateText({
-                    runtime,
-                    context: missingInfoContext,
-                    modelClass: ModelClass.SMALL,
-                });
-
-                if (callback) {
-                    callback({ text: missingInfoMessage });
-                }
+            
+            // Idea registration
+            console.log('🚀 ==== Registering idea onchain ===');
+            const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+            if (await provider.getCode(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS) === "0x") {
+                console.error("❌ No contract deployed at this address!");
+                return false;
             }
+            const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
+            const contract = new ethers.Contract(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
+            
+            console.log("contract.createInitiatives(", {ideator, title, description, category , tags, globalRating});
+            const tx = await contract.createInitiatives(ethers.getAddress(ideator), title, description, category || "", tags || [], globalRating);
+            await tx.wait();
+            elizaLogger.info(`✅ Idea successfully registered on-chain: ${tx.hash}`);
+            callback?.({ text: `Your idea "${title}" has been successfully registered on-chain. Transaction Hash: https://sepolia.lineascan.build/tx/${tx.hash}` });
+            
+            return true;
             
         } catch (error) {
             elizaLogger.error("Error registering idea on-chain:", error);

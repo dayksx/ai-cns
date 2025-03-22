@@ -18,7 +18,7 @@ const attestationsProvider: Provider = {
                 "0x8660da4093987072670aba14868d8dc4112ea88a777f7434a54ea8e7925a1a73";
 
             const myAttestations = await attestationDataMapper.findBy(
-                10, // first - can be set to limit the number of results, null means no limit
+                20, // first - can be set to limit the number of results, null means no limit
                 null, // skip - can be set to paginate results, null means start from the beginning
                 {
                     portal: portalAddress.toLowerCase(),
@@ -32,20 +32,19 @@ const attestationsProvider: Provider = {
                 .map((attestation, index) => {
                     const [scope, isTrustworthy] = attestation.decodedData;
                     return `
-                    **Attestation #${index + 1}**
-                    - **ID:** ${attestation.id}
-                    - **URL:** https://explorer.ver.ax/linea-sepolia/attestations/${
-                        attestation.id
-                    }
+                    **Attestation issued to ${attestation.subject}:**
                     - **Scope:** ${scope}
-                    - **Subject:** ${attestation.subject}
                     - **Trustworthiness:** ${
                         isTrustworthy ? "Trusted" : "Not Trusted"
-                    }`;
+                        }
+                    - **URL:** https://explorer.ver.ax/linea-sepolia/attestations/${
+                            attestation.id
+                        }
+                    `;
                 })
                 .join("\n");
-
-            return `**The Consensys Network State (CNS) issued Verax Trust attestations registered on-chain by the community reflecting trustworthy and untrustworthy agents / CNS netizens: **\n${formattedAttestations}`;
+                
+            return `**Lattest attestations issued by Netizens reflecting the trustworthiness of human and AI Agents on a certain scope: **\n${formattedAttestations}`;
         } catch (error) {}
     },
 };

@@ -1,1 +1,1 @@
-export * from "./shareValues.ts"
+export * from "./shareValuesInfo.ts"

@@ -70,11 +70,11 @@ Based on {{senderName}}'s recent messages, identify the missing details required
 Your task is to **ask for the missing information directly**, without acknowledgment or extra explanations.
 
 ### **Mandatory Missing Details**  
-{{#if !recipient}}- **Recipient's EVM address** → Must be a valid \`0x[a-fA-F0-9]{40}\` address.{{/if}}  
-{{#if !amount}}- **Amount of $CNS** → The exact number of tokens to be sent.{{/if}}  
+{{#if !recipient}}Recipient's EVM address → Must be a valid \`0x[a-fA-F0-9]{40}\` address.{{/if}}  
+{{#if !amount}}Amount of $CNS → The exact number of tokens to be sent.{{/if}}  
 
 ### **Optional Missing Details**  
-{{#if !reason}}- **Reason for the tip** → This is optional, but you can ask {{senderName}} for more context.{{/if}}  
+{{#if !reason}}Reason for the tip* → This is optional, but you can ask {{senderName}} for more context.{{/if}}  
 
 ## **Response Format**  
 - Respond in **{{agentName}}'s** style and personality.  
