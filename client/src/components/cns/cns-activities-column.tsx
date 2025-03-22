@@ -16,33 +16,50 @@ export function ActivitiesColumn({
                 {title}
             </div>
             {activities?.length === 0 ? (
-                <div className="italic text-center text-gray-500">No topic yet</div>
+                <div className="italic text-center text-gray-500">
+                    No topic yet
+                </div>
             ) : (
                 activities.map((a, index) => (
                     <Tooltip key={index}>
                         <TooltipTrigger asChild>
                             <div className="border border-gray-700 bg-gray-800 rounded-lg p-3 my-2 hover:bg-gray-700 transition-all">
-                                <div className="text-sm font-bold text-gray-100">{a.title}</div>
+                                {/* Title */}
+                                <div className="text-sm font-bold text-gray-100">
+                                    {a.title}
+                                </div>
+
+                                {/* Description */}
                                 <div className="text-xs text-gray-400">
                                     {a.description?.substring(0, 100)}
                                     {a.description?.length > 100 && "..."}
                                 </div>
-                                <div className="grid grid-cols-2 mt-2 items-center">
 
+                                {/* Category + Voting Icons */}
+                                <div className="flex justify-between items-center mt-3">
+                                    {/* Category Badge */}
                                     <div className="text-xs text-gray-400">
-                                            <Badge className="bg-blue-500 text-white">
-                                                <span className="lowercase">
-                                                    {a.category}
-                                                </span>
-                                            </Badge>
-                                        </div>
-                                    <div className="grid grid-cols-2 gap-2 justify-end text-gray-400 text-xs">
+                                        <Badge className="bg-blue-500 text-white px-2 py-1">
+                                            <span className="lowercase">
+                                                {a.category}
+                                            </span>
+                                        </Badge>
+                                    </div>
+
+                                    {/* Voting Icons */}
+                                    <div className="flex gap-4 text-gray-400 text-xs">
                                         <div className="flex items-center gap-1">
-                                            <ThumbsUp size={15} className="text-green-400" />
+                                            <ThumbsUp
+                                                size={15}
+                                                className="text-green-400"
+                                            />
                                             {a.upvotes}
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <ThumbsDown size={15} className="text-red-400" />
+                                            <ThumbsDown
+                                                size={15}
+                                                className="text-red-400"
+                                            />
                                             {a.downvotes}
                                         </div>
                                     </div>

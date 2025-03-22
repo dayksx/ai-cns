@@ -12,7 +12,6 @@ export default function Census() {
     useEffect(() => {
         getCnsNetizens().then((netizens) => {
             setNetizens(netizens);
-            console.log(netizens.map((n) => n.address));
         });
     }, []);
 

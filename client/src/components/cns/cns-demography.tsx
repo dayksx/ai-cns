@@ -18,37 +18,11 @@ export function CnsDemography({ netizens }: { netizens: Netizen[] }) {
             </div>
             <div className="flex flex-col gap-4 border-gray-700 rounded-lg p-4  ">
                 <div className="flex flex-row gap-2">
-                    <span className="text-xl font-semibold text-gray-700 uppercase border-b pb-1s">Demography</span>
+                    <span className="text-xl font-semibold text-gray-700 uppercase border-b pb-1s">
+                        Demography
+                    </span>
                 </div>
                 <AccountsGridShort netizens={netizens} />
-                {/* <div className="flex flex-col gap-2 text-sm">
-                    <div>
-                        {netizens.map((netizen) => {
-                            return (
-                                <div
-                                    key={netizen.address}
-                                    className="grid grid-cols-4 gap-1"
-                                >
-                                    <div>
-                                        <Address
-                                            address={netizen.address}
-                                            showFullAddress={false}
-                                        />
-                                    </div>
-                                    <div className="capitalize">
-                                        {netizen.profileType}
-                                    </div>
-                                    <div className="capitalize">
-                                        {netizen.agentNature}
-                                    </div>
-                                    <div className="capitalize">
-                                        Verax attestation
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div> */}
             </div>
         </>
     );

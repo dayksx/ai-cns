@@ -18,6 +18,7 @@ import type { UUID } from "@elizaos/core";
 import {
     Cog,
     HandCoins,
+    Search,
     SquareActivity,
     ThumbsUp,
     User,
@@ -160,6 +161,14 @@ export function AppSidebar() {
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
+                        <NavLink to="/allnetizens">
+                            <SidebarMenuButton>
+                                <Search />
+                                Netizens
+                            </SidebarMenuButton>
+                        </NavLink>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                         <NavLink to="/census">
                             <SidebarMenuButton>
                                 <SquareActivity /> Census
@@ -177,13 +186,6 @@ export function AppSidebar() {
                         <NavLink to="/allocation">
                             <SidebarMenuButton>
                                 <HandCoins /> Resource Allocation
-                            </SidebarMenuButton>
-                        </NavLink>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <NavLink to="/allnetizens">
-                            <SidebarMenuButton>
-                                🌐 Netizens Explorer
                             </SidebarMenuButton>
                         </NavLink>
                     </SidebarMenuItem>
