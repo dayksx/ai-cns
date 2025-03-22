@@ -13,7 +13,6 @@ export default function CapitalAllocation() {
                 (initiative) => initiative.status === "CAPITAL_ALLOCATION"
             );
             setCapitalAllocation(initiatives);
-            console.log(initiatives);
         });
     }, []);
 
