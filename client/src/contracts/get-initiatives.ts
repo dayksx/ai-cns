@@ -15,7 +15,7 @@ export async function getInitiatives() {
         const events = await publicClient.getLogs({
             address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
             event: parseAbiItem(
-                "event InitiativeCreated(bytes32 initiativeId, address ideator, string title, string description, string category)"
+                "event InitiativeCreated(bytes32 initiativeId, address ideator, string title, string description, string category, uint256 score)"
             ),
             fromBlock: BigInt(0),
             toBlock: "latest",
@@ -45,6 +45,7 @@ export async function getInitiatives() {
             status: initiative[7], // string status
             upvotes: Number(initiative[8]), // uint256 upvotes
             downvotes: Number(initiative[9]), // uint256 downvotes
+            score: Number(initiative[10]), // uint256 score
         }));
     } catch (error) {
         console.error("Error fetching initiatives:", error);
