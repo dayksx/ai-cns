@@ -50,6 +50,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A decentralized identity verification system that utilizes zero-knowledge proofs to allow CNS netizens to prove their identity or certain attributes without revealing sensitive information. This digital passport empowers users to interact securely across decentralized platforms while protecting their personal data.",
       "Decentralized Identity Systems",
       ["identity", "privacy", "zero-knowledge proof", "decentralization"],
+      95,
     ],
     [
       acc2,
@@ -57,6 +58,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A system where disputes are resolved through a network of autonomous agents and community-driven protocols utilizing blockchain technology to ensure transparency and fairness. Smart contracts will automate resolutions based on predefined community guidelines integrating decentralized identity verification and leveraging reputation systems to provide a secure and equitable process.",
       "Governance",
       ["dispute resolution", "decentralization", "community governance"],
+      90,
     ],
     [
       acc3,
@@ -64,6 +66,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A system where crowdfunding is accessible by everyone while relying on web3 technologies.",
       "Crowdfunding",
       ["crowdfunding", "decentralization"],
+      85,
     ],
     [
       acc1,
@@ -71,6 +74,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A decentralized data marketplace where individuals can sell or share their personal data with full control over access and monetization. Utilizing blockchain-based consent mechanisms and encrypted storage, users ensure privacy and data sovereignty.",
       "Data Privacy",
       ["data sovereignty", "decentralization", "privacy"],
+      92,
     ],
     [
       acc2,
@@ -78,6 +82,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A censorship-resistant, user-owned social media network that rewards content creators through tokenized incentives while ensuring free speech and resistance to central authority control.",
       "Social Media & Communication",
       ["social media", "decentralization", "free speech"],
+      88,
     ],
     [
       acc3,
@@ -85,6 +90,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "An experiment in urban governance using blockchain-based decision-making, allowing residents to participate in direct governance, public budgeting, and city planning through quadratic voting and smart contracts.",
       "Urban Governance",
       ["decentralization", "governance", "quadratic voting"],
+      93,
     ],
     [
       acc1,
@@ -92,6 +98,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A blockchain-powered education system where learners earn verifiable credentials stored on-chain. Educators and students engage in a trustless environment where content curation is democratized and incentivized.",
       "Education & Learning",
       ["education", "decentralization", "blockchain"],
+      89,
     ],
     [
       acc2,
@@ -99,6 +106,7 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A framework for governing AI models in a decentralized way, allowing communities to propose, vote, and regulate AI behavior and decision-making through on-chain governance mechanisms.",
       "AI & Governance",
       ["AI governance", "decentralization", "autonomous systems"],
+      91,
     ],
     [
       acc3,
@@ -106,11 +114,12 @@ async function fillData(contract: NetworkStateInitiatives) {
       "A decentralized energy trading platform where individuals can produce, trade, and consume renewable energy using blockchain-based smart contracts for transparent and automated transactions.",
       "Sustainability & Energy",
       ["energy", "decentralization", "sustainability"],
+      87,
     ],
   ];
 
-  for (const [account, title, description, category, tags] of initiatives) {
-    await contract.connect(account).createInitiatives(account, title, description, category, tags, 0);
+  for (const [account, title, description, category, tags, score] of initiatives) {
+    await contract.connect(account).createInitiatives(account, title, description, category, tags, score);
   }
 
   await updateInitiatives(contract, acc1);
