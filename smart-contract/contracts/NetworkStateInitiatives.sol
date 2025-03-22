@@ -17,6 +17,7 @@ contract NetworkStateInitiatives {
         uint256 downvotes;
         address[] teamMembers;
         uint256 score;
+        uint256 funding;
     }
 
     string[] public statusList = ["IDEATION", "CAPITAL_ALLOCATION", "BUILDING"];
@@ -50,6 +51,12 @@ contract NetworkStateInitiatives {
     event TeamMemberRemoved(bytes32 initiativeId, address member);
     // Event emitted when a score is updated
     event ScoreUpdated(bytes32 initiativeId, uint256 newScore);
+    // Event emitted when a fund is allocated
+    event FundAllocated(bytes32 initiativeId, address funder, uint256 amount);
+    // Event emitted when a fund is withdrawn
+    event FundingWithdrawn(bytes32 initiativeId, address instigator, uint256 amount);
+    // Event emitted when fund is withdrawn in case of emergency
+    event EmergencyWithdrawal(address owner, uint256 amount);
 
     /**
      * @dev Modifier to make a function callable only by the owner.
@@ -65,6 +72,22 @@ contract NetworkStateInitiatives {
      */
     constructor() {
         owner = msg.sender;
+    }
+
+    /**
+     * @notice Allocates funds to a specific initiative.
+     * @dev This function allows users to send ETH to fund an initiative identified by its ID.
+     * @param _initiativeId The ID of the initiative to fund.
+     */
+    function allocateFund(bytes32 _initiativeId) public payable {
+        require(msg.value > 0, "Must send ETH to fund");
+        for (uint256 i = 0; i < initiatives.length; i++) {
+            if (initiatives[i].id == _initiativeId) {
+                initiatives[i].funding += msg.value;
+                emit FundAllocated(_initiativeId, msg.sender, msg.value);
+                break;
+            }
+        }
     }
 
     /**
@@ -101,7 +124,8 @@ contract NetworkStateInitiatives {
             upvotes: 0,
             downvotes: 0,
             teamMembers: new address[](0),
-            score: _score
+            score: _score,
+            funding: 0
         });
         initiatives.push(newInitiative);
         emit InitiativeCreated(initiativeId, _ideator, _title, _description, _category, _score);
@@ -241,6 +265,36 @@ contract NetworkStateInitiatives {
                 break;
             }
         }
+    }
+
+    /**
+     * @notice Withdraws the funding for a specific initiative.
+     * @dev Only the instigator of the initiative can withdraw the funding.
+     * @param _initiativeId The ID of the initiative to withdraw funding from.
+     */
+    function withdrawInitiativeFunding(bytes32 _initiativeId) public {
+        for (uint256 i = 0; i < initiatives.length; i++) {
+            if (initiatives[i].id == _initiativeId) {
+                require(msg.sender == initiatives[i].instigator, "Only instigator can withdraw");
+                uint256 amount = initiatives[i].funding;
+                require(amount > 0, "No funding available");
+                initiatives[i].funding = 0;
+                payable(msg.sender).transfer(amount);
+                emit FundingWithdrawn(_initiativeId, msg.sender, amount);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @notice Allows the owner to withdraw all ETH from the contract in case of an emergency.
+     * @dev This function can only be called by the owner of the contract.
+     */
+    function withdrawEmergency() public onlyOwner {
+        uint256 contractBalance = address(this).balance;
+        require(contractBalance > 0, "No ETH available");
+        payable(owner).transfer(contractBalance);
+        emit EmergencyWithdrawal(owner, contractBalance);
     }
 
     /**
