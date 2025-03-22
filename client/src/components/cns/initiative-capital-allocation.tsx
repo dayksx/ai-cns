@@ -51,7 +51,7 @@ export function InitiativeCapitalAllocation({
     }
 
     return (
-        <div className="grid grid-cols-3 gap-4 border border-blue-500 rounded-lg p-4 ">
+        <div className="grid grid-cols-3 gap-4 border rounded-lg p-4 ">
             <div className="grid col-span-2">
                 <div className="font-bold mb-5">{initiative.title}</div>
                 <div className="grid grid-cols-2 gap-4">
@@ -109,7 +109,7 @@ export function InitiativeCapitalAllocation({
 
                 <div>
                     <Button
-                        className="w-full bg-blue-600 text-white font-bold"
+                        className="w-full bg-blue-600 hover:bg-blue-400 text-white font-bold"
                         disabled={!isConnected}
                         onClick={() => {
                             joinTeam();
@@ -120,7 +120,7 @@ export function InitiativeCapitalAllocation({
                 </div>
                 <div>
                     <Button
-                        className="w-full bg-yellow-500 text-sm font-bold"
+                        className="w-full bg-yellow-500 hover:bg-yellow-400 text-sm font-bold"
                         onClick={() => {
                             sendTransaction({
                                 to: CNS_WALLET_ADDRESS,
