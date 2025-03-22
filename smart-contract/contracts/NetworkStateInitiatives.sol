@@ -27,6 +27,7 @@ contract NetworkStateInitiatives {
     mapping(address => uint256) public userCredits; // Remaining credits per user
     mapping(address => mapping(bytes32 => bool)) public hasVoted; // Track if a user has voted on an initiative
     uint256 public constant MAX_CREDITS_PER_USER = 100; // Maximum credit allowed per user
+    address payable public networkStateTreasury; // Address of the treasury contract
 
     // event emitted when a user's credit balance is updated
     event CreditsUpdated(address user, uint256 newCreditBalance);
@@ -57,6 +58,8 @@ contract NetworkStateInitiatives {
     event FundingWithdrawn(bytes32 initiativeId, address instigator, uint256 amount);
     // Event emitted when fund is withdrawn in case of emergency
     event EmergencyWithdrawal(address owner, uint256 amount);
+    // Event emitted when the network state treasury address is updated
+    event NetworkStateTreasuryUpdated(address newReceiver, uint256 timestamp);
 
     /**
      * @dev Modifier to make a function callable only by the owner.
@@ -72,19 +75,26 @@ contract NetworkStateInitiatives {
      */
     constructor() {
         owner = msg.sender;
+        networkStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
     }
 
     /**
      * @notice Allocates funds to a specific initiative.
-     * @dev This function allows users to send ETH to fund an initiative identified by its ID.
+     * @dev This function allows users to send ETH to fund a specific initiative.
+     *      A portion of the sent ETH (10%) is forwarded to the network state treasury.
      * @param _initiativeId The ID of the initiative to fund.
      */
     function allocateFund(bytes32 _initiativeId) public payable {
         require(msg.value > 0, "Must send ETH to fund");
         for (uint256 i = 0; i < initiatives.length; i++) {
             if (initiatives[i].id == _initiativeId) {
-                initiatives[i].funding += msg.value;
-                emit FundAllocated(_initiativeId, msg.sender, msg.value);
+                uint256 treasuryShare = (msg.value * 10) / 100;
+                uint256 initiativeShare = msg.value - treasuryShare;
+
+                (bool success, ) = networkStateTreasury.call{ value: treasuryShare }("");
+                require(success, "Ether forwarding to treasury failed");
+                initiatives[i].funding += initiativeShare;
+                emit FundAllocated(_initiativeId, msg.sender, initiativeShare);
                 break;
             }
         }
@@ -295,6 +305,17 @@ contract NetworkStateInitiatives {
         require(contractBalance > 0, "No ETH available");
         payable(owner).transfer(contractBalance);
         emit EmergencyWithdrawal(owner, contractBalance);
+    }
+
+    /**
+     * @notice Updates the address of the network state treasury.
+     * @dev This function can only be called by the owner of the contract.
+     * @param _newReceiver The new address to receive the network state treasury funds.
+     */
+    function updateNetworkStateTreasury(address payable _newReceiver) public onlyOwner {
+        require(_newReceiver != address(0), "Invalid address");
+        networkStateTreasury = _newReceiver;
+        emit NetworkStateTreasuryUpdated(_newReceiver, block.timestamp);
     }
 
     /**
