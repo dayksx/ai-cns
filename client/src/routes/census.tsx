@@ -16,7 +16,7 @@ export default function Census() {
     }, []);
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col w-full h-[100dvh] p-8 text-white">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Census" />
                 <div className="flex flex-col gap-4">

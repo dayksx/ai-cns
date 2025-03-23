@@ -409,14 +409,12 @@ export default function Governance() {
     }, [address]);
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col w-full h-[100dvh] p-8 text-white">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Governance" />
                 <div className="grid grid-cols-[3fr_1fr] gap-6 items-start">
                     <div className="flex flex-col items-center justify-center rounded-lg p-6 min-h-[400px]">
-                        <h2 className="text-xl font-bold text-white mb-8 ml-8 self-start">
-                            Ideas
-                        </h2>
+
                         <Suspense
                             fallback={
                                 <p className="text-gray-400">

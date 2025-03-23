@@ -1,6 +1,7 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { getCnsNetizens, Netizen } from "@/lib/cns/get-cns-netizens";
 import { AccountCardShort } from "@/components/userprofile/account-card-short";
+import { PageHeader } from "@/components/page-header";
 
 export const AllNetizens: FunctionComponent = () => {
     const [netizens, setNetizens] = useState<Netizen[]>([]);
@@ -13,6 +14,7 @@ export const AllNetizens: FunctionComponent = () => {
     }, []);
 
     return (
+
         <div className="flex flex-col items-center px-8 py-12">
             {/* Title Section */}
             <div className="w-full text-center mb-8">

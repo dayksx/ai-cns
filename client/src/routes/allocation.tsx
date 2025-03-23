@@ -16,7 +16,7 @@ export default function CapitalAllocation() {
     }, []);
 
     return (
-        <div className="flex flex-col w-full h-[100dvh] p-8 bg-gray-900 text-white">
+        <div className="flex flex-col w-full h-[100dvh] p-8 text-white">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Resource Allocation" />
                 <div className="flex flex-col gap-6 mt-6">

@@ -89,7 +89,7 @@ export default function Naturalization() {
     }
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col w-full h-[100dvh] p-8 text-white">
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Naturalization" />
                 <div className="grid px-52 gap-y-4">

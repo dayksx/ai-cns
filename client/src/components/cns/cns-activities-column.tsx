@@ -11,7 +11,7 @@ export function ActivitiesColumn({
     activities: any[];
 }) {
     return (
-        <div className="border border-gray-700 bg-gray-900 rounded-lg p-4 shadow-lg">
+        <div className="rounded-lg p-4 shadow-lg">
             <div className="text-lg text-center font-bold mb-4 uppercase text-gray-200">
                 {title}
             </div>
