@@ -15,15 +15,23 @@ export async function deployNetworkStateAgreementFixture() {
   const Initiativescontract = (await factory.connect(owner).deploy(treasuryAddress)) as NetworkStateInitiatives;
   await Initiativescontract.waitForDeployment();
 
+  const initiativesContractAddress = await Initiativescontract.getAddress();
   const NetworkStateAgreement = (await ethers.getContractFactory(
     "NetworkStateAgreement",
   )) as NetworkStateAgreement__factory;
   const networkStateAgreement = (await NetworkStateAgreement.deploy(
     constitutionURL,
-    Initiativescontract.getAddress(),
+    initiativesContractAddress,
     treasuryAddress,
   )) as NetworkStateAgreement;
   const networkStateAgreementAddress = await networkStateAgreement.getAddress();
 
-  return { networkStateAgreement, networkStateAgreementAddress, constitutionURL, owner, user1 };
+  return {
+    networkStateAgreement,
+    networkStateAgreementAddress,
+    constitutionURL,
+    owner,
+    user1,
+    initiativesContractAddress,
+  };
 }
