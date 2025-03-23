@@ -7,7 +7,7 @@ import { InitiativeScore } from "./cns-initiative-score";
 import { InitiativeAbi } from "../../abi/Initiative.abi";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import * as Dialog from "@radix-ui/react-dialog";
 import { getTeamMembersForInitiative } from "@/contracts/get-team-members";
 import { lineaSepolia } from "viem/chains";
 
@@ -204,90 +204,90 @@ export function InitiativeCapitalAllocation({
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-2 items-center">
-                    <div className="flex text-xl">
-                        <div className="mr-4">Allocated</div>
-                        <div className="font-bold">
-                            Ξ {formatEther(balance ?? 0n)?.substring(0, 5)}
-                        </div>
-                    </div>
-                    <div className="flex">
-                        <InitiativeScore score={initiative.score ?? 1n} />
-                    </div>
+
+            <div className="flex flex-col gap-3 text-white">
+                {/* AI Score Section */}
+                <div className="flex justify-between items-center py-2 border-b border-gray-700">
+                    <span className="text-lg font-semibold text-gray-300">AI Score</span>
+                    <InitiativeScore score={initiative.score ?? 1n} />
                 </div>
 
-                <Button
-                    className="w-full bg-blue-600 hover:bg-blue-400 text-white font-bold"
-                    disabled={
-                        !isConnected ||
-                        isJoining ||
-                        isLeaving ||
-                        address === initiative.instigator ||
-                        address === initiative.ideator
-                    }
-                    onClick={
-                        teamMembers.includes(address || "0x")
-                            ? leaveTeam
-                            : joinTeam
-                    }
-                >
-                    {isJoining
-                        ? "Joining..."
-                        : isLeaving
-                        ? "Leaving..."
-                        : address !== initiative.ideator &&
-                          address !== initiative.instigator &&
-                          teamMembers.includes(address || "0x")
-                        ? "Leave Team"
-                        : "Join Team"}
-                </Button>
+                {/* ETH Allocated Section */}
+                <div className="flex justify-between items-center py-2 border-b border-gray-700">
+                    <span className="text-lg font-semibold text-gray-300">Allocated</span>
+                    <span className="text-xl font-bold text-gray-100">
+                        Ξ {formatEther(balance ?? 0n)?.substring(0, 5)}
+                    </span>
+                </div>
 
-                <Button
-                    className="w-full bg-yellow-500 hover:bg-yellow-400 text-sm font-bold"
-                    onClick={() => setIsModalOpen(true)}
-                    disabled={!isConnected || isAllocating}
-                >
-                    {isAllocating
-                        ? "Allocating..."
-                        : isConnected
-                        ? "Allocate Funds"
-                        : "Connect Wallet to Allocate Funds"}
-                </Button>
+                {/* Buttons Section */}
+                <div className="flex flex-col gap-2 mt-2 items-end">
+                    <Button
+                        className="w-auto px-6 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-md flex items-center gap-2 min-w-[180px] justify-center"
+                        disabled={
+                            !isConnected ||
+                            isJoining ||
+                            isLeaving ||
+                            address === initiative.instigator ||
+                            address === initiative.ideator
+                        }
+                        onClick={
+                            teamMembers.includes(address || "0x")
+                                ? leaveTeam
+                                : joinTeam
+                        }
+                    >
+                        <i className="fas fa-users"></i>
+                        <span>{isJoining ? "Joining..." : isLeaving ? "Leaving..." : teamMembers.includes(address || "0x") ? "Leave Team" : "Join Team"}</span>
+                    </Button>
+
+                    <Button
+                        className="w-auto px-6 bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-3 rounded-md flex items-center gap-2 min-w-[180px] justify-center"
+                        onClick={() => setIsModalOpen(true)}
+                        disabled={!isConnected || isAllocating}
+                    >
+                        <i className="fas fa-coins"></i>
+                        <span>{isAllocating ? "Allocating..." : isConnected ? "Allocate Funds" : "Connect Wallet to Allocate Funds"}</span>
+                    </Button>
+                </div>
             </div>
 
             {/* ETH Input Modal */}
-            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent>
-                    <DialogTitle>Allocate Funds</DialogTitle>
-                    <div className="flex flex-col gap-3">
-                        <label className="text-sm text-gray-600">
-                            Enter ETH Amount
-                        </label>
-                        <Input
-                            type="number"
-                            min="0"
-                            placeholder="e.g. 0.05"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button
-                            variant="outline"
-                            onClick={() => setIsModalOpen(false)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={allocateFunds}
-                            className="bg-yellow-500 hover:bg-yellow-400"
-                        >
-                            Confirm & Send
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+                    <Dialog.Content className="fixed inset-0 flex items-center justify-center p-4">
+                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+                            <Dialog.Title className="text-lg font-bold">
+                                Allocate Funds
+                            </Dialog.Title>
+                            <div className="flex flex-col gap-3 mt-3">
+                                <label className="text-sm text-gray-200">
+                                    Enter ETH Amount
+                                </label>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    placeholder="e.g. 0.05"
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 mt-4">
+                                <Dialog.Close asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </Dialog.Close>
+                                <Button
+                                    onClick={allocateFunds}
+                                    className="bg-yellow-500 hover:bg-yellow-400"
+                                >
+                                    Confirm & Send
+                                </Button>
+                            </div>
+                        </div>
+                    </Dialog.Content>
+                </Dialog.Portal>
+            </Dialog.Root>
         </div>
     );
 }

@@ -5,7 +5,6 @@ export function InitiativeScore({ score }: { score: bigint }) {
 
     return (
         <>
-            <div className="mr-4">AI score</div>
             <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
                     <Star
