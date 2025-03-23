@@ -1,8 +1,8 @@
 import type { FunctionComponent, JSX } from "react";
 import { Link } from "react-router";
 import { type Hex } from "viem";
-import { useEnsName } from "wagmi";
-import { mainnet } from "wagmi/chains";
+//import { useEnsName } from "wagmi";
+//import { mainnet } from "wagmi/chains";
 import { JazzIcon } from "./jazzicon";
 import { Bot, User } from "lucide-react"; // Import icons
 import { Address } from "../cns/address";
@@ -32,9 +32,9 @@ export const AccountCardShort: FunctionComponent<AccountCardShortProps> = ({
     agentNature,
     showOnlyProfileType = false,
 }) => {
-    const { data } = useEnsName({ address, chainId: mainnet.id });
-    const shortAddress = address.replace(/^(.{4}).*(.{3})$/, "$1...$2");
-    const title = `${data ?? shortAddress}`;
+    //const { data } = useEnsName({ address, chainId: mainnet.id });
+    //const shortAddress = address.replace(/^(.{4}).*(.{3})$/, "$1...$2");
+    //const title = `${data ?? shortAddress}`;
 
     const tagColor = profileColors[profileType] || "bg-gray-800 text-gray-300"; // Default color
 

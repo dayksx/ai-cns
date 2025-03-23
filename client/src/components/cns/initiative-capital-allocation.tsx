@@ -174,22 +174,22 @@ export function InitiativeCapitalAllocation({
     return (
         <div className="grid grid-cols-3 gap-4 rounded-lg p-1">
             <div className="grid col-span-2">
-                <div className="font-bold mb-5">{initiative.title}</div>
+                <div className="font-bold text-2xl text-gray-200 mb-5">{initiative.title}</div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <div className="flex text-xs text-gray-400 uppercase mb-2">
+                        <div className="flex text-s text-gray-500 uppercase mb-2">
                             Description
                         </div>
-                        <div className="text-sm">
+                        <div className="text-sm text-gray-300">
                             {initiative.description?.substring(0, 200)}
                             {initiative.description?.length > 100 && "..."}
                         </div>
                     </div>
                     <div>
-                        <div className="flex text-xs text-gray-400 uppercase mb-2">
+                        <div className="flex text-s text-gray-500 uppercase mb-2">
                             Team
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 text-gray-300">
                             {teamMembers.map((m) => (
                                 <div key={m} className="flex gap-3">
                                     <Address
@@ -208,13 +208,13 @@ export function InitiativeCapitalAllocation({
             <div className="flex flex-col gap-3 text-white">
                 {/* AI Score Section */}
                 <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                    <span className="text-lg font-semibold text-gray-300">AI Score</span>
+                    <span className="flex text-s text-gray-400 uppercase mb-2">AI Score</span>
                     <InitiativeScore score={initiative.score ?? 1n} />
                 </div>
 
                 {/* ETH Allocated Section */}
                 <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                    <span className="text-lg font-semibold text-gray-300">Allocated</span>
+                    <span className="flex text-s text-gray-400 uppercase mb-2">Allocated</span>
                     <span className="text-xl font-bold text-gray-100">
                         Ξ {formatEther(balance ?? 0n)?.substring(0, 5)}
                     </span>
