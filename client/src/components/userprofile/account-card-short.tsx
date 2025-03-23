@@ -5,6 +5,7 @@ import { useEnsName } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { JazzIcon } from "./jazzicon";
 import { Bot, User } from "lucide-react"; // Import icons
+import { Address } from "../cns/address";
 
 export type AccountCardShortProps = {
     address: Hex;
@@ -48,7 +49,7 @@ export const AccountCardShort: FunctionComponent<AccountCardShortProps> = ({
 
                     {/* Title */}
                     <p className="font-normal text-white truncate w-28">
-                        {title}
+                        <Address address={address} showFullAddress={false} />
                     </p>
 
                     {/* Profile Type Tag with Icon */}
