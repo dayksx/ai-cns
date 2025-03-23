@@ -5,10 +5,9 @@ import {
 import getConnectedNodes from "@/components/userprofile/random-nodes";
 import { FunctionComponent, useMemo } from "react";
 import { Hex } from "viem";
-import { lineaSepolia } from "viem/chains";
-import { useEnsName } from "wagmi";
 // @ts-ignore
 import Jazzicon from "@metamask/jazzicon";
+import { Address } from "./cns/address";
 
 export type BadgeInfo = {
     title: string;
@@ -30,27 +29,22 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
     creditBalance,
     cnsBalance,
 }) => {
-    const { data: ensName, isLoading } = useEnsName({
-        address,
-        chainId: lineaSepolia.id,
-    });
-
     const connectedNodes: ConnectedNodesProps = useMemo(
         () => getConnectedNodes(address),
         [address]
     );
-
-    const getDisplayName = () => {
-        if (isLoading) return "Loading...";
-        return ensName || `${address.slice(0, 6)}...${address.slice(-4)}`;
-    };
 
     return (
         <div className="flex flex-col h-screen text-white">
             {/* Top Section: Connected Nodes */}
             <div className="flex-1 flex flex-col items-center justify-center gap-4 pb-4">
                 <ConnectedNodes data={connectedNodes} />
-                <div className="text-lg font-semibold">{getDisplayName()}</div>
+                <div className="text-lg font-semibold">
+                    <Address
+                        address={address}
+                        showFullAddress={false}
+                    ></Address>
+                </div>
             </div>
 
             {/* Bottom Section: Badges, Activities & Balances */}

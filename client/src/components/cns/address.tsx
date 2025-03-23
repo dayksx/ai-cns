@@ -52,10 +52,6 @@ const demoEnsTweakForMembers = [
         ensName: "ethrules.linea.eth",
     },
     {
-        address: "0xF49A92AaEc31CeBfcFcd084e9953cde251f28fd2",
-        ensName: "guesswho.linea.eth",
-    },
-    {
         address: "0x224b11F0747c7688a10aCC15F785354aA6493ED6",
         ensName: "dayksx.linea.eth",
     },
