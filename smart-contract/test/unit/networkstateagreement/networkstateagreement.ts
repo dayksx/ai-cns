@@ -121,14 +121,14 @@ describe("NetworkStateAgreement", function () {
 
     it("should allow anyone to update initiatives contract address", async function () {
       const newInitiativesContract = ethers.Wallet.createRandom().address;
-      await this.networkStateAgreement.connect(this.signers.user1).updateInitiativesContract(newInitiativesContract);
+      await this.networkStateAgreement.connect(this.signers.admin).updateInitiativesContract(newInitiativesContract);
 
       expect(await this.networkStateAgreement.initiativesContract()).to.equal(newInitiativesContract);
     });
 
     it("should revert updating initiatives contract with zero address", async function () {
       await expect(
-        this.networkStateAgreement.connect(this.signers.user1).updateInitiativesContract(ethers.ZeroAddress),
+        this.networkStateAgreement.connect(this.signers.admin).updateInitiativesContract(ethers.ZeroAddress),
       ).to.be.revertedWith("Invalid address");
     });
   });
