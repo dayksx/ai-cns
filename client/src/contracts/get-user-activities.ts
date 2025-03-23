@@ -10,7 +10,6 @@ const client = createPublicClient({
     transport: http(),
 });
 
-// Define event ABI items
 const eventFilters = {
     CreditsUpdated: parseAbiItem(
         "event CreditsUpdated(address user, uint256 newCreditBalance)"
@@ -29,6 +28,12 @@ const eventFilters = {
     ),
     TeamMemberRemoved: parseAbiItem(
         "event TeamMemberRemoved(bytes32 initiativeId, address member)"
+    ),
+    FundAllocated: parseAbiItem(
+        "event FundAllocated(bytes32 initiativeId, address funder, uint256 amount)"
+    ),
+    FundingWithdrawn: parseAbiItem(
+        "event FundingWithdrawn(bytes32 initiativeId, address instigator, uint256 amount)"
     ),
 };
 

@@ -46,6 +46,7 @@ export async function getInitiatives() {
             upvotes: Number(initiative[8]), // uint256 upvotes
             downvotes: Number(initiative[9]), // uint256 downvotes
             score: Number(initiative[10]), // uint256 score
+            funding: Number(initiative[11]), // uint256 funding
         }));
     } catch (error) {
         console.error("Error fetching initiatives:", error);

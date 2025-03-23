@@ -49,6 +49,75 @@ export const InitiativeAbi = [
         inputs: [
             {
                 indexed: false,
+                internalType: "address",
+                name: "owner",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+            },
+        ],
+        name: "EmergencyWithdrawal",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "bytes32",
+                name: "initiativeId",
+                type: "bytes32",
+            },
+            {
+                indexed: false,
+                internalType: "address",
+                name: "funder",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+            },
+        ],
+        name: "FundAllocated",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "bytes32",
+                name: "initiativeId",
+                type: "bytes32",
+            },
+            {
+                indexed: false,
+                internalType: "address",
+                name: "instigator",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount",
+                type: "uint256",
+            },
+        ],
+        name: "FundingWithdrawn",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
                 internalType: "bytes32",
                 name: "initiativeId",
                 type: "bytes32",
@@ -85,6 +154,25 @@ export const InitiativeAbi = [
             },
         ],
         name: "InitiativeCreated",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "address",
+                name: "newReceiver",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "timestamp",
+                type: "uint256",
+            },
+        ],
+        name: "NetworkStateTreasuryUpdated",
         type: "event",
     },
     {
@@ -213,6 +301,15 @@ export const InitiativeAbi = [
     },
     {
         inputs: [
+            { internalType: "bytes32", name: "_initiativeId", type: "bytes32" },
+        ],
+        name: "allocateFund",
+        outputs: [],
+        stateMutability: "payable",
+        type: "function",
+    },
+    {
+        inputs: [
             { internalType: "address", name: "_ideator", type: "address" },
             { internalType: "string", name: "_title", type: "string" },
             { internalType: "string", name: "_description", type: "string" },
@@ -267,6 +364,16 @@ export const InitiativeAbi = [
             { internalType: "uint256", name: "upvotes", type: "uint256" },
             { internalType: "uint256", name: "downvotes", type: "uint256" },
             { internalType: "uint256", name: "score", type: "uint256" },
+            { internalType: "uint256", name: "funding", type: "uint256" },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "networkStateTreasury",
+        outputs: [
+            { internalType: "address payable", name: "", type: "address" },
         ],
         stateMutability: "view",
         type: "function",
@@ -293,6 +400,19 @@ export const InitiativeAbi = [
         name: "statusList",
         outputs: [{ internalType: "string", name: "", type: "string" }],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address payable",
+                name: "_newReceiver",
+                type: "address",
+            },
+        ],
+        name: "updateNetworkStateTreasury",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -344,6 +464,22 @@ export const InitiativeAbi = [
         name: "userCredits",
         outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "withdrawEmergency",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "bytes32", name: "_initiativeId", type: "bytes32" },
+        ],
+        name: "withdrawInitiativeFunding",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
 ];
