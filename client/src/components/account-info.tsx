@@ -228,7 +228,7 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                                                     <span
                                                         className={`px-3 py-1 text-xs font-medium text-white rounded-lg self-start ${
                                                             roleColors[
-                                                                project.role
+                                                                project.role as keyof typeof roleColors
                                                             ] || "bg-gray-500"
                                                         }`}
                                                     >
