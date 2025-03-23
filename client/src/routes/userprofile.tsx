@@ -47,6 +47,14 @@ export const UserProfile: FunctionComponent = () => {
             `Joined initiative team ${shortenInitiativeId(args.initiativeId)}`,
         TeamMemberRemoved: (args: { initiativeId: any }) =>
             `Left initiative team ${shortenInitiativeId(args.initiativeId)}`,
+        FundAllocated: (args: { initiativeId: any; amount: any }) =>
+            `Allocated funds to initiative ${shortenInitiativeId(
+                args.initiativeId
+            )} (${args.amount} credits)`,
+        FundingWithdrawn: (args: { initiativeId: any; amount: any }) =>
+            `Withdrew funds from initiative ${shortenInitiativeId(
+                args.initiativeId
+            )} (${args.amount} credits)`,
     };
 
     useEffect(() => {

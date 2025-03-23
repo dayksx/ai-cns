@@ -21,15 +21,7 @@ export default function CapitalAllocation() {
                 <PageHeader title="Resource Allocation" />
                 <div className="flex flex-col gap-6">
                     {capitalAllocation.length > 0 ? (
-                        capitalAllocation.map((initiative, index) => {
-                            if (index <= 2) {
-                                initiative.balance =
-                                    initiative.balance === 0
-                                        ? initiative.balance
-                                        : 1252600000000000000 *
-                                          (index + 1) *
-                                          1.333;
-                            }
+                        capitalAllocation.map((initiative) => {
                             return (
                                 <div
                                     key={initiative.initiativeId}

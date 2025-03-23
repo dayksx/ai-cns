@@ -144,7 +144,7 @@ export const NetworkAgreementAbi = [
     },
     {
         inputs: [],
-        name: "networkdStateTreasury",
+        name: "networkStateTreasury",
         outputs: [
             { internalType: "address payable", name: "", type: "address" },
         ],
