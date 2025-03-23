@@ -159,7 +159,7 @@ contract NetworkStateAgreement is ReentrancyGuard {
      * @dev This function sets a new address for the initiatives contract and emits an event.
      * @param _initiativesContract The address of the new initiatives contract. Must not be the zero address.
      */
-    function updateInitiativesContract(address _initiativesContract) public {
+    function updateInitiativesContract(address _initiativesContract) public onlyOwner {
         require(_initiativesContract != address(0), "Invalid address");
         initiativesContract = NetworkStateInitiatives(_initiativesContract);
         emit InitiativesContractAdressUpdated(_initiativesContract, block.timestamp);

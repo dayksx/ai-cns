@@ -232,7 +232,7 @@ contract NetworkStateInitiatives is ReentrancyGuard {
      * @param _initiativeId The ID of the initiative to update.
      * @param _newScore The new score to assign to the initiative.
      */
-    function updateScore(bytes32 _initiativeId, uint256 _newScore) public {
+    function updateScore(bytes32 _initiativeId, uint256 _newScore) public onlyOwner {
         for (uint256 i = 0; i < initiatives.length; i++) {
             if (initiatives[i].id == _initiativeId) {
                 initiatives[i].score = _newScore;
