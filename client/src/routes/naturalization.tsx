@@ -10,14 +10,23 @@ import { keccak256, parseEther, stringToBytes } from "viem";
 import DownloadButton from "../components/download-button";
 import { constitutionTextAsMarkdown } from "../cns-constitution";
 import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
+import { getTokenBalance } from "@/lib/viem-utils";
+import { getNetizenBadgeAttestations } from "@/verax/attestations-reader";
+import { Link } from "react-router";
 
 export default function Naturalization() {
     const [cnsValues, setCnsValues] = useState<string[]>([]);
     const [profileType, setProfileType] = useState("maker");
     const [agentNature, setAgentNature] = useState("human");
     const [contribution, setContribution] = useState(0.001);
+    const [cnsBalance, setCnsBalance] = useState(0);
+    const [badges, setBadges] = useState<
+        { scope: string; isTrustworthy: string; attestationId: string }[]
+    >([]);
     const [isNetizen, setIsNetizen] = useState(false);
-    const { isConnected, address, chainId } = useAccount();
+    const [isAgreedValues, setIsAgreedValues] = useState(false);
+    const [isAgreedConstitution, setIsAgreedConstitution] = useState(false);
+    const { isConnected, address } = useAccount();
     const { data: hash, writeContractAsync, isPending } = useWriteContract();
     const { signMessageAsync, data } = useSignMessage();
 
@@ -33,6 +42,35 @@ export default function Naturalization() {
                 setIsNetizen(bool);
             });
         }
+
+        const fetchBalances = async () => {
+            if (isConnected && address) {
+                try {
+                    const cnsBalance = await getTokenBalance(
+                        import.meta.env.VITE_CNS_TOKEN_ADDRESS,
+                        address
+                    );
+                    setCnsBalance(Number(cnsBalance) / 10 ** 18);
+                } catch (error) {
+                    console.error("Failed to fetch balances:", error);
+                }
+            }
+        };
+
+        const fetchBadges = async () => {
+            if (isConnected && address) {
+                try {
+                    const badgeData = await getNetizenBadgeAttestations(
+                        address
+                    );
+                    setBadges(badgeData || []);
+                } catch (error) {
+                    console.error("Failed to fetch badges:", error);
+                }
+            }
+        };
+        fetchBalances();
+        fetchBadges();
     }, [address]);
 
     async function signConstitution(): Promise<{
@@ -93,6 +131,7 @@ export default function Naturalization() {
             <div className="flex-1 overflow-y-auto">
                 <PageHeader title="Naturalization" />
                 <div className="grid px-52 gap-y-4">
+                    {/* Values Box */}
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-4  mt-6">
                             <span className="text-2xl font-bold">Values</span>
@@ -124,8 +163,21 @@ export default function Naturalization() {
                                 </span>
                             </div>
                             <div></div>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={isAgreedValues}
+                                    onChange={() =>
+                                        setIsAgreedValues(!isAgreedValues)
+                                    }
+                                />
+                                <span className="text-sm">
+                                    I agree with CNS values
+                                </span>
+                            </label>
                         </div>
                     </div>
+                    {/* Constitution Box */}
                     <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-4">
                         <div className="flex flex-row gap-2">
                             <span className="text-2xl font-bold">
@@ -206,6 +258,92 @@ export default function Naturalization() {
                                 constitution as a declaration of their
                                 commitment to its principles.
                             </span>
+                            <label className="mt-3 flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={isAgreedConstitution}
+                                    onChange={() =>
+                                        setIsAgreedConstitution(
+                                            !isAgreedConstitution
+                                        )
+                                    }
+                                />
+                                <span className="text-sm">
+                                    I agree with CNS constitution
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    {/* Conditions Box */}
+                    <div className="border border-gray-700 rounded-lg px-16 py-4">
+                        <span className="text-2xl font-bold">Conditions</span>
+                        <div className="flex flex-col gap-2 mt-2">
+                            <span className="flex items-center gap-1">
+                                ✅ Endorsed by a CNS Netizen –{" "}
+                                <span className="text-blue-400">
+                                    <Link to={`/netizens/${address}`}>
+                                        {badges.length} endorsements
+                                    </Link>
+                                </span>{" "}
+                                ( powered by{" "}
+                                <a
+                                    href="https://explorer.ver.ax/linea"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <div className="w-8 h-8">
+                                        <svg
+                                            width="32"
+                                            height="32"
+                                            viewBox="0 0 32 32"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <defs>
+                                                <clipPath id="clip0_1658_29071">
+                                                    <rect
+                                                        width="32"
+                                                        height="32"
+                                                        fill="white"
+                                                    />
+                                                </clipPath>
+                                            </defs>
+                                            <g clipPath="url(#clip0_1658_29071)">
+                                                <circle
+                                                    cx="16"
+                                                    cy="16"
+                                                    r="16"
+                                                    fill="#676455"
+                                                ></circle>
+                                                <path
+                                                    d="M11.7946 8.04572H6.85742L11.4289 18.6514L13.9889 12.9829L11.7946 8.04572Z"
+                                                    fill="#A5AF63"
+                                                ></path>
+                                                <path
+                                                    d="M25.1422 8.04572H20.5708L13.8965 24.0457H18.3765L25.1422 8.04572Z"
+                                                    fill="#A5AF63"
+                                                ></path>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </a>
+                                )
+                            </span>
+                            <span className="flex items-center gap-2">
+                                ✅ Owner of $CNS reputation points –{" "}
+                                <span className="text-blue-400">
+                                    <Link to={`/netizens/${address}`}>
+                                        {cnsBalance} $CNS
+                                    </Link>
+                                </span>
+                            </span>
+                            <span className="flex items-center gap-2">
+                                {isAgreedValues ? "✅" : "❌"} Agree CNS values
+                            </span>
+                            <span className="flex items-center gap-2">
+                                {isAgreedConstitution ? "✅" : "❌"} Agree CNS
+                                constitution
+                            </span>
                         </div>
                     </div>
                     <div className="flex flex-col gap-4">
@@ -274,14 +412,13 @@ export default function Naturalization() {
                                     className="bg-yellow-500 text-black"
                                     disabled={
                                         !isConnected ||
-                                        ![59141, 59144].includes(chainId ?? 0)
+                                        !isAgreedValues ||
+                                        !isAgreedConstitution
                                     }
-                                    onClick={() => handleAgreementSubmit()}
+                                    onClick={handleAgreementSubmit}
                                 >
                                     {!isConnected
                                         ? "Connect Wallet to Join"
-                                        : ![59141, 59144].includes(chainId ?? 0)
-                                        ? "Switch Network to Join"
                                         : isNetizen
                                         ? "You're already a CNS netizen"
                                         : "Sign to Join the Network State"}
