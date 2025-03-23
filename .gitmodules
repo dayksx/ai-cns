@@ -7,3 +7,6 @@
 [submodule "packages/client-slack"]
 	path = packages/client-slack
 	url = git@github.com:elizaos-plugins/client-slack.git
+[submodule "packages/packages/client-telegram"]
+	path = packages/packages/client-telegram
+	url = git@github.com:elizaos-plugins/client-telegram.git

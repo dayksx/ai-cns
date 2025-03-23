@@ -5,8 +5,10 @@
         "@elizaos-plugins/client-slack",
         "@elizaos/plugin-community-values",
         "@elizaos/plugin-ideation",
-        "@elizaos/plugin-reputation"
+        "@elizaos/plugin-reputation",
+        "@elizaos-plugins/client-telegram"
     ],
+    "clients": ["telegram"],
     "modelProvider": "openai",
     "settings": {
         "secrets": {}
