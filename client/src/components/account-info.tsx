@@ -3,11 +3,18 @@ import {
     ConnectedNodesProps,
 } from "@/components/userprofile/connected-nodes";
 import getConnectedNodes from "@/components/userprofile/random-nodes";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Hex } from "viem";
 // @ts-ignore
 import Jazzicon from "@metamask/jazzicon";
 import { Address } from "./cns/address";
+import { getProjectsForUser } from "@/contracts/get-projects-for-user";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type BadgeInfo = {
     title: string;
@@ -34,6 +41,29 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
         [address]
     );
 
+    const [projects, setProjects] = useState<
+        {
+            initiativeId: Hex;
+            title: string;
+            description: string;
+            role: string;
+        }[]
+    >([]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const userProjects = await getProjectsForUser(address);
+                setProjects(userProjects);
+            } catch (error) {
+                console.error("Failed to fetch projects:", error);
+                setProjects([]);
+            }
+        };
+
+        fetchProjects();
+    }, [address]);
+
     return (
         <div className="flex flex-col h-screen text-white">
             {/* Top Section: Connected Nodes */}
@@ -59,7 +89,6 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                         {badgesInfo.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
                                 {badgesInfo.map((badge, index) => {
-                                    // Define random colors for each badge
                                     const colors = [
                                         "bg-blue-500",
                                         "bg-green-500",
@@ -69,7 +98,7 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                                         "bg-red-500",
                                     ];
                                     const randomColor =
-                                        colors[index % colors.length]; // Rotate colors
+                                        colors[index % colors.length];
 
                                     return (
                                         <button
@@ -102,7 +131,6 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                         {activities.length > 0 ? (
                             <div className="flex flex-col gap-3">
                                 {activities.map((activity, index) => {
-                                    // Define some border colors to differentiate activities
                                     const colors = [
                                         "border-blue-500",
                                         "border-green-500",
@@ -130,7 +158,7 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                     </div>
                 </div>
 
-                {/* Right Side: Balances */}
+                {/* Right Side: Balances & Projects */}
                 <div className="w-1/3 flex flex-col space-y-4">
                     {/* CNS Balance Box */}
                     <div className="bg-gray-800 shadow-md p-4 flex flex-col items-center justify-center">
@@ -150,6 +178,53 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                         <p className="text-lg font-bold text-green-400 mt-2">
                             {creditBalance} Credits
                         </p>
+                    </div>
+
+                    {/* Projects Section */}
+                    <div className="bg-gray-800 shadow-md p-4 rounded-lg">
+                        <h3 className="text-md font-semibold text-gray-300 mb-3 text-center">
+                            🚀 Projects
+                        </h3>
+                        {projects.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-4">
+                                {projects.map((project) => (
+                                    <TooltipProvider key={project.initiativeId}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <div className="bg-gray-700 p-4 rounded-lg shadow-md flex flex-col justify-between cursor-pointer">
+                                                    <h3 className="text-sm font-semibold text-gray-100 mb-1">
+                                                        {project.title}
+                                                    </h3>
+                                                    <p
+                                                        className="text-xs text-gray-300 mb-2 line-clamp-2"
+                                                        style={{
+                                                            display:
+                                                                "-webkit-box",
+                                                            WebkitBoxOrient:
+                                                                "vertical",
+                                                            WebkitLineClamp: 2,
+                                                            overflow: "hidden",
+                                                        }}
+                                                    >
+                                                        {project.description}
+                                                    </p>
+                                                    <span className="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-lg self-start">
+                                                        {project.role}
+                                                    </span>
+                                                </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="max-w-xs break-words">
+                                                {project.description}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-sm text-center">
+                                No projects yet.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
