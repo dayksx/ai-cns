@@ -133,7 +133,7 @@ export default function Naturalization() {
                 <div className="grid px-52 gap-y-4">
                     {/* Values Box */}
                     <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-4 mt-6">
+                        <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-6 mt-6">
                             <span className="text-2xl font-bold">Values</span>
                             <div className="flex flex-col gap-2">
                                 {cnsValues?.slice(0, 5).map((value, index) => {
@@ -177,7 +177,7 @@ export default function Naturalization() {
                         </div>
                     </div>
                     {/* Constitution Box */}
-                    <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-4">
+                    <div className="flex flex-col gap-4 border border-gray-700 rounded-lg px-16 py-6">
                         <div className="flex flex-row gap-2">
                             <span className="text-2xl font-bold">
                                 Constitution of Consensys Network State (CNS)
@@ -274,7 +274,7 @@ export default function Naturalization() {
                         </div>
                     </div>
                     {/* Netizenship requirements Box */}
-                    <div className="border gap-4 border-gray-700 rounded-lg px-16 py-4">
+                    <div className="border gap-4 border-gray-700 rounded-lg px-16 py-6">
                         <span className="text-2xl font-bold">
                             Netizenship requirements
                         </span>
