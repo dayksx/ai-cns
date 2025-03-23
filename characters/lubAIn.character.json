@@ -3,10 +3,10 @@
     "username": "lubAIn",
     "plugins": [
         "@elizaos-plugins/client-slack",
+        "@elizaos-plugins/client-telegram",
         "@elizaos/plugin-community-values",
         "@elizaos/plugin-ideation",
-        "@elizaos/plugin-reputation",
-        "@elizaos-plugins/client-telegram"
+        "@elizaos/plugin-reputation"
     ],
     "clients": ["telegram"],
     "modelProvider": "openai",
