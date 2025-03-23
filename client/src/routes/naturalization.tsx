@@ -274,59 +274,29 @@ export default function Naturalization() {
                             </label>
                         </div>
                     </div>
-                    {/* Conditions Box */}
+                    {/* Netizenship requirements Box */}
                     <div className="border border-gray-700 rounded-lg px-16 py-4">
-                        <span className="text-2xl font-bold">Conditions</span>
-                        <div className="flex flex-col gap-2 mt-2">
+                        <span className="text-2xl font-bold">
+                            Netizenship requirements
+                        </span>
+                        <div className="flex flex-col gap-2 mt-6 text-sm">
                             <span className="flex items-center gap-1">
                                 {badges.length > 0 ? "✅" : "❌"} Endorsed by a
                                 CNS Netizen –{" "}
                                 <span className="text-blue-400">
                                     <Link to={`/netizens/${address}`}>
-                                        {badges.length} endorsements
+                                        {badges.length} endorsement
+                                        {badges.length > 1 ? "s" : ""}
                                     </Link>
                                 </span>{" "}
-                                ( powered by{" "}
+                                (powered by{" "}
                                 <a
                                     href="https://explorer.ver.ax/linea"
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    className="text-yellow-400"
                                 >
-                                    <div className="w-8 h-8">
-                                        <svg
-                                            width="32"
-                                            height="32"
-                                            viewBox="0 0 32 32"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <defs>
-                                                <clipPath id="clip0_1658_29071">
-                                                    <rect
-                                                        width="32"
-                                                        height="32"
-                                                        fill="white"
-                                                    />
-                                                </clipPath>
-                                            </defs>
-                                            <g clipPath="url(#clip0_1658_29071)">
-                                                <circle
-                                                    cx="16"
-                                                    cy="16"
-                                                    r="16"
-                                                    fill="#676455"
-                                                ></circle>
-                                                <path
-                                                    d="M11.7946 8.04572H6.85742L11.4289 18.6514L13.9889 12.9829L11.7946 8.04572Z"
-                                                    fill="#A5AF63"
-                                                ></path>
-                                                <path
-                                                    d="M25.1422 8.04572H20.5708L13.8965 24.0457H18.3765L25.1422 8.04572Z"
-                                                    fill="#A5AF63"
-                                                ></path>
-                                            </g>
-                                        </svg>
-                                    </div>
+                                    Verax Attestation Service
                                 </a>
                                 )
                             </span>
