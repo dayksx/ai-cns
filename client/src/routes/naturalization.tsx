@@ -279,7 +279,8 @@ export default function Naturalization() {
                         <span className="text-2xl font-bold">Conditions</span>
                         <div className="flex flex-col gap-2 mt-2">
                             <span className="flex items-center gap-1">
-                                ✅ Endorsed by a CNS Netizen –{" "}
+                                {badges.length > 0 ? "✅" : "❌"} Endorsed by a
+                                CNS Netizen –{" "}
                                 <span className="text-blue-400">
                                     <Link to={`/netizens/${address}`}>
                                         {badges.length} endorsements
@@ -330,7 +331,8 @@ export default function Naturalization() {
                                 )
                             </span>
                             <span className="flex items-center gap-2">
-                                ✅ Owner of $CNS reputation points –{" "}
+                                {cnsBalance > 0 ? "✅" : "❌"} Owner of $CNS
+                                reputation points –{" "}
                                 <span className="text-blue-400">
                                     <Link to={`/netizens/${address}`}>
                                         {cnsBalance} $CNS
