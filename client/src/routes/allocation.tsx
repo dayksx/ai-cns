@@ -25,7 +25,7 @@ export default function CapitalAllocation() {
                             return (
                                 <div
                                     key={initiative.initiativeId}
-                                    className="p-6 bg-gray-800 rounded-2xl shadow-xl border border-gray-700 hover:border-gray-500 transition duration-300"
+                                    className="p-6 bg-[hsl(0,0%,12%)] rounded-2xl shadow-xl hover:border-gray-500 transition duration-300"
                                 >
                                     <InitiativeCapitalAllocation initiative={initiative} />
                                 </div>

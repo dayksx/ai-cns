@@ -220,7 +220,7 @@ function InitiativesList({
                             className="flex flex-row gap-4"
                             key={initiative.initiativeId}
                         >
-                            <div className="relative flex flex-col items-center justify-between border border-gray-600 rounded-lg p-6 bg-gray-900 shadow-md w-[700px] min-h-[140px] mb-12">
+                            <div className="relative flex flex-col items-center justify-between rounded-lg p-6 bg-[hsl(0,0%,12%)] shadow-md w-[700px] min-h-[140px] mb-12">
                                 {/* New wrapper to keep title & description left-aligned */}
                                 <div className="w-full flex flex-col items-start text-left">
                                     <h3 className="text-md font-bold text-white mb-3 truncate">

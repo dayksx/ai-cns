@@ -172,7 +172,7 @@ export function InitiativeCapitalAllocation({
     }
 
     return (
-        <div className="grid grid-cols-3 gap-4 border rounded-lg p-4">
+        <div className="grid grid-cols-3 gap-4 rounded-lg p-1">
             <div className="grid col-span-2">
                 <div className="font-bold mb-5">{initiative.title}</div>
                 <div className="grid grid-cols-2 gap-4">
