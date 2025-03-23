@@ -33,6 +33,7 @@ export function InitiativeCapitalAllocation({
     const [isJoining, setIsJoining] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
     const [isAllocating, setIsAllocating] = useState(false);
+    const [isWithdrawing, setIsWithdrawing] = useState(false);
 
     useEffect(() => {
         async function fetchTeamMembers() {
@@ -171,10 +172,39 @@ export function InitiativeCapitalAllocation({
         );
     }
 
+    // Function to withdraw funds
+    async function withdrawFunds() {
+        if (!address) return;
+        setIsWithdrawing(true);
+        writeContract(
+            {
+                address: import.meta.env.VITE_CNS_INITIATIVE_CONTRACT_ADDRESS,
+                abi: InitiativeAbi,
+                functionName: "withdrawInitiativeFunding",
+                args: [initiative.initiativeId],
+            },
+            {
+                onSuccess: async (tx) => {
+                    console.log("Transaction sent! Hash:", tx);
+                    await publicClient.waitForTransactionReceipt({ hash: tx });
+                    alert("✅ Funds withdrawn successfully!");
+                    setBalance(0n); // Reset balance after withdrawal
+                    setIsWithdrawing(false);
+                },
+                onError: (error) => {
+                    console.error("Transaction failed:", error);
+                    alert("❌ Failed to withdraw funds. Please try again.");
+                    setIsWithdrawing(false);
+                },
+            }
+        );
+    }
     return (
         <div className="grid grid-cols-3 gap-4 rounded-lg p-1">
             <div className="grid col-span-2">
-                <div className="font-bold text-2xl text-gray-200 mb-5">{initiative.title}</div>
+                <div className="font-bold text-2xl text-gray-200 mb-5">
+                    {initiative.title}
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <div className="flex text-s text-gray-500 uppercase mb-2">
@@ -204,17 +234,20 @@ export function InitiativeCapitalAllocation({
                 </div>
             </div>
 
-
             <div className="flex flex-col gap-3 text-white">
                 {/* AI Score Section */}
                 <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                    <span className="flex text-s text-gray-400 uppercase mb-2">AI Score</span>
+                    <span className="flex text-s text-gray-400 uppercase mb-2">
+                        AI Score
+                    </span>
                     <InitiativeScore score={initiative.score ?? 1n} />
                 </div>
 
                 {/* ETH Allocated Section */}
                 <div className="flex justify-between items-center py-2 border-b border-gray-700">
-                    <span className="flex text-s text-gray-400 uppercase mb-2">Allocated</span>
+                    <span className="flex text-s text-gray-400 uppercase mb-2">
+                        Allocated
+                    </span>
                     <span className="text-xl font-bold text-gray-100">
                         Ξ {formatEther(balance ?? 0n)?.substring(0, 5)}
                     </span>
@@ -238,7 +271,15 @@ export function InitiativeCapitalAllocation({
                         }
                     >
                         <i className="fas fa-users"></i>
-                        <span>{isJoining ? "Joining..." : isLeaving ? "Leaving..." : teamMembers.includes(address || "0x") ? "Leave Team" : "Join Team"}</span>
+                        <span>
+                            {isJoining
+                                ? "Joining..."
+                                : isLeaving
+                                ? "Leaving..."
+                                : teamMembers.includes(address || "0x")
+                                ? "Leave Team"
+                                : "Join Team"}
+                        </span>
                     </Button>
 
                     <Button
@@ -247,8 +288,29 @@ export function InitiativeCapitalAllocation({
                         disabled={!isConnected || isAllocating}
                     >
                         <i className="fas fa-coins"></i>
-                        <span>{isAllocating ? "Allocating..." : isConnected ? "Allocate Funds" : "Connect Wallet to Allocate Funds"}</span>
+                        <span>
+                            {isAllocating
+                                ? "Allocating..."
+                                : isConnected
+                                ? "Allocate Funds"
+                                : "Connect Wallet to Allocate Funds"}
+                        </span>
                     </Button>
+
+                    {address === initiative.instigator && (
+                        <Button
+                            className="w-auto px-6 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-md flex items-center gap-2 min-w-[180px] justify-center"
+                            onClick={withdrawFunds}
+                            disabled={balance === 0n || isWithdrawing}
+                        >
+                            <i className="fas fa-wallet"></i>
+                            <span>
+                                {isWithdrawing
+                                    ? "Withdrawing ..."
+                                    : "Withdraw Funds"}
+                            </span>
+                        </Button>
+                    )}
                 </div>
             </div>
 
