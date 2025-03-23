@@ -1,7 +1,9 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.19;
 
-contract NetworkStateInitiatives {
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract NetworkStateInitiatives is ReentrancyGuard {
     // Struct to store initiatives properties
     struct Initiative {
         bytes32 id;
@@ -85,7 +87,7 @@ contract NetworkStateInitiatives {
      *      A portion of the sent ETH (10%) is forwarded to the network state treasury.
      * @param _initiativeId The ID of the initiative to fund.
      */
-    function allocateFund(bytes32 _initiativeId) public payable {
+    function allocateFund(bytes32 _initiativeId) public payable nonReentrant {
         require(msg.value > 0, "Must send ETH to fund");
         for (uint256 i = 0; i < initiatives.length; i++) {
             if (initiatives[i].id == _initiativeId) {

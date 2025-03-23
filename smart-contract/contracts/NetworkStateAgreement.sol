@@ -2,8 +2,9 @@
 pragma solidity ^0.8.19;
 
 import { NetworkStateInitiatives } from "./NetworkStateInitiatives.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract NetworkStateAgreement {
+contract NetworkStateAgreement is ReentrancyGuard {
     struct UserInfo {
         string userProfileType;
         string userNatureAgent;
@@ -72,7 +73,7 @@ contract NetworkStateAgreement {
         string memory _userNatureAgent,
         bytes32 _constitutionHash,
         bytes memory _signature
-    ) public payable {
+    ) public payable nonReentrant {
         //TODO: Implement signature verification
         require(!userInformation[msg.sender].hasAgreed, "Agreement already signed");
         require(isValidProfileType(_userProfileType), "Invalid profile type");
