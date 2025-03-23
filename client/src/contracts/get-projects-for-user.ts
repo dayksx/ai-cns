@@ -61,7 +61,7 @@ export async function getProjectsForUser(userAddress: Hex) {
             if (!teamMemberships.has(initiativeId)) {
                 teamMemberships.set(initiativeId, new Set());
             }
-            teamMemberships.get(initiativeId)!.add(member.toLowerCase());
+            teamMemberships.get(initiativeId)!.add(member.toLowerCase() as Hex);
         }
 
         for (const log of removedLogs) {
@@ -69,12 +69,14 @@ export async function getProjectsForUser(userAddress: Hex) {
                 initiativeId: Hex;
                 member: Hex;
             };
-            teamMemberships.get(initiativeId)?.delete(member.toLowerCase());
+            teamMemberships
+                .get(initiativeId)
+                ?.delete(member.toLowerCase() as Hex);
         }
 
         // Iterate over all initiatives and check the user's role
         for (const initiative of allInitiatives) {
-            const normalizedUserAddress = userAddress.toLowerCase();
+            const normalizedUserAddress = userAddress.toLowerCase() as Hex;
             const { initiativeId, title, description, ideator, instigator } =
                 initiative;
 
