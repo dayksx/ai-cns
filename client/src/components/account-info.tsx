@@ -21,6 +21,18 @@ export type BadgeInfo = {
     attestationId: string;
 };
 
+const roleColors = {
+    Ideator: "bg-indigo-500", // Slate Blue
+    Instigator: "bg-amber-600", // Burnt Orange
+    "Team Member": "bg-emerald-600", // Teal Green
+};
+const borderColors = [
+    "border-blue-500",
+    "border-green-500",
+    "border-yellow-500",
+    "border-purple-500",
+];
+
 export type AccountInfoProps = {
     address: Hex;
     badgesInfo: BadgeInfo[];
@@ -169,7 +181,6 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                             {cnsBalance} CNS
                         </p>
                     </div>
-
                     {/* Credit Balance Box */}
                     <div className="bg-gray-800 shadow-md p-4 flex flex-col items-center justify-center">
                         <h3 className="text-md font-semibold text-gray-300">
@@ -179,7 +190,6 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                             {creditBalance} Credits
                         </p>
                     </div>
-
                     {/* Projects Section */}
                     <div className="bg-gray-800 shadow-md p-4 rounded-lg">
                         <h3 className="text-md font-semibold text-gray-300 mb-3 text-center">
@@ -187,11 +197,18 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                         </h3>
                         {projects.length > 0 ? (
                             <div className="grid grid-cols-2 gap-4">
-                                {projects.map((project) => (
+                                {projects.map((project, index) => (
                                     <TooltipProvider key={project.initiativeId}>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <div className="bg-gray-700 p-4 rounded-lg shadow-md flex flex-col justify-between cursor-pointer">
+                                                <div
+                                                    className={`p-4 rounded-lg shadow-md flex flex-col justify-between cursor-pointer bg-gray-700 border-l-4 ${
+                                                        borderColors[
+                                                            index %
+                                                                borderColors.length
+                                                        ]
+                                                    }`}
+                                                >
                                                     <h3 className="text-sm font-semibold text-gray-100 mb-1">
                                                         {project.title}
                                                     </h3>
@@ -208,7 +225,13 @@ export const AccountInfo: FunctionComponent<AccountInfoProps> = ({
                                                     >
                                                         {project.description}
                                                     </p>
-                                                    <span className="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-lg self-start">
+                                                    <span
+                                                        className={`px-3 py-1 text-xs font-medium text-white rounded-lg self-start ${
+                                                            roleColors[
+                                                                project.role
+                                                            ] || "bg-gray-500"
+                                                        }`}
+                                                    >
                                                         {project.role}
                                                     </span>
                                                 </div>
