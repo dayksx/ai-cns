@@ -45,17 +45,15 @@ contract NetworkStateAgreement {
     }
 
     /**
-     * @dev Constructor for the NetworkStateAgreement contract.
-     * @param _constitutionURL The URL of the constitution.
-     * @param _initiativesAddress The address of the NetworkStateInitiatives contract.
-     *
-     * Initializes the contract by setting the owner to the address that deploys the contract,
-     * setting the network state treasury address, initializing the initiatives contract,
-     * and setting the constitution URL.
+     * @notice Constructor to initialize the contract with the constitution URL,
+     * initiatives contract address, and treasury address.
+     * @param _constitutionURL The URL of the constitution document.
+     * @param _initiativesAddress The address of the initiatives contract.
+     * @param _treasuryAddress The address of the treasury.
      */
-    constructor(string memory _constitutionURL, address _initiativesAddress) {
+    constructor(string memory _constitutionURL, address _initiativesAddress, address _treasuryAddress) {
         owner = msg.sender;
-        networkStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
+        networkStateTreasury = payable(_treasuryAddress);
         initiativesContract = NetworkStateInitiatives(_initiativesAddress);
         constitutionURL = _constitutionURL;
     }

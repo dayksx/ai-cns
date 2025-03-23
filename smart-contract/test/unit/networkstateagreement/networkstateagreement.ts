@@ -32,13 +32,11 @@ describe("NetworkStateAgreement", function () {
 
     it("should return the new constitution URL once it's changed", async function () {
       expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionURL()).to.equal(
-        "https://ipfs.io/ipfs/xxxxxxxxxxxx",
+        "https://ipfs.io/ipfs/QmZCXBiYSMVJe5vUq3s62L2YTugGCY2WZ8m6wb9ra99wAc/",
       );
-      await this.networkStateAgreement
-        .connect(this.signers.admin)
-        .updateConstitutionURL("https://ipfs.io/ipfs/zzzzzzzzzz");
+      await this.networkStateAgreement.connect(this.signers.admin).updateConstitutionURL("https://ipfs.io/ipfs/xxx");
       expect(await this.networkStateAgreement.connect(this.signers.admin).constitutionURL()).to.equal(
-        "https://ipfs.io/ipfs/zzzzzzzzzz",
+        "https://ipfs.io/ipfs/xxx",
       );
     });
 
