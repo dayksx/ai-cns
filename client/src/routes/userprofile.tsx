@@ -3,7 +3,7 @@
 import Jazzicon from "@metamask/jazzicon";
 import { useParams } from "react-router";
 import { FunctionComponent, useEffect, useState } from "react";
-import { Hex } from "viem";
+import { Hex, formatEther } from "viem";
 import { getNetizenBadgeAttestations } from "@/verax/attestations-reader";
 import { getUserCredits } from "@/contracts/get-user-credits";
 import { getUserInitiativeEvents } from "@/contracts/get-user-activities";
@@ -50,11 +50,11 @@ export const UserProfile: FunctionComponent = () => {
         FundAllocated: (args: { initiativeId: any; amount: any }) =>
             `Allocated funds to initiative ${shortenInitiativeId(
                 args.initiativeId
-            )} (${args.amount} credits)`,
+            )} (${formatEther(args.amount ?? 0n)?.substring(0, 5)} ETH)`,
         FundingWithdrawn: (args: { initiativeId: any; amount: any }) =>
             `Withdrew funds from initiative ${shortenInitiativeId(
                 args.initiativeId
-            )} (${args.amount} credits)`,
+            )} (${formatEther(args.amount ?? 0n)?.substring(0, 5)} ETH)`,
     };
 
     useEffect(() => {
