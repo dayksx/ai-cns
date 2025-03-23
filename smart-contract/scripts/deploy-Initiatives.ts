@@ -1,4 +1,5 @@
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/dist/src/signer-with-address";
+import fs from "fs";
 import { ethers } from "hardhat";
 
 import { verify } from "../scripts/VerifyContract";
@@ -20,9 +21,10 @@ export async function deployNetworkStateInitiatives(
   verifyContract: boolean,
   filldata: boolean,
 ): Promise<string> {
+  const config = JSON.parse(fs.readFileSync("./scripts/Initiatives.json", "utf-8"));
   console.log("Deployer:", deployer.address);
   const factory = (await ethers.getContractFactory("NetworkStateInitiatives")) as NetworkStateInitiatives__factory;
-  const contract = (await factory.connect(deployer).deploy()) as NetworkStateInitiatives;
+  const contract = (await factory.connect(deployer).deploy(config.treasuryAddress)) as NetworkStateInitiatives;
   await contract.waitForDeployment();
   const address = await contract.getAddress();
   console.log("NetworkStateInitiatives deployed to:", address);
@@ -33,7 +35,7 @@ export async function deployNetworkStateInitiatives(
 
   if (verifyContract) {
     setTimeout(async () => {
-      await verify(address);
+      await verify(address, [config.treasuryAddress]);
     }, 5000);
   }
 

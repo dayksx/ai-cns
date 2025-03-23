@@ -27,7 +27,7 @@ contract NetworkStateInitiatives {
     mapping(address => uint256) public userCredits; // Remaining credits per user
     mapping(address => mapping(bytes32 => bool)) public hasVoted; // Track if a user has voted on an initiative
     uint256 public constant MAX_CREDITS_PER_USER = 100; // Maximum credit allowed per user
-    address payable public networkStateTreasury; // Address of the treasury contract
+    address payable public networkStateTreasury; // Address of the treasury
 
     // event emitted when a user's credit balance is updated
     event CreditsUpdated(address user, uint256 newCreditBalance);
@@ -71,11 +71,12 @@ contract NetworkStateInitiatives {
     }
 
     /**
-     * @dev Constructor that sets the initial constitution hash and assigns the contract owner.
+     * @notice Constructor to initialize the contract with the treasury address.
+     * @param _treasuryAddress The address of the treasury.
      */
-    constructor() {
+    constructor(address _treasuryAddress) {
         owner = msg.sender;
-        networkStateTreasury = payable(0x01F8e269CADCD36C945F012d2EeAe814c42D1159);
+        networkStateTreasury = payable(_treasuryAddress);
     }
 
     /**
