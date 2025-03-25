@@ -65,7 +65,7 @@ spec:
             - name: SERVER_URL
               value: localhost
             - name: SERVER_PORT
-              value: 3000
+              value: "3000"
           ports:
             - containerPort: 3000
               protocol: TCP
