@@ -52,7 +52,7 @@ metadata:
     ingress.kubernetes.io/whitelist-x-forwarded-for: 'true'
   labels:
     app.kubernetes.io/name: ai-cns-app
-  name: ai-cns-app
+  name: ai-cns-app-back
   namespace: ai-cns
 spec:
   ingressClassName: nginx
