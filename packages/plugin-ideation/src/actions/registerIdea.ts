@@ -247,7 +247,7 @@ export const registerIdeaAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "That's a fantastic idea! I've registered your concept for a decentralized farm-to-consumer marketplace onchain via Linea Sepolia. The transaction is confirmed and you can view it on the block explorer. Your idea is now permanently recorded on the blockchain!",
-                    action: "REGISTER_ONCHAIN_IDEA",
+                    action: "REGISTER_IDEA",
                 },
             },
         ],
@@ -274,7 +274,7 @@ export const registerIdeaAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "I've registered your 'Parametric Disaster Relief Fund' idea onchain through our Linea Sepolia smart contract. The transaction is complete and your concept is now immutably recorded with proper attribution. You can check the transaction details on Linea Sepolia's block explorer.",
-                    action: "REGISTER_ONCHAIN_IDEA",
+                    action: "REGISTER_IDEA",
                 },
             },
         ],
@@ -289,7 +289,7 @@ export const registerIdeaAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "I've captured your idea for a 'Natural Language Smart Contract Generator' and registered it onchain via Linea Sepolia. This innovative concept for democratizing blockchain development is now permanently recorded with your attribution. The transaction is confirmed and available on the block explorer.",
-                    action: "REGISTER_ONCHAIN_IDEA",
+                    action: "REGISTER_IDEA",
                 },
             },
         ],
@@ -316,7 +316,7 @@ export const registerIdeaAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "I've registered your 'Ocean Cleanup DAO' concept onchain through our Linea Sepolia smart contract. Your innovative governance model is now immutably recorded on the blockchain. You can view the transaction details on Linea Sepolia's block explorer. Your idea is preserved with proper attribution.",
-                    action: "REGISTER_ONCHAIN_IDEA",
+                    action: "REGISTER_IDEA",
                 },
             },
         ],
@@ -331,7 +331,7 @@ export const registerIdeaAction: Action = {
                 user: "{{agent}}",
                 content: {
                     text: "I've registered your 'Cross-Chain Anonymous Identity' concept onchain via Linea Sepolia. This solution addresses the important challenge of maintaining consistent user identity across multiple blockchains while preserving privacy. The transaction is confirmed and your idea is now permanently recorded with your attribution.",
-                    action: "REGISTER_ONCHAIN_IDEA",
+                    action: "REGISTER_IDEA",
                 },
             },
         ],
