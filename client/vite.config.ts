@@ -45,9 +45,10 @@ export default defineConfig(({ mode }) => {
             ),
         },
         server: {
-            cors: true, // :white_check_mark: Allow all origins
-        },
-        resolve: {
+            cors: true, // Allow all origins
+            allowedHosts: ['ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net'], // Add the allowed host here
+          },
+          resolve: {
             alias: {
                 "@": "/src",
             },
