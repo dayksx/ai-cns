@@ -22,17 +22,17 @@ spec:
         - name: ai-cns
           image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-e61a6ff
           command: ["sh", "-c"]
-          args: ["pnpm start --characters='lubAIn.character.json,vitalAIk.character.json,satoshAI.character.json' & pnpm start:client"]
+          args: ["pnpm start --characters='lubAIn.character.json' & pnpm start:client"]
           envFrom:
             - secretRef:
                 optional: false
                 name: ai-cns-app
           env:
-            - name: "CHARACTER_LUBAIN_SLACK_APP_ID"
+            - name: "SLACK_APP_ID"
               value: "A08F72TBG9H"
-            - name: "CHARACTER_LUBAIN_SLACK_CLIENT_ID"
+            - name: "SLACK_CLIENT_ID"
               value: "8497303115941.8517095390323"
-            - name: "CHARACTER_LUBAIN_SLACK_SERVER_PORT"
+            - name: "SLACK_SERVER_PORT"
               value: "3069"
             - name: "CHARACTER_VITALAIK_SLACK_APP_ID"
               value: "A08F808GNAF"
