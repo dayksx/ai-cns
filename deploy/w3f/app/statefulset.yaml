@@ -20,9 +20,9 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: ai-cns
-          image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-6aebe94
+          image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-3e1625d
           command: ["sh", "-c"]
-          args: ["pnpm start --characters='lubAIn.character.json,vitalAIk.character.json,satoshAI.character.json'"]
+          args: ["pnpm start --characters='lubAIn.character.json,vitalAIk.character.json,satoshAI.character.json' & pnpm start:client"]
           envFrom:
             - secretRef:
                 optional: false
