@@ -22,7 +22,7 @@ spec:
         - name: ai-cns
           image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-df2a0c0
           command: ["sh", "-c"]
-          args: ["pnpm start --characters='lubAIn.character.json' & pnpm start:client --host"]
+          args: ["pnpm start --characters='lubAIn.character.json,satoshAI.character.json,vitalAIk.character.json' & pnpm start:client --host"]
           envFrom:
             - secretRef:
                 optional: false
@@ -82,6 +82,10 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/agent/data
+            - name: dotenv
+              mountPath: "/app/.env"
+              subPath: .env
+              readOnly: true
           imagePullPolicy: Always
           resources:
             limits:
@@ -106,6 +110,13 @@ spec:
             tcpSocket:
               port: 3000
             timeoutSeconds: 5
+      volumes:
+        - name: dotenv
+          secret:
+            secretName: dotenv
+            items:
+              - key: dotenv
+                path: .env
   volumeClaimTemplates:
   - metadata:
       name: data
