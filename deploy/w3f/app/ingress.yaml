@@ -20,27 +20,6 @@ spec:
                   number: 5173
             path: /
             pathType: Prefix
-          - backend:
-              service:
-                name: ai-cns-app
-                port:
-                  number: 3069
-            path: /slack69
-            pathType: Prefix
-          - backend:
-              service:
-                name: ai-cns-app
-                port:
-                  number: 3070
-            path: /slack70
-            pathType: Prefix
-          - backend:
-              service:
-                name: ai-cns-app
-                port:
-                  number: 3071
-            path: /slack71
-            pathType: Prefix
   tls:
     - hosts:
         - ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net
@@ -70,3 +49,81 @@ spec:
   tls:
     - hosts:
         - ai-cnsback-hackathon-eu-dev.sandbox.web3factory.consensys.net
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/whitelist-x-forwarded-for: 'true'
+  labels:
+    app.kubernetes.io/name: ai-cns-app
+  name: ai-cns-app-69
+  namespace: ai-cns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ai-cns3069-hackathon-eu-dev.sandbox.web3factory.consensys.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: ai-cns-app
+                port:
+                  number: 3069
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - ai-cns3069-hackathon-eu-dev.sandbox.web3factory.consensys.net
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/whitelist-x-forwarded-for: 'true'
+  labels:
+    app.kubernetes.io/name: ai-cns-app
+  name: ai-cns-app-70
+  namespace: ai-cns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ai-cns3070-hackathon-eu-dev.sandbox.web3factory.consensys.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: ai-cns-app
+                port:
+                  number: 3070
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - ai-cns3070-hackathon-eu-dev.sandbox.web3factory.consensys.net
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/whitelist-x-forwarded-for: 'true'
+  labels:
+    app.kubernetes.io/name: ai-cns-app
+  name: ai-cns-app-71
+  namespace: ai-cns
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ai-cns3071-hackathon-eu-dev.sandbox.web3factory.consensys.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: ai-cns-app
+                port:
+                  number: 3071
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - ai-cns3071-hackathon-eu-dev.sandbox.web3factory.consensys.net
