@@ -29,7 +29,7 @@ spec:
                 name: ai-cns-app
           env:
             - name: SERVER_BASE_URL
-              value: "https://ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net/"
+              value: "https://ai-cnsback-hackathon-eu-dev.sandbox.web3factory.consensys.net"
             - name: LOG_LEVEL
               value: "debug"
             - name: DEFAULT_LOG_LEVEL
