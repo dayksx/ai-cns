@@ -28,6 +28,8 @@ spec:
                 optional: false
                 name: ai-cns-app
           env:
+            - name: SERVER_BASE_URL
+              value: "https://ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net/"
             - name: "SLACK_APP_ID"
               value: "A08F72TBG9H"
             - name: "SLACK_CLIENT_ID"
