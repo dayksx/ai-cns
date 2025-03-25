@@ -2,8 +2,6 @@
     "name": "LubAIn",
     "username": "lubAIn",
     "plugins": [
-        "@elizaos-plugins/client-slack",
-        "@elizaos-plugins/client-telegram",
         "@elizaos/plugin-community-values",
         "@elizaos/plugin-ideation",
         "@elizaos/plugin-reputation"

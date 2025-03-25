@@ -209,12 +209,14 @@ export const registerIdeaAction: Action = {
             // Idea registration
             console.log('🚀 ==== Registering idea onchain ===');
             const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-            if (await provider.getCode(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS) === "0x") {
+            const contactAddress = process.env.CNS_INITIATIVE_CONTRACT_ADDRESS;
+            elizaLogger.info("🔗 Initative Smart Contract address: ", contactAddress);
+            if (await provider.getCode(contactAddress) === "0x") {
                 console.error("❌ No contract deployed at this address!");
                 return false;
             }
             const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-            const contract = new ethers.Contract(process.env.CNS_INITIATIVE_CONTRACT_ADDRESS, SMART_CONTRACT_ABI, signer);
+            const contract = new ethers.Contract(contactAddress, SMART_CONTRACT_ABI, signer);
             
             console.log("contract.createInitiatives(", {ideator, title, description, category , tags, globalRating});
             const tx = await contract.createInitiatives(ethers.getAddress(ideator), title, description, category || "", tags || [], globalRating);

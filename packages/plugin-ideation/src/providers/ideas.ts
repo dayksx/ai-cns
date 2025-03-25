@@ -16,76 +16,50 @@ const SMART_CONTRACT_ABI = [
         "type": "event"
     }
 ];
-const CONTRACT_DEPLOYMENT_BLOCK = 10850877;
-const BATCH_SIZE = 9999;
-const MAX_INITIATIVES = 50;
+
+const MAX_INITIATIVES = 10;
 
 const ideasProvider: Provider = {
     get: async (_runtime: IAgentRuntime, _message: Memory, _state?: State) => {
-        elizaLogger.info(`⏳ Provider: Fetch registered ideas to provide the information to the Agent`);
-
+        elizaLogger.info("⏳ Fetching latest initiatives...");
+        elizaLogger.log("⏳ Provider: Fetch registered initiatiives");
         try {
-            // Validate environment variables
             const evmProviderUrl = process.env.EVM_PROVIDER_URL;
             const contractAddress = process.env.CNS_INITIATIVE_CONTRACT_ADDRESS;
-            
-            if (!evmProviderUrl || !contractAddress) {
-                throw new Error("Missing required environment variables: EVM_PROVIDER_URL or CNS_INITIATIVE_CONTRACT_ADDRESS");
-            }
-            
-            const iface = new ethers.Interface(SMART_CONTRACT_ABI);
+            elizaLogger.info("🔗 Initative Smart Contract address: ", contractAddress);
+            if (!evmProviderUrl || !contractAddress) throw new Error("Missing env variables");
+
             const provider = new ethers.JsonRpcProvider(evmProviderUrl);
+            if (await provider.getCode(contractAddress) === "0x") {
+                console.error("❌ No contract deployed at this address!");
+                return false;
+            }
             const latestBlock = await provider.getBlockNumber();
-            
-            let fromBlock = CONTRACT_DEPLOYMENT_BLOCK;
-            let allInitiatives: any[] = [];
+            const fromBlock = Math.max(latestBlock - 5000, 0); // Fetch only last 5000 blocks
 
-            while (fromBlock <= latestBlock) {
-                const toBlock = Math.min(fromBlock + BATCH_SIZE, latestBlock);
-                
-                const logs = await provider.getLogs({
-                    address: contractAddress,
-                    topics: [iface.getEvent("InitiativeCreated").topicHash],
-                    fromBlock,
-                    toBlock
-                });
+            const iface = new ethers.Interface(SMART_CONTRACT_ABI);
+            const eventSignature = "InitiativeCreated(bytes32,address,string,string,string,uint256)";
+            const eventTopic = ethers.id(eventSignature);
 
-                const initiatives = logs.map(log => {
-                    const parsedLog = iface.parseLog(log);
-                    return {
-                        initiativeId: parsedLog.args.initiativeId,
-                        ideator: parsedLog.args.ideator,
-                        title: parsedLog.args.title,
-                        description: parsedLog.args.description,
-                        category: parsedLog.args.category,
-                        score: parsedLog.args.score
-                    };
-                });
-                
-                allInitiatives = [...allInitiatives, ...initiatives];
-                fromBlock = toBlock + 1;
-            }
+            const logs = await provider.getLogs({
+                address: contractAddress,
+                topics: [eventTopic],
+                fromBlock,
+                toBlock: latestBlock
+            });
 
-            // Limit the number of initiatives returned
-            allInitiatives = allInitiatives.slice(-MAX_INITIATIVES);
+            const initiatives = logs.slice(-MAX_INITIATIVES).map(log => {
+                const { args } = iface.parseLog(log);
+                return `- **${args.title}** by ${args.ideator} (Score: ${args.score})`;
+            });
 
-            if (allInitiatives.length === 0) {
-                return "No initiatives have been registered on-chain yet.";
-            }
-
-            const formattedInitiatives = allInitiatives.map((initiative, index) => `
-                **Initiative #${index + 1}**
-                - **Ideator:** ${initiative.ideator}
-                - **Title:** ${initiative.title}
-                - **Description:** ${initiative.description}
-                - **Category:** ${initiative.category}
-                - **Score:** ${initiative.score}
-            `).join("\n");
-            
-            return `**The Consensys Network State (CNS) initiatives registered on-chain:**\n${formattedInitiatives}`;
+            console.log("initiatives: ", initiatives);
+            return initiatives.length
+                ? `**Recent CNS community ideas, needs or initiatives:**\n${initiatives.join("\n")}`
+                : "No recent initiatives found.";
         } catch (error) {
-            elizaLogger.error(`❌ Error fetching initiatives: ${error.message}`, error);
-            return "Failed to retrieve initiatives due to a technical issue.";
+            elizaLogger.error(`❌ Fetch error: ${error.message}`);
+            return "Failed to fetch initiatives.";
         }
     },
 };

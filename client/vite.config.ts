@@ -2,7 +2,6 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import viteCompression from "vite-plugin-compression";
 import path from "node:path";
-
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
     const envDir = path.resolve(__dirname, "..");
@@ -45,17 +44,21 @@ export default defineConfig(({ mode }) => {
                 env.CNS_TOKEN_ADDRESS
             ),
         },
+        server: {
+            cors: true, // Allow all origins
+            allowedHosts: ['ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net'], // Add the allowed host here
+          },
+          resolve: {
+            alias: {
+                "@": "/src",
+            },
+        },
         build: {
             outDir: "dist",
             minify: true,
             cssMinify: true,
             sourcemap: false,
             cssCodeSplit: true,
-        },
-        resolve: {
-            alias: {
-                "@": "/src",
-            },
         },
     };
 });

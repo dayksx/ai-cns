@@ -106,9 +106,11 @@ const SMART_CONTRACT_ABI = [
     }
 ];
 
-const fetchMintedToday = async (provider: ethers.JsonRpcProvider): Promise<bigint> => {
+const CNS_TOKEN_ADDRESS = process.env.CNS_TOKEN_ADDRESS;
+
+const fetchMintedToday = async (provider: ethers.JsonRpcProvider, contractAddress: string): Promise<bigint> => {
     try {
-        const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, SMART_CONTRACT_ABI, provider);
+        const contract = new ethers.Contract(contractAddress, SMART_CONTRACT_ABI, provider);
         return await contract.mintedToday();
     } catch (error) {
         elizaLogger.error(`Failed to fetch mintedToday: ${error.message}`);
@@ -117,9 +119,13 @@ const fetchMintedToday = async (provider: ethers.JsonRpcProvider): Promise<bigin
 };
 
 const executeMintTransaction = async (recipient: string, amount: string) => {
-    const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
+    const evmProviderUrl = process.env.EVM_PROVIDER_URL;
+    const contractAddress = CNS_TOKEN_ADDRESS;
+
+    const provider = new ethers.JsonRpcProvider(evmProviderUrl);
     const signer = new ethers.Wallet(process.env.EVM_PRIVATE_KEY, provider);
-    const contract = new ethers.Contract(process.env.CNS_TOKEN_ADDRESS, SMART_CONTRACT_ABI, signer);
+    const contract = new ethers.Contract(contractAddress, SMART_CONTRACT_ABI, signer);
+    elizaLogger.info("🔗 $CNS Token Smart Contract address: ", contractAddress);
     const parsedAmount = ethers.parseUnits(amount, 18);
     
     let attempt = 0;
@@ -158,8 +164,7 @@ export const tipCNSTokenAction: Action = {
         "Only use this action when a user ask to send $CNS token to a specific EVM address",
 
     validate: async (_runtime: IAgentRuntime, _message: Memory) => {
-        elizaLogger.info(`Tipping validation`);
-
+        elizaLogger.info(`👀 Action validate: Tipping`);
         // placeholder: check if the given user is allowed to tip
         return true;
     },
@@ -194,16 +199,20 @@ export const tipCNSTokenAction: Action = {
 
             console.log('🚀 ==== Minting and transfering $CNS token ===');
             const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
-            const mintedToday = await fetchMintedToday(provider);
-            console.log("là");
-            const amountBN = ethers.parseUnits(amount.toString(), 18);
-            const maxAmountBN = ethers.parseUnits(CNS_MINT_DAILY_CREDIT.toString(), 18)
-            console.log("ici");
-            console.log("$CNS mint: ", {mintedToday: mintedToday, amount: amount, amountBN: amountBN, maxAmountBN: maxAmountBN});
+            try {
+                const mintedToday = await fetchMintedToday(provider, CNS_TOKEN_ADDRESS);
+                const amountBN = ethers.parseUnits(amount.toString(), 18);
+                const maxAmountBN = ethers.parseUnits(CNS_MINT_DAILY_CREDIT.toString(), 18)
 
-            if (mintedToday + amountBN > maxAmountBN) {
-                callback?.({ text: "The daily credit for $CNS tipping has been reached." });
-                return false;
+                if (mintedToday + amountBN > maxAmountBN) {
+                    callback?.({ text: "The daily credit for $CNS tipping has been reached." });
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error("Error fetching minted today:", error);
+                console.error("Full error details:", error.stack);
+            
             }
 
             try {
