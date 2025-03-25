@@ -5,7 +5,7 @@ import { ideasProvider } from "./providers/ideas.ts";
 
 export const ideationPlugin: Plugin = {
     name: "ideation",
-    description: "Register ideas comming from the community",
+    description: "Register needs, ideas, initiatives comming from the community",
     actions: [registerIdeaAction],
     evaluators: [],
     providers: [ideasProvider],

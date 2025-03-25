@@ -56,8 +56,16 @@ const demoEnsTweakForMembers = [
         ensName: "dayksx.linea.eth",
     },
     {
+        address: "0x2B52e3A8bBdE66262E10f15578769ACd4812249d",
+        ensName: "hal.linea.eth",
+    },
+    {
         address: "0x4D8aD86dEe297B5703E92465692999abDB0508c8",
-        ensName: "john.linea.eth",
+        ensName: "puja.linea.eth",
+    },
+    {
+        address: "0xA7F36973465b4C3d609961Bc72Cc2E65acE26337",
+        ensName: "eli.linea.eth",
     },
 ];
 

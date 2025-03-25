@@ -117,6 +117,7 @@ export const issueAttestationAction: Action = {
             state = state ? await runtime.updateRecentMessageState(state) : (await runtime.composeState(message)) as State;
 
             // Extracting attestation information
+            elizaLogger.info("🔗 Verax Portal address: ", PORTAL_ADDRESS);
             const attestationContextData = composeContext({ state, template: attestationContext });
             let { subject, scope, isTrustworthy } = await generateObjectDeprecated({ runtime, context: attestationContextData, modelClass: ModelClass.SMALL });
             console.log('🛠 Extracted attestation information: ', { subject: subject, scope: scope, isTrustworthy: isTrustworthy });
