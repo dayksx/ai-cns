@@ -28,6 +28,8 @@ spec:
                 optional: false
                 name: ai-cns-app
           env:
+            - name: SERVER_BASE_URL
+              value: "https://ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net/"
             - name: LOG_LEVEL
               value: "debug"
             - name: DEFAULT_LOG_LEVEL
@@ -66,10 +68,6 @@ spec:
               value: "https://erqahqyzhirixswuiplt.supabase.co"
             - name: EVM_PROVIDER_URL
               value: "https://rpc.sepolia.linea.build"
-            - name: SERVER_URL
-              value: localhost
-            - name: SERVER_PORT
-              value: "3000"
           ports:
             - containerPort: 3000
               protocol: TCP
