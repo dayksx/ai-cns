@@ -28,6 +28,10 @@ spec:
                 optional: false
                 name: ai-cns-app
           env:
+            - name: LOG_LEVEL
+              value: "debug"
+            - name: DEFAULT_LOG_LEVEL
+              value: "debug"
             - name: SERVER_BASE_URL
               value: "https://ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net/"
             - name: "SLACK_APP_ID"
