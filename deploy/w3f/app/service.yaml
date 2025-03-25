@@ -11,6 +11,10 @@ spec:
       port: 5173
       protocol: TCP
       targetPort: 5173
+    - name: backend
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
     - name: slack69
       port: 3069
       protocol: TCP
