@@ -37,8 +37,10 @@ WORKDIR /app
 # Copy application code
 COPY . .
 
+RUN git submodule update --init --recursive
+
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 
 # Build the project
 RUN pnpm run build && pnpm prune --prod
