@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: ai-cns
-          image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-e61a6ff
+          image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-df2a0c0
           command: ["sh", "-c"]
           args: ["pnpm start --characters='lubAIn.character.json' & pnpm start:client --host"]
           envFrom:
@@ -32,8 +32,6 @@ spec:
               value: "debug"
             - name: DEFAULT_LOG_LEVEL
               value: "debug"
-            - name: SERVER_BASE_URL
-              value: "https://ai-cns-hackathon-eu-dev.sandbox.web3factory.consensys.net/"
             - name: "SLACK_APP_ID"
               value: "A08F72TBG9H"
             - name: "SLACK_CLIENT_ID"
@@ -57,13 +55,13 @@ spec:
             - name: CNS_VERAX_SCHEMA_ID
               value: "0x8660da4093987072670aba14868d8dc4112ea88a777f7434a54ea8e7925a1a73"
             - name: CNS_TOKEN_ADDRESS
-              value: "0x8d16c48c8E5d392f91b5BCC53DdfbdB26523a7Ae"
+              value: "0x535eedd532d2Bb4f20CF17d0416676dff1609FAc"
             - name: CNS_CONSTITUTION_HASH
               value: "QmZCXBiYSMVJe5vUq3s62L2YTugGCY2WZ8m6wb9ra99wAc"
             - name: CNS_AGREEMENT_CONTRACT_ADDRESS
-              value: "0xbE67C358d5439D558EDd5D009c5cA01b830E426A"
+              value: "0xc97aA83b5d13F737324F488e4AAfBC52Ed04b5BC"
             - name: CNS_INITIATIVE_CONTRACT_ADDRESS
-              value: "0x43464d868acfEa977a198cbd89cA46d6C55Be494"
+              value: "0x14a3e26D9382730Eb297F5F135B8f3473e85E7dD"
             - name: SUPABASE_URL
               value: "https://erqahqyzhirixswuiplt.supabase.co"
             - name: EVM_PROVIDER_URL
