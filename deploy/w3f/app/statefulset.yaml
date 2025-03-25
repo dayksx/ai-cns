@@ -28,23 +28,23 @@ spec:
                 optional: false
                 name: ai-cns-app
           env:
-            - name: CHARACTER.LUBAIN.SLACK_APP_ID
+            - name: "CHARACTER.LUBAIN.SLACK_APP_ID"
               value: "A08F72TBG9H"
-            - name: CHARACTER.LUBAIN.SLACK_CLIENT_ID
+            - name: "CHARACTER.LUBAIN.SLACK_CLIENT_ID"
               value: "8497303115941.8517095390323"
-            - name: CHARACTER.LUBAIN.SLACK_SERVER_PORT
+            - name: "CHARACTER.LUBAIN.SLACK_SERVER_PORT"
               value: "3069"
-            - name: CHARACTER.VITALAIK.SLACK_APP_ID
+            - name: "CHARACTER.VITALAIK.SLACK_APP_ID"
               value: "A08F808GNAF"
-            - name: CHARACTER.VITALAIK.SLACK_CLIENT_ID
+            - name: "CHARACTER.VITALAIK.SLACK_CLIENT_ID"
               value: "8497303115941.8518008566355"
-            - name: CHARACTER.VITALAIK.SLACK_SERVER_PORT
+            - name: "CHARACTER.VITALAIK.SLACK_SERVER_PORT"
               value: "3070"
-            - name: CHARACTER.SATOSHAI.SLACK_APP_ID
+            - name: "CHARACTER.SATOSHAI.SLACK_APP_ID"
               value: "A08F6LUPAF8"
-            - name: CHARACTER.SATOSHAI.SLACK_CLIENT_ID
+            - name: "CHARACTER.SATOSHAI.SLACK_CLIENT_ID"
               value: "8497303115941.8516708792518"
-            - name: CHARACTER.SATOSHAI.SLACK_SERVER_PORT
+            - name: "CHARACTER.SATOSHAI.SLACK_SERVER_PORT"
               value: "3071"
             - name: CNS_VERAX_PORTAL_ID
               value: "0x4787Fd2DfE83C0e5d07d2BA1aEF12Afc5c4fe306"
