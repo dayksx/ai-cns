@@ -57,13 +57,13 @@ spec:
             - name: CNS_VERAX_SCHEMA_ID
               value: "0x8660da4093987072670aba14868d8dc4112ea88a777f7434a54ea8e7925a1a73"
             - name: CNS_TOKEN_ADDRESS
-              value: "0x535eedd532d2Bb4f20CF17d0416676dff1609FAc"
+              value: "0xd2A2c346bF6A62235DBE9222F43d423024D7353D"
             - name: CNS_CONSTITUTION_HASH
               value: "QmZCXBiYSMVJe5vUq3s62L2YTugGCY2WZ8m6wb9ra99wAc"
             - name: CNS_AGREEMENT_CONTRACT_ADDRESS
-              value: "0xc97aA83b5d13F737324F488e4AAfBC52Ed04b5BC"
+              value: "0xDB86E258C616a70DA099Aef2Fa2b69a0C461cb65"
             - name: CNS_INITIATIVE_CONTRACT_ADDRESS
-              value: "0x14a3e26D9382730Eb297F5F135B8f3473e85E7dD"
+              value: "0xf446114B4f687C309B1D2C36E35483703D956f6d"
             - name: SUPABASE_URL
               value: "https://erqahqyzhirixswuiplt.supabase.co"
             - name: EVM_PROVIDER_URL
