@@ -31,7 +31,7 @@ export function CnsTreasury() {
                     <span>
                         $CNS {formatEther(tokenBalance)?.substring(0, 5)}
                     </span>
-                    <a href="https://sepolia.lineascan.build/token/0xd0d3da5416f4d4164af95372a3251e3864bef78b" className="text-blue-500 hover:text-blue-400">
+                    <a href="https://sepolia.lineascan.build/token/0xd2A2c346bF6A62235DBE9222F43d423024D7353D" className="text-blue-500 hover:text-blue-400">
                         <SquareArrowOutUpRight className="w-4 h-4" />
                     </a>
                 </div>
