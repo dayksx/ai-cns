@@ -18,7 +18,7 @@ import Core from "./routes/core";
 import CapitalAllocation from "./routes/allocation";
 import { UserProfile } from "./routes/userprofile";
 import { AllNetizens } from "./routes/all-netizens";
-import PasskeyLogin from "./routes/passkey-login";
+import PasskeyLogin from "./routes/login";
 
 const queryClient = new QueryClient({
     defaultOptions: {
