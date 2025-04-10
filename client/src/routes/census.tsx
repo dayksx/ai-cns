@@ -4,6 +4,7 @@ import { CnsActivities } from "../components/cns/cns-activities";
 import { CnsCoreGoods } from "../components/cns/cns-core-goods";
 import { CnsDemography } from "../components/cns/cns-demography";
 import { CnsTreasury } from "../components/cns/cns-treasury";
+import { CnsSoftwareAssets } from "../components/cns/cns-software-assets";
 import { getCnsNetizens, Netizen } from "../lib/cns/get-cns-netizens";
 
 export default function Census() {
@@ -30,6 +31,7 @@ export default function Census() {
                             </span>
                             <CnsTreasury />
                             <CnsCoreGoods />
+                            <CnsSoftwareAssets />
                         </div>
                     </div>
                     <div>

@@ -18,6 +18,7 @@ import Core from "./routes/core";
 import CapitalAllocation from "./routes/allocation";
 import { UserProfile } from "./routes/userprofile";
 import { AllNetizens } from "./routes/all-netizens";
+import PasskeyLogin from "./routes/passkey-login";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -84,6 +85,10 @@ function App() {
                                             <Route
                                                 path="allocation"
                                                 element={<CapitalAllocation />}
+                                            />
+                                            <Route
+                                                path="login"
+                                                element={<PasskeyLogin />}
                                             />
                                         </Routes>
                                     </div>
