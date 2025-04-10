@@ -68,6 +68,8 @@ spec:
               value: "https://erqahqyzhirixswuiplt.supabase.co"
             - name: EVM_PROVIDER_URL
               value: "https://rpc.sepolia.linea.build"
+            - name: EMBEDDING_OPENAI_MODEL
+              value: "text-embedding-3-small"
           ports:
             - containerPort: 3000
               protocol: TCP
