@@ -1,31 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button } from "../components/ui/button";
-import { getCNSValues } from "../lib/cns/get-cns-values";
-import { useAccount, useSignMessage, useWriteContract } from "wagmi";
+import { useAccount } from "wagmi";
 import { PageHeader } from "../components/page-header";
-import { Input } from "../components/ui/input";
-import { cn } from "../lib/utils";
-import { NetworkAgreementAbi } from "../abi/NetworkAgreement.abi";
-import { keccak256, parseEther, stringToBytes, toHex } from "viem";
-import DownloadButton from "../components/download-button";
-import { constitutionTextAsMarkdown } from "../cns-constitution";
-import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
-import { getTokenBalance } from "@/lib/viem-utils";
-import { getNetizenBadgeAttestations } from "@/verax/attestations-reader";
-import { Link } from "react-router";
-
-import { http, createPublicClient } from "viem";
+import { http, createPublicClient, toHex } from "viem";
 import { lineaSepolia as chain } from "viem/chains";
-
-import {
-  Implementation,
-  toMetaMaskSmartAccount,
-} from "@metamask-private/delegator-core-viem";
-
-import { createCredential, parsePublicKey } from "webauthn-p256";
+import { Implementation, toMetaMaskSmartAccount } from "@metamask-private/delegator-core-viem";
+import { createCredential } from "webauthn-p256";
 import { toWebAuthnAccount } from "viem/account-abstraction";
-
-
+import { checkIsNetizen } from "../lib/cns/get-cns-netizens";
 
 async function createSmartAccount() {
     
