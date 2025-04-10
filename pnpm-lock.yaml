@@ -489,9 +489,15 @@ importers:
 
   packages/adapter-supabase:
     dependencies:
+      '@elizaos/core':
+        specifier: ^0.25.9
+        version: 0.25.9(@types/debug@4.1.12)(@types/node@22.13.14)(bufferutil@4.0.9)(encoding@0.1.13)(jiti@1.21.7)(react@19.1.0)(terser@5.39.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(ws@8.18.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(yaml@2.7.1)
       '@supabase/supabase-js':
         specifier: 2.46.2
         version: 2.46.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
       whatwg-url:
         specifier: 7.1.0
         version: 7.1.0

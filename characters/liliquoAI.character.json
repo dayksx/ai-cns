@@ -26,7 +26,7 @@
     ],
     "knowledge": [
         {
-            "directory": "knowledge/shared",
+            "directory": "shared",
             "shared": true
         }
     ],
