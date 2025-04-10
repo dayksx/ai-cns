@@ -54,8 +54,9 @@ You need to make a clear difference between different mentioned ideas, if it's a
     "title": "Title of the Idea",
     "description": "Detailed description of the idea",
     "tags": ["tag1", "tag2"],
-    "category": "Category of the idea"
-    "exist": false
+    "category": "Category of the idea",
+    "exist": false,
+    "finalized": false
 }
 \`\`\`
 
@@ -72,6 +73,10 @@ Your task is to extract the relevant details and return a **structured JSON obje
 - **Tags** → Keywords or themes associated with the idea.  
 - **Category** → A broader classification of the idea.  
 
+### **Finalization**
+- The **finalized** field should be set to **false** by default.
+- The agent should ask the user if they want to register the idea on-chain or if they need more refinement or prefer to keep it off-chain.
+- Set **finalized** to **true** only if the user explicitly mentions that the idea is ready to be registered on-chain.
 
 If conflicting details are present, **favor the most recent and explicit information**.  
 If no **tags or category** are provided, infer them from the context of the discussion.
@@ -144,6 +149,52 @@ Return a **JSON markdown block** containing:
 - **Do not** return a response if the idea lacks sufficient detail for evaluation.
 - **If unclear**, infer a reasonable estimate but highlight any uncertainties. `;
 
+const ideaImprovementTemplate = `# Provide Feedback on Idea Improvements and Linea Building Blocks
+
+Based on the idea proposed by {{senderName}}, provide constructive feedback on how to better align with CNS values and suggest relevant Linea building blocks.
+
+## **Recent Messages**
+{{recentMessages}}
+
+## **Idea Details**
+- Title: {{ideaTitle}}
+- Description: {{ideaDescription}}
+- Current Score: {{globalRating}}
+
+## **Instructions**
+1. First, summarize the idea in your own words to ensure you've understood it correctly. Ask {{senderName}} to confirm if your understanding is accurate.
+
+2. Only if the understanding is confirmed, provide focused feedback in the following format:
+
+   **Value Alignment Improvements**
+   - Only identify specific areas where the idea could better align with CNS values if there are clear opportunities
+   - Suggest concrete improvements only for identified areas
+   - If the idea already aligns well with CNS values, acknowledge this instead of forcing improvements
+
+   **Linea Building Block Recommendations**
+   - List only relevant Linea building blocks that could directly enhance this specific idea
+   - Explain how each building block could specifically benefit this idea
+   - Include specific use cases and integration points
+   - If no building blocks are particularly relevant, state this clearly
+
+   **Implementation Suggestions**
+   - Provide high-level technical recommendations only if they add value
+   - Suggest potential partnerships or collaborations only if they make sense for this idea
+   - Outline key milestones only if they help clarify the implementation path
+
+3. Keep the feedback focused and relevant to this specific idea. If there are no significant improvements to suggest, acknowledge the idea's strengths instead of providing generic feedback.
+
+## **Response Format**
+Return a structured response that:
+- Starts with a clear summary of the idea
+- Is constructive and actionable
+- Focuses on specific improvements rather than general feedback
+- Provides clear next steps for implementation
+- Maintains {{agentName}}'s natural speaking style
+
+## **Next Steps**
+After providing the feedback, ask {{senderName}} if they feel their idea is ready to be registered on-chain, or if they'd like to refine it further based on the suggestions provided.`;
+
 const SMART_CONTRACT_ABI = [
     {
         "inputs": [
@@ -186,7 +237,10 @@ export const registerIdeaAction: Action = {
             // Extracting idea information
             console.log("🛠 Extracting idea information");
             const ideaContextData = composeContext({ state, template: ideaContext });
-            let { ideator, title, description, tags, category } = await generateObjectDeprecated({ runtime, context: ideaContextData, modelClass: ModelClass.SMALL });
+            let { ideator, title, description, tags, category, finalized } = await generateObjectDeprecated({ runtime, context: ideaContextData, modelClass: ModelClass.SMALL });
+
+            // Convert finalized string to boolean
+            finalized = finalized === "true" || finalized === true;
 
             // Missing idea information
             console.log("ideator check", {ideator:ideator, isvalidEVMAddress: isValidEVMAddress(ideator), title: title, description: description});
@@ -197,7 +251,7 @@ export const registerIdeaAction: Action = {
                 callback?.({ text: missingInfoMessage });
                 return false;
             }
-            console.log('🔧 Idea information: ', { ideator, title, description, tags, category });
+            console.log('🔧 Idea information: ', { ideator, title, description, tags, category, finalized });
             
             // Scoring idea
             console.log("🛠 Scoring idea information");
@@ -206,6 +260,24 @@ export const registerIdeaAction: Action = {
             console.log('🔧 Idea scoring: ', ideaScoring);
             let { globalRating } = ideaScoring;
             
+            // Registration confirmation
+            if (!finalized) {
+                // Provide feedback on improvements and Linea building blocks
+                console.log("🛠 Generating improvement feedback");
+                const improvementContext = composeContext({ 
+                    state, 
+                    template: ideaImprovementTemplate,
+                    templatingEngine: "handlebars"
+                });
+                const improvementFeedback = await generateText({ 
+                    runtime, 
+                    context: improvementContext, 
+                    modelClass: ModelClass.SMALL 
+                });
+                callback?.({ text: improvementFeedback });
+                return false;
+            }
+
             // Idea registration
             console.log('🚀 ==== Registering idea onchain ===');
             const provider = new ethers.JsonRpcProvider(process.env.EVM_PROVIDER_URL);
