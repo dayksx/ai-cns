@@ -45,7 +45,7 @@ export function CnsCoreGoods() {
                             className="h-32 bg-cover bg-center transition-opacity group-hover:opacity-100"
                             style={{
                                 backgroundImage: `url(${asset.image})`,
-                                filter: "grayscale(80%) brightness(85%) contrast(110%)",
+                                filter: "grayscale(95%) brightness(60%) contrast(110%)",
                                 opacity: 0.9,
                             }}
                         />
