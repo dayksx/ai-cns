@@ -306,7 +306,6 @@ export const registerIdeaAction: Action = {
         }
         return false;
     },
-    
     examples: [
         [
             {
@@ -318,7 +317,20 @@ export const registerIdeaAction: Action = {
             {
                 user: "{{agent}}",
                 content: {
-                    text: "That's a fantastic idea! I've registered your concept for a decentralized farm-to-consumer marketplace onchain via Linea Sepolia. The transaction is confirmed and you can view it on the block explorer. Your idea is now permanently recorded on the blockchain!",
+                    text: "Thank you for sharing your idea about a decentralized farm-to-consumer marketplace! I've taken note of it. This concept has strong potential to reduce food waste and create more equitable economics for farmers.\n\nBased on my analysis, your idea scores well on value alignment (85/100) and need relevance (90/100), as it promotes decentralization and addresses real market inefficiencies. The innovation score is moderate (75/100) as similar concepts exist but your approach seems unique. Feasibility is good (80/100) assuming standard blockchain infrastructure.\n\nTo strengthen this concept, you might consider:\n- Adding a reputation system for quality assurance\n- Incorporating a token model that incentivizes sustainable farming practices\n- Exploring integration with Linea's payment solutions for lower transaction fees\n\nWould you like me to register this idea on-chain, or would you prefer to refine it further based on this feedback?",
+                    action: "REGISTER_IDEA",
+                },
+            },
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "Yes, please register it on-chain.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Your idea for a 'Decentralized Farm-to-Consumer Marketplace' has been successfully registered on-chain via Linea Sepolia. The transaction is confirmed and your concept is now permanently recorded with your attribution. You can view the transaction details at https://sepolia.lineascan.build/tx/0x123456789abcdef.",
                     action: "REGISTER_IDEA",
                 },
             },
@@ -331,21 +343,22 @@ export const registerIdeaAction: Action = {
                 },
             },
             {
-                user: "{{user3}}",
+                user: "{{agent}}",
                 content: {
-                    text: "That could really speed up response times!",
+                    text: "I've noted your idea for a parametric disaster relief fund using smart contracts and weather oracles. This is a compelling concept that could significantly improve humanitarian aid efficiency.\n\nLooking at the evaluation metrics:\n- Value Alignment: 92/100 (strongly supports public goods and transparency)\n- Innovation: 85/100 (combines existing technologies in a novel application)\n- Feasibility: 78/100 (requires reliable oracle integration and disaster response partnerships)\n- Sustainability: 88/100 (could attract ongoing support from both donors and aid organizations)\n\nTo enhance this concept, you might consider:\n- Incorporating multiple data sources beyond weather (news APIs, local reports)\n- Adding governance mechanisms for fund allocation decisions\n- Exploring Linea's oracle solutions for reliable data feeds\n\nWould you like to register this idea on-chain now, or would you prefer to develop it further?",
+                    action: "REGISTER_IDEA",
                 },
             },
             {
                 user: "{{user2}}",
                 content: {
-                    text: "Can you register this idea onchain?",
+                    text: "Yes, please register it on-chain. I think the core concept is solid.",
                 },
             },
             {
                 user: "{{agent}}",
                 content: {
-                    text: "I've registered your 'Parametric Disaster Relief Fund' idea onchain through our Linea Sepolia smart contract. The transaction is complete and your concept is now immutably recorded with proper attribution. You can check the transaction details on Linea Sepolia's block explorer.",
+                    text: "I've registered your 'Parametric Disaster Relief Fund' idea on-chain through our Linea Sepolia smart contract. The transaction is complete and your concept is now immutably recorded with proper attribution. You can check the transaction details on Linea Sepolia's block explorer at https://sepolia.lineascan.build/tx/0x123456789abcdef.",
                     action: "REGISTER_IDEA",
                 },
             },
@@ -360,7 +373,20 @@ export const registerIdeaAction: Action = {
             {
                 user: "{{agent}}",
                 content: {
-                    text: "I've captured your idea for a 'Natural Language Smart Contract Generator' and registered it onchain via Linea Sepolia. This innovative concept for democratizing blockchain development is now permanently recorded with your attribution. The transaction is confirmed and available on the block explorer.",
+                    text: "I've captured your idea for a 'Natural Language Smart Contract Generator'. This is an excellent concept that could significantly lower barriers to entry in blockchain development.\n\nHere's my evaluation:\n- Value Alignment: 95/100 (strongly promotes accessibility and decentralization)\n- Innovation: 88/100 (pushes boundaries of current developer tools)\n- Feasibility: 70/100 (challenging NLP problem, but achievable with current AI capabilities)\n- Scalability: 85/100 (could serve a growing audience of non-technical creators)\n\nSome considerations to strengthen this idea:\n- Starting with limited scope (specific contract types) before expanding\n- Incorporating educational components to help users understand the generated code\n- Adding verification tools to ensure security of generated contracts\n\nWould you like me to register this idea on-chain now, or would you prefer to refine the concept further?",
+                    action: "REGISTER_IDEA",
+                },
+            },
+            {
+                user: "{{user1}}",
+                content: {
+                    text: "Let's register it now. I can work on the refinements as I develop it.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "Your 'Natural Language Smart Contract Generator' idea has been successfully registered on-chain via Linea Sepolia. This innovative concept for democratizing blockchain development is now permanently recorded with your attribution. The transaction is confirmed and available on the block explorer at https://sepolia.lineascan.build/tx/0xabcdef123456789.",
                     action: "REGISTER_IDEA",
                 },
             },
@@ -373,21 +399,22 @@ export const registerIdeaAction: Action = {
                 },
             },
             {
-                user: "{{user1}}",
+                user: "{{agent}}",
                 content: {
-                    text: "That's brilliant! It aligns incentives perfectly.",
+                    text: "I've noted your idea for an 'Ocean Cleanup DAO' with activity-based governance tokens. This is a fascinating concept that combines environmental impact with innovative governance.\n\nMy evaluation shows strong potential:\n- Value Alignment: 96/100 (combines public goods, sustainability, and decentralization)\n- Innovation: 90/100 (novel approach to DAO participation and governance)\n- Need Relevance: 92/100 (addresses critical environmental challenges)\n- Governance: 94/100 (creates direct alignment between contribution and decision-making)\n\nSome considerations to strengthen the implementation:\n- Developing verification mechanisms for cleanup activities (perhaps using geolocation and photos)\n- Creating partnerships with existing ocean cleanup organizations\n- Exploring Linea's low-cost transactions to make micro-contributions viable\n\nWould you like me to register this concept on-chain, or would you prefer to develop these aspects further?",
+                    action: "REGISTER_IDEA",
                 },
             },
             {
                 user: "{{user3}}",
                 content: {
-                    text: "Can you register this concept on the blockchain?",
+                    text: "Yes, please register this concept on the blockchain.",
                 },
             },
             {
                 user: "{{agent}}",
                 content: {
-                    text: "I've registered your 'Ocean Cleanup DAO' concept onchain through our Linea Sepolia smart contract. Your innovative governance model is now immutably recorded on the blockchain. You can view the transaction details on Linea Sepolia's block explorer. Your idea is preserved with proper attribution.",
+                    text: "I've registered your 'Ocean Cleanup DAO' concept on-chain through our Linea Sepolia smart contract. Your innovative governance model is now immutably recorded on the blockchain. You can view the transaction details at https://sepolia.lineascan.build/tx/0xfedcba987654321. Your idea is preserved with proper attribution and received an overall score of 92/100.",
                     action: "REGISTER_IDEA",
                 },
             },
@@ -396,13 +423,26 @@ export const registerIdeaAction: Action = {
             {
                 user: "{{user2}}",
                 content: {
-                    text: "I need to register my idea for a cross-chain identity solution that allows users to maintain a consistent identity across multiple blockchains without revealing personal information.",
+                    text: "I need to share my idea for a cross-chain identity solution that allows users to maintain a consistent identity across multiple blockchains without revealing personal information.",
                 },
             },
             {
                 user: "{{agent}}",
                 content: {
-                    text: "I've registered your 'Cross-Chain Anonymous Identity' concept onchain via Linea Sepolia. This solution addresses the important challenge of maintaining consistent user identity across multiple blockchains while preserving privacy. The transaction is confirmed and your idea is now permanently recorded with your attribution.",
+                    text: "Thank you for sharing your 'Cross-Chain Anonymous Identity' concept. I've noted the details of your idea, which addresses an important challenge in the blockchain ecosystem.\n\nMy evaluation indicates this is a strong concept:\n- Value Alignment: 94/100 (strongly supports privacy and interoperability)\n- Innovation: 88/100 (tackles an unsolved problem in the space)\n- Feasibility: 75/100 (technically challenging but achievable)\n- Scalability: 90/100 (becomes more valuable as blockchain adoption grows)\n\nTo strengthen this concept, you might consider:\n- Exploring zero-knowledge proof implementations for privacy preservation\n- Defining governance mechanisms for identity verification standards\n- Investigating Linea's cross-chain communication capabilities as potential infrastructure\n\nWould you like me to register this idea on-chain now, or would you prefer to develop these aspects further?",
+                    action: "REGISTER_IDEA",
+                },
+            },
+            {
+                user: "{{user2}}",
+                content: {
+                    text: "I'd like to register it now, please.",
+                },
+            },
+            {
+                user: "{{agent}}",
+                content: {
+                    text: "I've registered your 'Cross-Chain Anonymous Identity' concept on-chain via Linea Sepolia. This solution addresses the important challenge of maintaining consistent user identity across multiple blockchains while preserving privacy. The transaction is confirmed and your idea is now permanently recorded with your attribution. You can view the details at https://sepolia.lineascan.build/tx/0x1a2b3c4d5e6f7890.",
                     action: "REGISTER_IDEA",
                 },
             },
