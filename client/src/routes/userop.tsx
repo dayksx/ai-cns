@@ -20,7 +20,7 @@ export default function UserOp() {
             setError("");
             
             const pimlicoClient = createPimlicoClient({
-                transport: http("https://api.pimlico.io/v2/59141/rpc"),
+                transport: http(process.env.BUNDLER_URL),
             });
 
             const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
