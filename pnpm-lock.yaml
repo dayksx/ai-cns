@@ -273,6 +273,9 @@ importers:
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@19.1.0)
+      permissionless:
+        specifier: ^0.2.41
+        version: 0.2.41(viem@2.21.58(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2))
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -11150,6 +11153,15 @@ packages:
   pbkdf2@3.1.2:
     resolution: {integrity: sha512-iuh7L6jA7JEGu2WxDwtQP1ddOpaJNC4KlDEFfdQajSGgGPNi4OyDc2R7QnbY2bR9QjBVGwgvTdNJZoE7RaxUMA==}
     engines: {node: '>=0.12'}
+
+  permissionless@0.2.41:
+    resolution: {integrity: sha512-Jc2Gf2raUz0ZGl4oUJLhtMJzdqkxsyd2ryitD9WT/perPzbuiGcV7GJZP67UjcXwMqlPUqjoBfpdENHHD5A6fw==}
+    peerDependencies:
+      ox: 0.6.7
+      viem: 2.21.58
+    peerDependenciesMeta:
+      ox:
+        optional: true
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -28616,6 +28628,10 @@ snapshots:
       ripemd160: 2.0.2
       safe-buffer: 5.2.1
       sha.js: 2.4.11
+
+  permissionless@0.2.41(viem@2.21.58(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2)):
+    dependencies:
+      viem: 2.21.58(bufferutil@4.0.9)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.24.2)
 
   picocolors@1.1.1: {}
 
