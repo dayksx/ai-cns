@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/name: ai-cns-app
+  name: ai-cns-app
+  namespace: ai-cns
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-cns-app
+  serviceName: ai-cns-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-cns-app
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: ai-cns
+          image: 992382680272.dkr.ecr.eu-west-3.amazonaws.com/sandbox-dev-ai-cns:main-69a7870
+          command: ["sh", "-c"]
+          args: ["pnpm start --characters='lubAIn.character.json,satoshAI.character.json,vitalAIk.character.json,liliquoAI.character.json' & pnpm start:client --host"]
+          envFrom:
+            - secretRef:
+                optional: false
+                name: ai-cns-app
+          env:
+            - name: SERVER_BASE_URL
+              value: "https://ai-cnsback-hackathon-eu-dev.sandbox.web3factory.consensys.net"
+            - name: LOG_LEVEL
+              value: "debug"
+            - name: DEFAULT_LOG_LEVEL
+              value: "debug"
+            - name: "SLACK_APP_ID"
+              value: "A08F72TBG9H"
+            - name: "SLACK_CLIENT_ID"
+              value: "8497303115941.8517095390323"
+            - name: "SLACK_SERVER_PORT"
+              value: "3069"
+            - name: "CHARACTER_VITALAIK_SLACK_APP_ID"
+              value: "A08F808GNAF"
+            - name: "CHARACTER_VITALAIK_SLACK_CLIENT_ID"
+              value: "8497303115941.8518008566355"
+            - name: "CHARACTER_VITALAIK_SLACK_SERVER_PORT"
+              value: "3070"
+            - name: "CHARACTER_SATOSHAI_SLACK_APP_ID"
+              value: "A08F6LUPAF8"
+            - name: "CHARACTER_SATOSHAI_SLACK_CLIENT_ID"
+              value: "8497303115941.8516708792518"
+            - name: CHARACTER_SATOSHAI_SLACK_SERVER_PORT
+              value: "3071"
+            - name: CNS_VERAX_PORTAL_ID
+              value: "0x4787Fd2DfE83C0e5d07d2BA1aEF12Afc5c4fe306"
+            - name: CNS_VERAX_SCHEMA_ID
+              value: "0x8660da4093987072670aba14868d8dc4112ea88a777f7434a54ea8e7925a1a73"
+            - name: CNS_TOKEN_ADDRESS
+              value: "0xd2A2c346bF6A62235DBE9222F43d423024D7353D"
+            - name: CNS_CONSTITUTION_HASH
+              value: "QmZCXBiYSMVJe5vUq3s62L2YTugGCY2WZ8m6wb9ra99wAc"
+            - name: CNS_AGREEMENT_CONTRACT_ADDRESS
+              value: "0xDB86E258C616a70DA099Aef2Fa2b69a0C461cb65"
+            - name: CNS_INITIATIVE_CONTRACT_ADDRESS
+              value: "0xf446114B4f687C309B1D2C36E35483703D956f6d"
+            - name: SUPABASE_URL
+              value: "https://erqahqyzhirixswuiplt.supabase.co"
+            - name: EVM_PROVIDER_URL
+              value: "https://rpc.sepolia.linea.build"
+            - name: EMBEDDING_OPENAI_MODEL
+              value: "text-embedding-3-small"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+            - containerPort: 5173
+              protocol: TCP           
+            - containerPort: 3069
+              protocol: TCP
+            - containerPort: 3070
+              protocol: TCP
+            - containerPort: 3071
+              protocol: TCP           
+          volumeMounts:
+            - name: data
+              mountPath: /app/agent/data
+            - name: dotenv
+              mountPath: "/app/.env"
+              subPath: .env
+              readOnly: true
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 4
+              memory: 2Gi
+            requests:
+              cpu: 2
+              memory: 2Gi
+          livenessProbe:
+            failureThreshold: 3
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 3000
+            timeoutSeconds: 5
+      volumes:
+        - name: dotenv
+          secret:
+            secretName: dotenv
+            items:
+              - key: dotenv
+                path: .env
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi

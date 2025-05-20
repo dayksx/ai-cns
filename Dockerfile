@@ -37,8 +37,15 @@ WORKDIR /app
 # Copy application code
 COPY . .
 
+RUN git submodule update --init --recursive
+
+RUN cd /app/packages/client-slack \
+    && pnpm add @elizaos/core \
+    && cd /app/packages/client-telegram \
+    && pnpm add @elizaos/core
+
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 
 # Build the project
 RUN pnpm run build && pnpm prune --prod
