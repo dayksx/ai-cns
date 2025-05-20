@@ -2,6 +2,7 @@
     "name": "LubAIn",
     "username": "lubAIn",
     "plugins": [
+        "@elizaos-plugins/client-slack",
         "@elizaos-plugins/client-twitter",
         "@elizaos-plugins/plugin-web-search",
         "@elizaos/plugin-community-values",
