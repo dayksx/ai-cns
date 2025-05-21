@@ -77,8 +77,7 @@ const topHoldersProvider: Provider = {
                     return `${index + 1}. ${address}: ${formattedBalance} CNS`;
                 })
                 .join("\n");
-            console.log(`**Top 20 CNS Token Holders:**\n${formattedHolders}`);
-            return `**Top 20 CNS Token Holders:**\n${formattedHolders}`;
+            return `**Top 20 $CNS Tipping Token Holders:**\n${formattedHolders}`;
         } catch (error) {
             elizaLogger.error(`Error fetching top holders: ${error}`);
             return "Failed to fetch top CNS token holders. Please try again later.";
